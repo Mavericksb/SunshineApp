@@ -49,7 +49,7 @@ public final class NetworkUtils {
      * you can do so by setting the FORECAST_BASE_URL to STATIC_WEATHER_URL below.
      */
     private static final String DYNAMIC_WEATHER_URL =
-            "https://andfun-weather.udacity.com/weather";
+            "https://api.darksky.net/forecast/86e612f54bf44d5992b101d39f9640f4/";
 
     private static final String STATIC_WEATHER_URL =
             "https://andfun-weather.udacity.com/staticweather";

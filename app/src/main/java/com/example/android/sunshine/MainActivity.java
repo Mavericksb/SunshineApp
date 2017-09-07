@@ -336,8 +336,9 @@ public class MainActivity extends AppCompatActivity implements
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
-        if (id == R.id.action_map) {
-            openPreferredLocationInMap();
+        if (id == R.id.action_location) {
+            startActivity(new Intent(this, LocationActivity.class));
+            //openPreferredLocationInMap();
             return true;
         }
 
