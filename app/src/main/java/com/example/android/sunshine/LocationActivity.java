@@ -1,20 +1,32 @@
 package com.example.android.sunshine;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 
 /**
  * Created by ROBERTO on 07/09/2017.
  */
 
-public class LocationActivity extends AppCompatActivity{
+public class LocationActivity extends AppCompatActivity {
+
+    private static final String LOG_TAG = "Location Autocomplete";
+
+    private AutoCompleteTextView mAutoComplete;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mAutoComplete = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
+        mAutoComplete.setAdapter(new AutoCompleteAdapter(this, R.layout.list_item_location_autocomplete));
     }
 
 
@@ -41,4 +53,8 @@ public class LocationActivity extends AppCompatActivity{
 
         return super.onOptionsItemSelected(item);
     }
+
+
+
+
 }
