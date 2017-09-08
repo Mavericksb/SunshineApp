@@ -56,11 +56,13 @@
         <activity android:name=".LocationActivity"
             android:label="@string/title_activity_location"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity"/>
         </activity>
+
 
         <!-- Our ContentProvider -->
         <provider

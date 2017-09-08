@@ -4,11 +4,14 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -24,7 +27,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 /**
- * Created by ROBERTO on 07/09/2017.
+ * Created by ROBERTO on 08/09/2017.
  */
 
 class AutoCompleteAdapter extends ArrayAdapter implements Filterable, AdapterView.OnItemClickListener {
@@ -40,15 +43,25 @@ class AutoCompleteAdapter extends ArrayAdapter implements Filterable, AdapterVie
     private Context mContext;
 
 
-    public interface LocationAdapterOnClickHandler{
-        void onClickItem();
-    }
-
-
     public AutoCompleteAdapter(Context context, int textViewResId) {
         super(context,textViewResId);
-
         mContext = context;
+
+    }
+
+    @NonNull
+    @Override
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        String pos = getItem(position);
+        View view = convertView;
+        if(view == null){
+            LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+            view = layoutInflater.inflate(R.layout.list_item_location_autocomplete, null);
+        }
+        TextView tv = (TextView) view.findViewById(R.id.textViewListLocation);
+        tv.setText(pos.toString());
+        tv.getBackground().setAlpha(50);
+        return view;
     }
 
     @Override
@@ -140,7 +153,7 @@ class AutoCompleteAdapter extends ArrayAdapter implements Filterable, AdapterVie
                 resultList.add(jsonArray.getJSONObject(i).getString("description"));
             }
 
-            }catch(JSONException e) {
+        }catch(JSONException e) {
             Log.e(LOG_TAG, "Error reading Json Response", e);
         }
         return resultList;

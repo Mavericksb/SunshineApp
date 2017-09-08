@@ -3,24 +3,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background">
 
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/forecast_detail_horizontal_padding"
-        android:layout_marginStart="@dimen/forecast_detail_horizontal_padding"
-        android:layout_marginRight="@dimen/forecast_detail_horizontal_padding"
-        android:layout_marginEnd="@dimen/forecast_detail_horizontal_padding"
-        android:paddingTop="@dimen/forecast_detail_vertical_padding"
+        android:layout_marginEnd="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginStart="4dp"
         android:ems="10"
-        android:hint="Please enter your place"
+        android:hint="Cerca città"
+        android:paddingEnd="@dimen/forecast_detail_horizontal_padding"
 
 
-        >
-    <requestFocus />
+        android:paddingLeft="@dimen/forecast_detail_horizontal_padding"
+        android:paddingRight="@dimen/forecast_detail_horizontal_padding"
+        android:paddingStart="@dimen/forecast_detail_horizontal_padding"
+        android:paddingTop="@dimen/forecast_detail_vertical_padding">
 
-</AutoCompleteTextView>
+        <requestFocus />
+
+    </AutoCompleteTextView>
 
     </LinearLayout>
