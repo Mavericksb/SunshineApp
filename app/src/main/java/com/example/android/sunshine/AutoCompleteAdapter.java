@@ -30,7 +30,7 @@ import java.util.ArrayList;
  * Created by ROBERTO on 08/09/2017.
  */
 
-class AutoCompleteAdapter extends ArrayAdapter implements Filterable, AdapterView.OnItemClickListener {
+class AutoCompleteAdapter extends ArrayAdapter implements Filterable {
 
     private static final String LOG_TAG = "Autocomplete Adapter";
     private static final String URL_PLACE_API_BASE = "https://maps.googleapis.com/maps/api/place";
@@ -47,6 +47,7 @@ class AutoCompleteAdapter extends ArrayAdapter implements Filterable, AdapterVie
         super(context,textViewResId);
         mContext = context;
 
+
     }
 
     @NonNull
@@ -60,15 +61,11 @@ class AutoCompleteAdapter extends ArrayAdapter implements Filterable, AdapterVie
         }
         TextView tv = (TextView) view.findViewById(R.id.textViewListLocation);
         tv.setText(pos.toString());
-        tv.getBackground().setAlpha(50);
+
         return view;
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        String string = (String) adapterView.getItemAtPosition(position);
-        Toast.makeText(mContext, string, Toast.LENGTH_SHORT).show();
-    }
+
 
     @Override
     public int getCount() {

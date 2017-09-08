@@ -3,14 +3,18 @@ package com.example.android.sunshine;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.Toast;
 
 /**
  * Created by ROBERTO on 07/09/2017.
  */
 
-public class LocationActivity extends AppCompatActivity {
+public class LocationActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
     private static final String LOG_TAG = "Location Autocomplete";
 
@@ -24,6 +28,7 @@ public class LocationActivity extends AppCompatActivity {
 
         mAutoComplete = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
         mAutoComplete.setAdapter(new AutoCompleteAdapter(this, R.layout.list_item_location_autocomplete));
+        mAutoComplete.setOnItemClickListener(this);
     }
 
 
@@ -52,6 +57,11 @@ public class LocationActivity extends AppCompatActivity {
     }
 
 
-
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+            String string = (String) adapterView.getItemAtPosition(position);
+            Toast city = Toast.makeText(this, "Città " + string, Toast.LENGTH_SHORT);
+            city.show();
+    }
 
 }

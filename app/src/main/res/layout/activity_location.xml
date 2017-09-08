@@ -17,8 +17,9 @@
         android:ems="10"
         android:hint="Cerca città"
         android:paddingEnd="@dimen/forecast_detail_horizontal_padding"
-
-
+        android:popupBackground="@android:color/transparent"
+        android:popupTheme="@style/DropDownListViewStyle"
+        android:maxLines="1"
         android:paddingLeft="@dimen/forecast_detail_horizontal_padding"
         android:paddingRight="@dimen/forecast_detail_horizontal_padding"
         android:paddingStart="@dimen/forecast_detail_horizontal_padding"
@@ -27,5 +28,18 @@
         <requestFocus />
 
     </AutoCompleteTextView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:cacheColorHint="@android:color/transparent">
+
+        <include android:id="@+id/list_view"
+            layout="@layout/list_item_location_autocomplete"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            />
+    </FrameLayout>
 
     </LinearLayout>
