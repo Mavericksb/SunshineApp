@@ -1,6 +1,7 @@
 package com.example.android.sunshine;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -10,13 +11,28 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.places.AutocompletePrediction;
+import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBuffer;
+import com.google.android.gms.location.places.PlaceBufferResponse;
+import com.google.android.gms.location.places.PlaceDetectionClient;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
+
 /**
  * Created by ROBERTO on 07/09/2017.
  */
 
 public class LocationActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
+    // The entry points to the Places API.
+
+
     private static final String LOG_TAG = "Location Autocomplete";
+    private GeoDataClient mGeoDataClient;
 
     private AutoCompleteTextView mAutoComplete;
 
@@ -24,6 +40,9 @@ public class LocationActivity extends AppCompatActivity implements AdapterView.O
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
+
+        mGeoDataClient = Places.getGeoDataClient(this, null);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mAutoComplete = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
@@ -59,9 +78,33 @@ public class LocationActivity extends AppCompatActivity implements AdapterView.O
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            String string = (String) adapterView.getItemAtPosition(position);
-            Toast city = Toast.makeText(this, "Città " + string, Toast.LENGTH_SHORT);
-            city.show();
+            String placeId = AutoCompleteAdapter.getPlaceId(position);
+            String current = (String) adapterView.getItemAtPosition(position);
+//            Toast city = Toast.makeText(this, "Città " + current + " Id " + placeId, Toast.LENGTH_SHORT);
+//            city.show();
+        Task<PlaceBufferResponse> placeResponse = mGeoDataClient.getPlaceById(placeId);
+
+
+        placeResponse.addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+            @Override
+            public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                if(task.isSuccessful()){
+                    PlaceBufferResponse placeBuffer = task.getResult();
+
+                    for(Place currentPlace : placeBuffer){
+                        Toast coords = Toast.makeText(LocationActivity.this, " Id " + currentPlace.getLatLng(), Toast.LENGTH_SHORT);
+                        coords.show();
+                    }
+
+                    placeBuffer.release();
+                } else{
+                    Exception exception = task.getException();
+                    Log.e("OnCompleteAutocomplete", "Exception " + exception);
+
+                }
+            }
+        });
+
     }
 
 }

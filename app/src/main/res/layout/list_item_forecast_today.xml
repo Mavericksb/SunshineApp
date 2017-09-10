@@ -26,16 +26,27 @@
   - but again, we wanted to avoid making things too complicated.                                 -
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
+
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/gradient_background"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/today_touch_selector"
-    android:paddingBottom="@dimen/today_forecast_list_item_vertical_padding"
-    android:paddingTop="@dimen/today_forecast_list_item_vertical_padding">
+    android:layout_height="wrap_content">
+    <!--android:paddingBottom="@dimen/today_forecast_list_item_vertical_padding"-->
+    <!--android:paddingTop="@dimen/today_forecast_list_item_vertical_padding">-->
 
+    <ImageView
+        android:id="@+id/cloudView"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:src="@drawable/cloud1"
+        android:scaleX="3"
+        android:scaleY="3"
+
+
+        />
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - This Guideline divides the screen into a left half and a right half and is used to        -
      - anchor the views to the middle of the screen.                                             -
@@ -141,5 +152,8 @@
         app:layout_constraintLeft_toLeftOf="@+id/high_temperature"
         app:layout_constraintRight_toRightOf="@+id/high_temperature"
         tools:text="10\u00b0"/>
+
+
+        
 
 </android.support.constraint.ConstraintLayout>

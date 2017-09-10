@@ -14,6 +14,20 @@ import android.widget.Filterable;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.AutocompletePrediction;
+import com.google.android.gms.location.places.AutocompletePredictionBuffer;
+import com.google.android.gms.location.places.AutocompletePredictionBufferResponse;
+import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.PlaceDetectionClient;
+import com.google.android.gms.location.places.PlaceLikelihood;
+import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,27 +39,47 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import static com.google.android.gms.location.places.AutocompleteFilter.TYPE_FILTER_CITIES;
 
 /**
  * Created by ROBERTO on 08/09/2017.
  */
 
-class AutoCompleteAdapter extends ArrayAdapter implements Filterable {
+class AutoCompleteAdapter extends ArrayAdapter<String> implements Filterable {
 
     private static final String LOG_TAG = "Autocomplete Adapter";
-    private static final String URL_PLACE_API_BASE = "https://maps.googleapis.com/maps/api/place";
-    private static final String TYPE_AUTOCOMPLETE = "/autocomplete";
-    private static final String OUT_JSON = "/json";
 
-    private static final String API_KEY = "AIzaSyBahRT-ypkg3p658o_fVkshRlDGpG3_al8";
+    // The entry points to the Places API.
+    private GeoDataClient mGeoDataClient;
+    private PlaceDetectionClient mPlaceDetectionClient;
+
+
+    private AutocompleteFilter mAutoCompleteFilter = new AutocompleteFilter.Builder()
+//            .setCountry("it")
+            .setTypeFilter(TYPE_FILTER_CITIES)
+            .build();
+
 
     private ArrayList<String> resultList;
+    static private ArrayList<String> placeIds;
     private Context mContext;
 
 
     public AutoCompleteAdapter(Context context, int textViewResId) {
         super(context,textViewResId);
         mContext = context;
+
+        // Construct a GeoDataClient.
+        mGeoDataClient = Places.getGeoDataClient(context, null);
+
+        // Construct a PlaceDetectionClient.
+        mPlaceDetectionClient = Places.getPlaceDetectionClient(context, null);
+
 
 
     }
@@ -66,7 +100,6 @@ class AutoCompleteAdapter extends ArrayAdapter implements Filterable {
     }
 
 
-
     @Override
     public int getCount() {
         return resultList.size();
@@ -75,7 +108,11 @@ class AutoCompleteAdapter extends ArrayAdapter implements Filterable {
     @Nullable
     @Override
     public String getItem(int index) {
-        return resultList.get(index);
+        return resultList.get(index); //completeArray.get(index).getPlaceId().toString();
+    }
+
+    static public String getPlaceId(int index) {
+        return placeIds.get(index);
     }
 
     @NonNull
@@ -86,10 +123,10 @@ class AutoCompleteAdapter extends ArrayAdapter implements Filterable {
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults filterResults = new FilterResults();
                 if(constraint != null){
-                    // Retrieve the autocomplete results.
+
                     resultList = autoComplete(constraint.toString());
 
-                    // Assign the data to the FilterResults
+
                     filterResults.values = resultList;
                     filterResults.count = resultList.size();
                 }
@@ -108,52 +145,50 @@ class AutoCompleteAdapter extends ArrayAdapter implements Filterable {
         return filter;
     }
 
-    public ArrayList autoComplete(String input){
+    synchronized public ArrayList<String> autoComplete(CharSequence constraint){
 
-        ArrayList resultList = null;
-        HttpURLConnection connection = null;
-
-        StringBuilder jsonResult = new StringBuilder();
-        try
-        {
-            StringBuilder sb = new StringBuilder(URL_PLACE_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
-            sb.append("?key=" + API_KEY);
-            sb.append("&components=country:it");
-            sb.append("&input=" + URLEncoder.encode(input, "utf8"));
-
-            URL url = new URL(sb.toString());
-            connection = (HttpURLConnection) url.openConnection();
-            InputStreamReader in = new InputStreamReader(connection.getInputStream());
-            int read;
-            char[] buff = new char[1024];
-            while((read = in.read(buff)) != -1){
-                jsonResult.append(buff, 0, read);
-            }} catch (MalformedURLException e) {
-            Log.e(LOG_TAG, "Error processing Places API URL", e);
-            return resultList;
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Error connecting to Places API", e);
-            return resultList;
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
+        final ArrayList<String> results = new ArrayList<>();
+        final ArrayList<String> placeId = new ArrayList<>();
 
         try {
+            Task<AutocompletePredictionBufferResponse> result = mGeoDataClient.getAutocompletePredictions(
+                    constraint.toString(),
+                    null,
+                    mAutoCompleteFilter);
+            result.addOnCompleteListener(new OnCompleteListener<AutocompletePredictionBufferResponse>() {
+                @Override
+                public void onComplete(@NonNull Task<AutocompletePredictionBufferResponse> task) {
+                    if (task.isSuccessful()) {
+                        AutocompletePredictionBufferResponse autocompletePredictions = task.getResult();
+                        for (AutocompletePrediction placeLikelihood : autocompletePredictions) {
 
-            JSONObject jsonObj = new JSONObject(jsonResult.toString());
-            JSONArray jsonArray = jsonObj.getJSONArray("predictions");
-            resultList = new ArrayList(jsonArray.length());
+                            String city = placeLikelihood.getPrimaryText(null).toString() + " " + placeLikelihood.getSecondaryText(null).toString();
+                            results.add(city);
+                            placeId.add(placeLikelihood.getPlaceId());
+                        }
+                        notifyDataSetChanged();
+                        autocompletePredictions.release();
+                    } else{
+                        Exception exception = task.getException();
+                        Log.e("OnCompleteAutocomplete", "Exception " + exception);
 
-            for (int i = 0; i < jsonArray.length(); i++) {
-                resultList.add(jsonArray.getJSONObject(i).getString("description"));
-            }
-
-        }catch(JSONException e) {
-            Log.e(LOG_TAG, "Error reading Json Response", e);
+                    }
+                }
+            });
+            // Block on a task and get the result synchronously.
+            Tasks.await(result, 30, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            Log.e(LOG_TAG, "AutoComplete request failed: " + e);
+        } catch (InterruptedException e) {
+            Log.e(LOG_TAG, "AutoComplete request interrupted: " + e);
+        } catch (TimeoutException e){
+            Log.e(LOG_TAG, "AutoComplete request interrupted: " + e);
         }
-        return resultList;
 
+
+        placeIds = placeId;
+        return results;
     }
+
+
 }
