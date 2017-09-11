@@ -98,6 +98,8 @@ public final class NetworkUtils {
      * @return URL to query weather service
      */
     public static URL getUrl(Context context) {
+
+
         if (SunshinePreferences.isLocationLatLonAvailable(context)) {
             double[] preferredCoordinates = SunshinePreferences.getLocationCoordinates(context);
             double latitude = preferredCoordinates[0];
@@ -118,13 +120,15 @@ public final class NetworkUtils {
      * @return The Url to use to query the weather server.
      */
     private static URL buildUrlWithLatitudeLongitude(Double latitude, Double longitude) {
-        Uri weatherQueryUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+        Uri weatherQueryUri = Uri.parse(STATIC_WEATHER_URL).buildUpon()
+                
                 .appendQueryParameter(LAT_PARAM, String.valueOf(latitude))
                 .appendQueryParameter(LON_PARAM, String.valueOf(longitude))
                 .appendQueryParameter(FORMAT_PARAM, format)
                 .appendQueryParameter(UNITS_PARAM, units)
                 .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
                 .build();
+        Log.e("Build URL", "Url : " + weatherQueryUri);
 
         try {
             URL weatherQueryUrl = new URL(weatherQueryUri.toString());

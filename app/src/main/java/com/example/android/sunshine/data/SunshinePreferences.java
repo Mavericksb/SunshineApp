@@ -30,6 +30,7 @@ public final class SunshinePreferences {
      */
     public static final String PREF_COORD_LAT = "coord_lat";
     public static final String PREF_COORD_LONG = "coord_long";
+    public static final String PREF_LOCATION = "location";
 
     /**
      * Helper method to handle setting location details in Preferences (city name, latitude,
@@ -48,6 +49,39 @@ public final class SunshinePreferences {
         editor.putLong(PREF_COORD_LAT, Double.doubleToRawLongBits(lat));
         editor.putLong(PREF_COORD_LONG, Double.doubleToRawLongBits(lon));
         editor.apply();
+    }
+
+    /**
+     * Helper method to handle setting location details in Preferences (city name)
+     * <p>
+     * When the location details are updated, the database should to be cleared.
+     *
+     * @param context  Context used to get the SharedPreferences
+     * @param city     the name of the city
+     */
+    public static void setLocationName(Context context, String city) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sp.edit();
+
+        String keyForLocation = context.getString(R.string.pref_location_key);
+        String defaultLocation = context.getString(R.string.pref_location_default);
+
+        editor.putString(keyForLocation, city);
+        editor.putString(PREF_LOCATION, city);
+        editor.apply();
+    }
+
+    /**
+     * Helper method to handle setting location details in Preferences (city name)
+     * <p>
+     * When the location details are updated, the database should to be cleared.
+     *
+     * @param context  Context used to get the SharedPreferences
+     */
+    public static String getLocationName(Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return sp.getString(PREF_LOCATION, "");
     }
 
     /**

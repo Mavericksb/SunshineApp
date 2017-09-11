@@ -11,6 +11,8 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
+import com.example.android.sunshine.data.SunshinePreferences;
+import com.example.android.sunshine.sync.SunshineSyncUtils;
 import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
@@ -35,6 +37,11 @@ public class LocationActivity extends AppCompatActivity implements AdapterView.O
     private GeoDataClient mGeoDataClient;
 
     private AutoCompleteTextView mAutoComplete;
+    private AutoCompleteAdapter mAutoCompleteAdapter;
+
+    private double mLatitude;
+    private double mLongitude;
+    private String mCity;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,7 +53,8 @@ public class LocationActivity extends AppCompatActivity implements AdapterView.O
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mAutoComplete = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
-        mAutoComplete.setAdapter(new AutoCompleteAdapter(this, R.layout.list_item_location_autocomplete));
+        mAutoCompleteAdapter = new AutoCompleteAdapter(this, R.layout.list_item_location_autocomplete);
+        mAutoComplete.setAdapter(mAutoCompleteAdapter);
         mAutoComplete.setOnItemClickListener(this);
     }
 
@@ -78,8 +86,11 @@ public class LocationActivity extends AppCompatActivity implements AdapterView.O
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            String placeId = AutoCompleteAdapter.getPlaceId(position);
-            String current = (String) adapterView.getItemAtPosition(position);
+        AutoCompleteAdapter.PlaceAutocomplete item = mAutoCompleteAdapter.getItem(position);
+        String placeId = String.valueOf(item.placeId);
+        mCity = (String) item.city;
+        SunshinePreferences.setLocationName(this, mCity);
+
 //            Toast city = Toast.makeText(this, "Città " + current + " Id " + placeId, Toast.LENGTH_SHORT);
 //            city.show();
         Task<PlaceBufferResponse> placeResponse = mGeoDataClient.getPlaceById(placeId);
@@ -92,10 +103,13 @@ public class LocationActivity extends AppCompatActivity implements AdapterView.O
                     PlaceBufferResponse placeBuffer = task.getResult();
 
                     for(Place currentPlace : placeBuffer){
-                        Toast coords = Toast.makeText(LocationActivity.this, " Id " + currentPlace.getLatLng(), Toast.LENGTH_SHORT);
-                        coords.show();
+                        mLatitude = currentPlace.getLatLng().latitude;
+                        mLongitude = currentPlace.getLatLng().longitude;
                     }
-
+                    Toast coords = Toast.makeText(LocationActivity.this, " Id " + mLatitude + "," + mLongitude + "Pref: " + SunshinePreferences.getLocationCoordinates(LocationActivity.this)[0] + "," + SunshinePreferences.getLocationCoordinates(LocationActivity.this)[1], Toast.LENGTH_SHORT);
+                    coords.show();
+                    SunshinePreferences.setLocationDetails(LocationActivity.this, mLatitude, mLongitude);
+                    SunshineSyncUtils.startImmediateSync(getApplicationContext());
                     placeBuffer.release();
                 } else{
                     Exception exception = task.getException();
@@ -104,6 +118,7 @@ public class LocationActivity extends AppCompatActivity implements AdapterView.O
                 }
             }
         });
+
 
     }
 

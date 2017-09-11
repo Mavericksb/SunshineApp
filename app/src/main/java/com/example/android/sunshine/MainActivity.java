@@ -92,10 +92,9 @@ public class MainActivity extends AppCompatActivity implements
 
             ImageView img_animation = (ImageView) findViewById(R.id.cloudView);
 
-            TranslateAnimation animation = new TranslateAnimation(-1100.0f, 1200.0f,
+            TranslateAnimation animation = new TranslateAnimation(1200.0f, -1200.0f,
                     0.0f, 0.0f);          //  new TranslateAnimation(xFrom,xTo, yFrom,yTo)
-            animation.setZAdjustment(Animation.ZORDER_BOTTOM);
-            animation.setDuration(25000);  // animation duration
+            animation.setDuration(35000);  // animation duration
             animation.setRepeatCount(ValueAnimator.INFINITE);  // animation repeat count
             animation.setRepeatMode(1);   // repeat animation (left to right, right to left )
             //animation.setFillAfter(true);

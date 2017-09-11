@@ -50,13 +50,14 @@ import static com.google.android.gms.location.places.AutocompleteFilter.TYPE_FIL
  * Created by ROBERTO on 08/09/2017.
  */
 
-class AutoCompleteAdapter extends ArrayAdapter<String> implements Filterable {
+class AutoCompleteAdapter extends ArrayAdapter<AutoCompleteAdapter.PlaceAutocomplete> implements Filterable {
 
     private static final String LOG_TAG = "Autocomplete Adapter";
 
     // The entry points to the Places API.
     private GeoDataClient mGeoDataClient;
     private PlaceDetectionClient mPlaceDetectionClient;
+    private ArrayList<PlaceAutocomplete> mResultList;
 
 
     private AutocompleteFilter mAutoCompleteFilter = new AutocompleteFilter.Builder()
@@ -65,8 +66,7 @@ class AutoCompleteAdapter extends ArrayAdapter<String> implements Filterable {
             .build();
 
 
-    private ArrayList<String> resultList;
-    static private ArrayList<String> placeIds;
+    //static private ArrayList<String> placeIds;
     private Context mContext;
 
 
@@ -84,36 +84,36 @@ class AutoCompleteAdapter extends ArrayAdapter<String> implements Filterable {
 
     }
 
-    @NonNull
-    @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        String pos = getItem(position);
-        View view = convertView;
-        if(view == null){
-            LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-            view = layoutInflater.inflate(R.layout.list_item_location_autocomplete, null);
-        }
-        TextView tv = (TextView) view.findViewById(R.id.textViewListLocation);
-        tv.setText(pos.toString());
-
-        return view;
-    }
+//    @NonNull
+//    @Override
+//    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+//        String pos = getItem(position);
+//        View view = convertView;
+//        if(view == null){
+//            LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+//            view = layoutInflater.inflate(R.layout.list_item_location_autocomplete, null);
+//        }
+//        TextView tv = (TextView) view.findViewById(R.id.textViewListLocation);
+//        tv.setText(pos.toString());
+//
+//        return view;
+//    }
 
 
     @Override
     public int getCount() {
-        return resultList.size();
+        return mResultList.size();
     }
 
     @Nullable
     @Override
-    public String getItem(int index) {
-        return resultList.get(index); //completeArray.get(index).getPlaceId().toString();
+    public PlaceAutocomplete getItem(int index) {
+        return mResultList.get(index);
     }
 
-    static public String getPlaceId(int index) {
-        return placeIds.get(index);
-    }
+//    static public String getPlaceId(int index) {
+//        return placeIds.get(index);
+//    }
 
     @Override
     public String toString() {
@@ -129,11 +129,11 @@ class AutoCompleteAdapter extends ArrayAdapter<String> implements Filterable {
                 FilterResults filterResults = new FilterResults();
                 if(constraint != null){
 
-                    resultList = autoComplete(constraint.toString());
-
-
-                    filterResults.values = resultList;
-                    filterResults.count = resultList.size();
+                    mResultList = autoComplete(constraint.toString());
+                    if(mResultList!=null) {
+                        filterResults.values = mResultList;
+                        filterResults.count = mResultList.size();
+                    }
                 }
                 return filterResults;
             }
@@ -150,50 +150,86 @@ class AutoCompleteAdapter extends ArrayAdapter<String> implements Filterable {
         return filter;
     }
 
-    synchronized public ArrayList<String> autoComplete(CharSequence constraint){
+    private ArrayList<PlaceAutocomplete> autoComplete(CharSequence constraint){
 
-        final ArrayList<String> results = new ArrayList<>();
-        final ArrayList<String> placeId = new ArrayList<>();
+//        final ArrayList<String> results = new ArrayList<>();
+//        final ArrayList<String> placeId = new ArrayList<>();
 
         try {
             Task<AutocompletePredictionBufferResponse> result = mGeoDataClient.getAutocompletePredictions(
                     constraint.toString(),
                     null,
                     mAutoCompleteFilter);
-            result.addOnCompleteListener(new OnCompleteListener<AutocompletePredictionBufferResponse>() {
-                @Override
-                public void onComplete(@NonNull Task<AutocompletePredictionBufferResponse> task) {
-                    if (task.isSuccessful()) {
-                        AutocompletePredictionBufferResponse autocompletePredictions = task.getResult();
-                        for (AutocompletePrediction placeLikelihood : autocompletePredictions) {
+            // Wait for predictions, set the timeout.
+            AutocompletePredictionBufferResponse autocompletePredictions = Tasks.await(result, 60, TimeUnit.SECONDS);
 
-                            String city = placeLikelihood.getPrimaryText(null).toString() + " " + placeLikelihood.getSecondaryText(null).toString();
-                            results.add(city);
-                            placeId.add(placeLikelihood.getPlaceId());
-                        }
-                        notifyDataSetChanged();
-                        autocompletePredictions.release();
-                    } else{
-                        Exception exception = task.getException();
-                        Log.e("OnCompleteAutocomplete", "Exception " + exception);
-
-                    }
+            if(result.isSuccessful()){
+                Iterator<AutocompletePrediction> iterator = autocompletePredictions.iterator();
+                ArrayList resultList = new ArrayList<>(autocompletePredictions.getCount());
+                while (iterator.hasNext()) {
+                    AutocompletePrediction prediction = iterator.next();
+                    resultList.add(new PlaceAutocomplete(prediction.getPlaceId(),
+                            prediction.getPrimaryText(null)+" "+prediction.getSecondaryText(null), prediction.getPrimaryText(null)));
                 }
-            });
-            // Block on a task and get the result synchronously.
-            Tasks.await(result, 30, TimeUnit.SECONDS);
+                // Buffer release
+                autocompletePredictions.release();
+                return resultList;
+            } else {
+                Exception exception = result.getException();
+                Log.e("OnCompleteAutocomplete", "Exception " + exception);
+                autocompletePredictions.release();
+                return null;
+            }
+
+//            result.addOnCompleteListener(new OnCompleteListener<AutocompletePredictionBufferResponse>() {
+//                @Override
+//                public void onComplete(@NonNull Task<AutocompletePredictionBufferResponse> task) {
+//                    if (task.isSuccessful()) {
+//                        AutocompletePredictionBufferResponse autocompletePredictions = task.getResult();
+//                        for (AutocompletePrediction placeLikelihood : autocompletePredictions) {
+//
+//                            String city = placeLikelihood.getPrimaryText(null).toString() + " " + placeLikelihood.getSecondaryText(null).toString();
+//                            results.add(city);
+//                            placeId.add(placeLikelihood.getPlaceId());
+//                        }
+//                        notifyDataSetChanged();
+//                        autocompletePredictions.release();
+//                    } else{
+//                        Exception exception = task.getException();
+//                        Log.e("OnCompleteAutocomplete", "Exception " + exception);
+//
+//                    }
+//                }
+//            });
         } catch (ExecutionException e) {
             Log.e(LOG_TAG, "AutoComplete request failed: " + e);
+            return null;
         } catch (InterruptedException e) {
             Log.e(LOG_TAG, "AutoComplete request interrupted: " + e);
+            return null;
         } catch (TimeoutException e){
             Log.e(LOG_TAG, "AutoComplete request interrupted: " + e);
+            return null;
         }
-
-
-        placeIds = placeId;
-        return results;
     }
 
+
+    class PlaceAutocomplete {
+
+        public CharSequence placeId;
+        public CharSequence description;
+        public CharSequence city;
+
+        PlaceAutocomplete(CharSequence placeId, CharSequence description, CharSequence city) {
+            this.placeId = placeId;
+            this.description = description;
+            this.city = city;
+        }
+
+        @Override
+        public String toString() {
+            return description.toString();
+        }
+    }
 
 }
