@@ -15,6 +15,7 @@
  */
 package com.example.android.sunshine;
 
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -30,6 +31,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.example.android.sunshine.data.SunshinePreferences;
@@ -85,6 +89,19 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forecast);
         getSupportActionBar().setElevation(0f);
+
+            ImageView img_animation = (ImageView) findViewById(R.id.cloudView);
+
+            TranslateAnimation animation = new TranslateAnimation(-1100.0f, 1200.0f,
+                    0.0f, 0.0f);          //  new TranslateAnimation(xFrom,xTo, yFrom,yTo)
+            animation.setZAdjustment(Animation.ZORDER_BOTTOM);
+            animation.setDuration(25000);  // animation duration
+            animation.setRepeatCount(ValueAnimator.INFINITE);  // animation repeat count
+            animation.setRepeatMode(1);   // repeat animation (left to right, right to left )
+            //animation.setFillAfter(true);
+
+
+            img_animation.startAnimation(animation);  // start animation
 
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to

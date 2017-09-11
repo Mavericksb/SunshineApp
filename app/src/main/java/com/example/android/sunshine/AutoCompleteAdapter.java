@@ -115,6 +115,11 @@ class AutoCompleteAdapter extends ArrayAdapter<String> implements Filterable {
         return placeIds.get(index);
     }
 
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
     @NonNull
     @Override
     public Filter getFilter() {

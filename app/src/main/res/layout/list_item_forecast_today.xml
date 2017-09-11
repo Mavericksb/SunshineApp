@@ -31,22 +31,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/gradient_background"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <!--android:paddingBottom="@dimen/today_forecast_list_item_vertical_padding"-->
-    <!--android:paddingTop="@dimen/today_forecast_list_item_vertical_padding">-->
-
-    <ImageView
-        android:id="@+id/cloudView"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:src="@drawable/cloud1"
-        android:scaleX="3"
-        android:scaleY="3"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/today_forecast_list_item_vertical_padding"
+    android:paddingTop="@dimen/today_forecast_list_item_vertical_padding"
+>
 
 
-        />
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - This Guideline divides the screen into a left half and a right half and is used to        -
      - anchor the views to the middle of the screen.                                             -
