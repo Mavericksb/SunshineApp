@@ -1,6 +1,8 @@
 package com.example.android.sunshine;
 
 import android.content.Context;
+import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -43,6 +45,7 @@ public class LocationActivity extends AppCompatActivity implements AdapterView.O
     private double mLatitude;
     private double mLongitude;
     private String mCity;
+    private String mPlaceId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -86,80 +89,51 @@ public class LocationActivity extends AppCompatActivity implements AdapterView.O
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         AutoCompleteAdapter.PlaceAutocomplete item = mAutoCompleteAdapter.getItem(position);
-        String placeId = String.valueOf(item.placeId);
+        mPlaceId = String.valueOf(item.placeId);
         mCity = (String) item.city;
         SunshinePreferences.setLocationName(this, mCity);
-        final boolean isInitializing = false;
 
-        getCoordinates(placeId, getApplicationContext());
+        new GetCoordsTask().execute();
     }
 
-    public void getCoordinates(String placeId, Context context) {
+
+    private class GetCoordsTask extends AsyncTask<Void, Void, Void>{
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                Task<PlaceBufferResponse> placeResponse = mGeoDataClient.getPlaceById(mPlaceId);
+                PlaceBufferResponse placeBufferResponse = Tasks.await(placeResponse, 30, TimeUnit.SECONDS);
 
 
-        try {
-            Task<PlaceBufferResponse> placeResponse = mGeoDataClient.getPlaceById(placeId);
-            PlaceBufferResponse placeBufferResponse = Tasks.await(placeResponse, 30, TimeUnit.SECONDS);
-
-
-            if (placeResponse.isSuccessful()) {
-                Iterator<Place> iterator = placeBufferResponse.iterator();
-                while (iterator.hasNext()) {
-                    Place place = iterator.next();
-                    mLatitude = place.getLatLng().latitude;
-                    mLongitude = place.getLatLng().longitude;
-                }
-                SunshinePreferences.setLocationDetails(context, mLatitude, mLongitude);
-                placeBufferResponse.release();
+                if (placeResponse.isSuccessful()) {
+                    Iterator<Place> iterator = placeBufferResponse.iterator();
+                    while (iterator.hasNext()) {
+                        Place place = iterator.next();
+                        mLatitude = place.getLatLng().latitude;
+                        mLongitude = place.getLatLng().longitude;
+                    }
+                    SunshinePreferences.setLocationDetails(LocationActivity.this, mLatitude, mLongitude);
+                    placeBufferResponse.release();
                     // Coordinates changed so I need to fetch data from server
-                    SunshineSyncUtils.startImmediateSync(context);
-            } else {
-                Exception exception = placeResponse.getException();
-                Log.e("OnCompleteAutocomplete", "Exception " + exception);
-                placeBufferResponse.release();
+                    SunshineSyncUtils.startImmediateSync(LocationActivity.this);
+                } else {
+                    Exception exception = placeResponse.getException();
+                    Log.e("OnCompleteAutocomplete", "Exception " + exception);
+                    placeBufferResponse.release();
+                }
+            } catch (ExecutionException e) {
+                Log.e(LOG_TAG, "AutoComplete request failed: " + e);
+            } catch (InterruptedException e) {
+                Log.e(LOG_TAG, "AutoComplete request interrupted: " + e);
+            } catch (TimeoutException e) {
+                Log.e(LOG_TAG, "AutoComplete request interrupted: " + e);
             }
-        } catch (ExecutionException e) {
-            Log.e(LOG_TAG, "AutoComplete request failed: " + e);
-        } catch (InterruptedException e) {
-            Log.e(LOG_TAG, "AutoComplete request interrupted: " + e);
-        } catch (TimeoutException e) {
-            Log.e(LOG_TAG, "AutoComplete request interrupted: " + e);
+            return null;
+        }
         }
     }
-}
 
 
-//            placeResponse.addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
-//                @Override
-//                public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
-//                    if(task.isSuccessful()){
-//                        PlaceBufferResponse placeBuffer = task.getResult();
-//
-//                        for(Place currentPlace : placeBuffer){
-//                            mLatitude = currentPlace.getLatLng().latitude;
-//                            mLongitude = currentPlace.getLatLng().longitude;
-//                        }
-//
-//                        SunshinePreferences.setLocationDetails(context, mLatitude, mLongitude);
-//
-//                        if(!isInitializing) {
-//                            // Coordinates changed so I need to fetch data from server
-//                            SunshineSyncUtils.startImmediateSync(context);
-//                        }
-//                        coords[0] = mLatitude;
-//                        coords[1] = mLongitude;
-//
-//
-//                        //Release buffer to avoid memory leaks
-//                        placeBuffer.release();
-//                    } else{
-//                        Exception exception = task.getException();
-//                        Log.e("OnCompleteAutocomplete", "Exception " + exception);
-//
-//                    }
-//                }
-//            });
-//        return coords;
-//    }
 
 

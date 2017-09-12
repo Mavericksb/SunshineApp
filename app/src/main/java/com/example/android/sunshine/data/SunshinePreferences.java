@@ -32,6 +32,7 @@ public final class SunshinePreferences {
     public static final String PREF_COORD_LONG = "coord_long";
     public static final String PREF_LOCATION = "location";
 
+
     /**
      * Helper method to handle setting location details in Preferences (city name, latitude,
      * longitude)
@@ -116,9 +117,24 @@ public final class SunshinePreferences {
         return sp.getString(keyForLocation, defaultLocation);
     }
 
-    public static String getPreferredLocationPlaceId(Context context) {
+    public static double[] getPreferredLocationCoords(Context context) {
 
-        return context.getString(R.string.pref_placeid_default);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        String latKey = context.getString(R.string.pref_latitude_key);
+        String latDef = context.getString(R.string.pref_latitude_default);
+        String lonKey = context.getString(R.string.pref_longitude_key);
+        String lonDef = context.getString(R.string.pref_longitude_default);
+
+        double latitude = Double.valueOf(sp.getString(latKey, latDef));
+        double longitude = Double.valueOf(sp.getString(lonKey, lonDef));
+
+        double[] coords = {latitude, longitude};
+
+        setLocationDetails(context, latitude, longitude);
+
+        return coords;
     }
 
     /**

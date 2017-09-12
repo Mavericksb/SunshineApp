@@ -69,11 +69,6 @@ public final class NetworkUtils {
 
     private static final String FORECAST_BASE_URL = STATIC_WEATHER_URL;
 
-    private static GeoDataClient mGeoDataClient;
-
-    private static double mLatitude;
-    private static double mLongitude;
-
 
     /*
      * NOTE: These values only effect responses from OpenWeatherMap, NOT from the fake weather
@@ -125,55 +120,20 @@ public final class NetworkUtils {
      */
     public static URL getUrl(Context context) {
 
-        Log.e("getUrl", "I'm here!");
         if (SunshinePreferences.isLocationLatLonAvailable(context)) {
-            Log.e("getUrl", "In pref coord");
             double[] preferredCoordinates = SunshinePreferences.getLocationCoordinates(context);
             double latitude = preferredCoordinates[0];
             double longitude = preferredCoordinates[1];
-            Log.e("getUrl", "pref coords : " + preferredCoordinates);
             return buildUrlWithLatitudeLongitude(latitude, longitude);
         } else {
-            String placeId = SunshinePreferences.getPreferredLocationPlaceId(context);
-            boolean isInitializing = true;
-            Log.e("getUrl", "In coords");
-            mGeoDataClient = Places.getGeoDataClient(context, null);
-            try {
-                Task<PlaceBufferResponse> placeBufferResponseTask = mGeoDataClient.getPlaceById(placeId);
-
-                PlaceBufferResponse placeBufferResponse = Tasks.await(placeBufferResponseTask, 30, TimeUnit.SECONDS);
-
-                if(placeBufferResponseTask.isSuccessful()) {
-                    Iterator<Place> iterator = placeBufferResponse.iterator();
-                    while (iterator.hasNext()) {
-                        Place place = iterator.next();
-                        mLatitude = place.getLatLng().latitude;
-                        mLongitude = place.getLatLng().longitude;
-                    }
-                    Log.e("getUrl", "coords : " + mLatitude + " " + mLongitude);
-                    placeBufferResponse.release();
-                    return buildUrlWithLatitudeLongitude(mLatitude, mLongitude);
-                } else{
-                    Exception exception = placeBufferResponseTask.getException();
-                    Log.e("OnCompleteAutocomplete", "Exception " + exception);
-                    placeBufferResponse.release();
-                    return null;
-                    }
-            } catch (IllegalStateException e){
-                Log.e(TAG, "Retrieve Coords failed: " + e);
-                return null;
-            }
-            catch (ExecutionException e) {
-                Log.e(TAG, "Retrieve Coords failed: " + e);
-                return null;
-            } catch (InterruptedException e) {
-                Log.e(TAG, "Request Coords interrupted: " + e);
-                return null;
-            } catch (TimeoutException e){
-                Log.e(TAG, "Request Coords Timeout: " + e);
-                return null;
-            }
+            double[] coords = SunshinePreferences.getPreferredLocationCoords(context);
+            double latitude = coords[0];
+            double longitude = coords[1];
+            return buildUrlWithLatitudeLongitude(latitude, longitude);
         }
+
+
+
     }
 
     /**
