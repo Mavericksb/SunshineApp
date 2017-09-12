@@ -53,6 +53,8 @@ public final class OpenWeatherJsonUtils {
     private static final String DS_HUMIDITY = "humidity";
     private static final String DS_WINDSPEED = "windSpeed";
     private static final String DS_WIND_DIRECTION = "windBearing";
+    private static final String DS_PRECIP_INTENSITY = "precipIntensity";
+    private static final String DS_CLOUD_COVER = "cloudCover";
 
     /* All temperatures are children of the "temp" object */
     private static final String OWM_TEMPERATURE = "temp";
@@ -83,7 +85,6 @@ public final class OpenWeatherJsonUtils {
     private static final String DS_DATA_ARRAY = "data";
 
 
-
     /**
      * This method parses JSON from a web response and returns an array of Strings
      * describing the weather over various days from the forecast.
@@ -93,9 +94,7 @@ public final class OpenWeatherJsonUtils {
      * now, we just convert the JSON into human-readable strings.
      *
      * @param forecastJsonStr JSON response from server
-     *
      * @return Array of Strings describing weather data
-     *
      * @throws JSONException If JSON data cannot be properly parsed
      */
     public static ContentValues[] getWeatherContentValuesFromJson(Context context, String forecastJsonStr)
@@ -160,10 +159,13 @@ public final class OpenWeatherJsonUtils {
             double humidity;
             double windSpeed;
             int windDirection;
+            double precipIntensity;
+            double cloudCover;
 
             double high;
             double low;
 
+            String id;
             String weatherId;
 
             /* Get the JSON object representing the day */
@@ -179,6 +181,8 @@ public final class OpenWeatherJsonUtils {
             humidity = dayForecast.getDouble(DS_HUMIDITY);
             windSpeed = dayForecast.getDouble(DS_WINDSPEED);
             windDirection = dayForecast.getInt(DS_WIND_DIRECTION);
+            precipIntensity = dayForecast.getDouble(DS_PRECIP_INTENSITY);
+            cloudCover = dayForecast.getDouble(DS_CLOUD_COVER);
 
             /*
              * Description is in a child array called "weather", which is 1 element long.
@@ -187,7 +191,13 @@ public final class OpenWeatherJsonUtils {
 //            JSONObject weatherObject =
 //                    dayForecast.getJSONArray(OWM_WEATHER).getJSONObject(0);
 
-            weatherId = dayForecast.getString(DS_WEATHER_ID);
+            id = dayForecast.getString(DS_WEATHER_ID);
+            if (id.equals("rain") || id.equals("wind") || id.equals("cloudy")) {
+                weatherId = extractWeatherId(id, precipIntensity, cloudCover, windSpeed);
+            } else {
+                weatherId = id;
+            }
+
 
             /*
              * Temperatures are sent by Open Weather Map in a child object called "temp".
@@ -215,5 +225,72 @@ public final class OpenWeatherJsonUtils {
         }
 
         return weatherContentValues;
+    }
+
+    private static String extractWeatherId(String id, double precipIntensity, double cloudCover, double windSpeed) {
+
+        String exactId = "";
+
+        switch (id) {
+            case "rain":
+                if (windSpeed > 50 && precipIntensity > 0.25) {
+                    if (windSpeed > 75 && precipIntensity > 0.50) {
+                        exactId = "violent_storm";
+                    } else {
+                        exactId = "storm";
+                    }
+                    return exactId;
+                }
+
+                if (precipIntensity < 0.25) {
+                    exactId = "light_" + id;
+                } else if (precipIntensity < 0.50) {
+                    exactId = "moderate_" + id;
+                } else if (precipIntensity < 0.75) {
+                    exactId = "heavy_" + id;
+                } else {
+                    exactId = "intense_" + id;
+                }
+                return exactId;
+
+            case "wind":
+                if (windSpeed <= 1) {
+                    exactId = "calm";
+                } else if (windSpeed <= 5) {
+                    exactId = "wind";
+                } else if (windSpeed <= 11) {
+                    exactId = "light_breeze";
+                } else if (windSpeed <= 19) {
+                    exactId = "gentle_breeze";
+                } else if (windSpeed <= 28) {
+                    exactId = "breeze";
+                } else if (windSpeed <= 38) {
+                    exactId = "fresh_breeze";
+                } else if (windSpeed <= 49) {
+                    exactId = "strong_breeze";
+                } else if (windSpeed <= 61) {
+                    exactId = "high_wind";
+                } else if (windSpeed <= 74) {
+                    exactId = "gale";
+                } else {
+                    exactId = "severe_gale";
+                }
+                return exactId;
+            case "cloudy":
+                if (cloudCover < 0.25) {
+                    exactId = "mostly_clear";
+                } else if (cloudCover < 0.50) {
+                    exactId = "scattered_clouds" + id;
+                } else if (cloudCover < 0.75) {
+                    exactId = "broken_clouds";
+                } else {
+                    exactId = "overcast_clouds";
+                }
+                return exactId;
+
+            default:
+                return exactId;
+        }
+
     }
 }

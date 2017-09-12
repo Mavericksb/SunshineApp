@@ -314,17 +314,32 @@ public final class SunshineWeatherUtils {
     public static String getDSStringForWeatherCondition(Context context, String weatherId) {
         int stringId;
         switch (weatherId) {
-            case "rain":
+            case "light_rain":
+                stringId = R.string.condition_500;
+                break;
+            case "moderate_rain":
                 stringId = R.string.condition_501;
+                break;
+            case "heavy_rain":
+                stringId = R.string.condition_502;
+                break;
+            case "intense_rain":
+                stringId = R.string.condition_503;
+                break;
+            case "storm":
+                stringId = R.string.condition_960;
+                break;
+            case "violent_storm":
+                stringId = R.string.condition_961;
                 break;
             case "snow":
                 stringId = R.string.condition_601;
                 break;
             case "clear-day":
-                stringId = R.string.condition_800;
+                stringId = R.string.condition_8001;
                 break;
             case "clear-night":
-                stringId = R.string.condition_800;
+                stringId = R.string.condition_8002;
                 break;
             case "sleet":
                 stringId = R.string.condition_611;
@@ -335,18 +350,53 @@ public final class SunshineWeatherUtils {
             case "wind":
                 stringId = R.string.condition_905;
                 break;
-            case "cloudy":
+            case "calm":
+                stringId = R.string.condition_951;
+                break;
+            case "light_breeze":
+                stringId = R.string.condition_952;
+                break;
+            case "gentle_breeze":
+                stringId = R.string.condition_953;
+                break;
+            case "breeze":
+                stringId = R.string.condition_954;
+                break;
+            case "fresh_breeze":
+                stringId = R.string.condition_955;
+                break;
+            case "strong_breeze":
+                stringId = R.string.condition_956;
+                break;
+            case "high_wind":
+                stringId = R.string.condition_957;
+                break;
+            case "gale":
+                stringId = R.string.condition_958;
+                break;
+            case "severe_gale":
+                stringId = R.string.condition_959;
+                break;
+            case "mostly_clear":
+                stringId = R.string.condition_801;
+                break;
+            case "scattered_clouds":
+                stringId = R.string.condition_802;
+                break;
+            case "broken_clouds":
+                stringId = R.string.condition_803;
+                break;
+            case "overcast_clouds":
                 stringId = R.string.condition_804;
                 break;
             case "partly-cloudy-day":
-                stringId = R.string.condition_804;
+                stringId = R.string.condition_8041;
                 break;
             case "partly-cloudy-night":
-                stringId = R.string.condition_804;
+                stringId = R.string.condition_8042;
                 break;
             default:
-                stringId = R.string.condition_unknown;
-                break;
+                return context.getString(R.string.condition_ds_unknown, weatherId);
         }
 
         return context.getString(stringId);
@@ -409,38 +459,64 @@ public final class SunshineWeatherUtils {
         /*
          * Based on weather code data for Open Weather Map.
          */
-        if (weatherId.equals("rain")) {
+        if (weatherId.equals("storm")) {
+            return R.drawable.ic_storm;
+        } else if (weatherId.equals("violent_storm")) {
             return R.drawable.ic_storm;
         } else if (weatherId.equals("rain")) {
-            return R.drawable.ic_light_rain;
-        } else if (weatherId.equals("rain")) {
             return R.drawable.ic_rain;
+        } else if (weatherId.equals("light_rain")) {
+            return R.drawable.ic_light_rain;
+        } else if (weatherId.equals("moderate_rain")) {
+            return R.drawable.ic_light_rain;
         } else if (weatherId.equals("snow")) {
             return R.drawable.ic_snow;
-        } else if (weatherId.equals("rain")) {
-            return R.drawable.ic_rain;
         } else if (weatherId.equals("sleet")) {
             return R.drawable.ic_snow;
         } else if (weatherId.equals("fog")) {
             return R.drawable.ic_fog;
-        } else if (weatherId.equals("rain")) {
-            return R.drawable.ic_storm;
         } else if (weatherId.equals("clear-day")) {
             return R.drawable.ic_clear;
+        } else if (weatherId.equals("calm")) {
+            return R.drawable.ic_clear;
+        } else if (weatherId.equals("wind")) {
+            return R.drawable.ic_clear;
+        } else if (weatherId.equals("gentle_breeze")) {
+            return R.drawable.ic_clear;
+        } else if (weatherId.equals("breeze")) {
+            return R.drawable.ic_clear;
+        } else if (weatherId.equals("fresh_breeze")) {
+            return R.drawable.ic_clear;
+        } else if (weatherId.equals("strong_breeze")) {
+            return R.drawable.ic_clear;
+        } else if (weatherId.equals("high_wind")) {
+            return R.drawable.ic_storm;
+        } else if (weatherId.equals("gale")) {
+            return R.drawable.ic_storm;
+        } else if (weatherId.equals("severe_gale")) {
+            return R.drawable.ic_storm;
         } else if (weatherId.equals("partly-cloudy-day")) {
             return R.drawable.ic_light_clouds;
-        } else if (weatherId.equals("cloudy")) {
-            return R.drawable.ic_cloudy;
-        } else if (weatherId.equals("partly-cloudy-day")) {
-            return R.drawable.ic_storm;
         } else if (weatherId.equals("partly-cloudy-night")) {
+            return R.drawable.ic_light_clouds;
+        } else if (weatherId.equals("partly-cloudy-night")) {
+            return R.drawable.ic_light_clouds;
+        } else if (weatherId.equals("scattered_clouds")) {
+            return R.drawable.ic_cloudy;
+        } else if (weatherId.equals("broken_clouds")) {
+            return R.drawable.ic_cloudy;
+        } else if (weatherId.equals("overcast_clouds")) {
+            return R.drawable.ic_cloudy;
+        } else if (weatherId.equals("heavy_rain")) {
+            return R.drawable.ic_storm;
+        } else if (weatherId.equals("intense_rain")) {
             return R.drawable.ic_storm;
         } else if (weatherId.equals("clear-night")) {
             return R.drawable.ic_clear;
         }
 
         Log.e(LOG_TAG, "Unknown Weather: " + weatherId);
-        return R.drawable.ic_storm;
+        return R.drawable.ic_clear;
     }
 
     /**
@@ -501,37 +577,63 @@ public final class SunshineWeatherUtils {
         /*
          * Based on weather code data for Open Weather Map.
          */
-        if (weatherId.equals("rain")) {
+        if (weatherId.equals("storm")) {
+            return R.drawable.art_storm;
+        } else if (weatherId.equals("violent_storm")) {
             return R.drawable.art_storm;
         } else if (weatherId.equals("rain")) {
-            return R.drawable.art_light_rain;
-        } else if (weatherId.equals("rain")) {
             return R.drawable.art_rain;
+        } else if (weatherId.equals("light_rain")) {
+            return R.drawable.art_light_rain;
+        } else if (weatherId.equals("moderate_rain")) {
+            return R.drawable.art_light_rain;
         } else if (weatherId.equals("snow")) {
             return R.drawable.art_snow;
-        } else if (weatherId.equals("rain")) {
-            return R.drawable.art_rain;
         } else if (weatherId.equals("sleet")) {
             return R.drawable.art_snow;
         } else if (weatherId.equals("fog")) {
             return R.drawable.art_fog;
-        } else if (weatherId.equals("rain")) {
-            return R.drawable.art_storm;
         } else if (weatherId.equals("clear-day")) {
             return R.drawable.art_clear;
+        } else if (weatherId.equals("calm")) {
+            return R.drawable.art_clear;
+        } else if (weatherId.equals("wind")) {
+            return R.drawable.art_clear;
+        } else if (weatherId.equals("gentle_breeze")) {
+            return R.drawable.art_clear;
+        } else if (weatherId.equals("breeze")) {
+            return R.drawable.art_clear;
+        } else if (weatherId.equals("fresh_breeze")) {
+            return R.drawable.art_clear;
+        } else if (weatherId.equals("strong_breeze")) {
+            return R.drawable.art_clear;
+        } else if (weatherId.equals("high_wind")) {
+            return R.drawable.art_storm;
+        } else if (weatherId.equals("gale")) {
+            return R.drawable.art_storm;
+        } else if (weatherId.equals("severe_gale")) {
+            return R.drawable.art_storm;
         } else if (weatherId.equals("partly-cloudy-day")) {
             return R.drawable.art_light_clouds;
-        } else if (weatherId.equals("cloudy")) {
-            return R.drawable.art_clouds;
-        } else if (weatherId.equals("partly-cloudy-day")) {
-            return R.drawable.art_storm;
         } else if (weatherId.equals("partly-cloudy-night")) {
+            return R.drawable.art_light_clouds;
+        } else if (weatherId.equals("partly-cloudy-night")) {
+            return R.drawable.art_light_clouds;
+        } else if (weatherId.equals("scattered_clouds")) {
+            return R.drawable.art_clouds;
+        } else if (weatherId.equals("broken_clouds")) {
+            return R.drawable.art_clouds;
+        } else if (weatherId.equals("overcast_clouds")) {
+            return R.drawable.art_clouds;
+        } else if (weatherId.equals("heavy_rain")) {
+            return R.drawable.art_storm;
+        } else if (weatherId.equals("intense_rain")) {
             return R.drawable.art_storm;
         } else if (weatherId.equals("clear-night")) {
             return R.drawable.art_clear;
         }
 
         Log.e(LOG_TAG, "Unknown Weather: " + weatherId);
-        return R.drawable.art_storm;
+        return R.drawable.art_clear;
     }
 }

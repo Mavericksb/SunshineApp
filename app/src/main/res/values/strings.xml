@@ -194,10 +194,14 @@
     <string name="condition_771">Squalls</string>
     <string name="condition_781">Tornado</string>
     <string name="condition_800">Clear</string>
+    <string name="condition_8001">Clear Day</string>
+    <string name="condition_8002">Clear Night</string>
     <string name="condition_801">Mostly Clear</string>
     <string name="condition_802">Scattered Clouds</string>
     <string name="condition_803">Broken Clouds</string>
     <string name="condition_804">Overcast Clouds</string>
+    <string name="condition_8041">Partly Cloudy Day</string>
+    <string name="condition_8042">Partly Cloudy Night</string>
     <string name="condition_900">Tornado</string>
     <string name="condition_901">Tropical Storm</string>
     <string name="condition_902">Hurricane</string>
@@ -219,6 +223,7 @@
     <string name="condition_962">Hurricane</string>
 
     <string name="condition_unknown">Unknown (<xliff:g id="conditionId">%1$d</xliff:g>)</string>
+    <string name="condition_ds_unknown">Unknown (<xliff:g id="conditionId">%s</xliff:g>)</string>
 
 
 
