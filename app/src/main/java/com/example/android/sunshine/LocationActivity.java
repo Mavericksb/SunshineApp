@@ -106,10 +106,13 @@ public class LocationActivity extends AppCompatActivity implements AdapterView.O
                         mLatitude = currentPlace.getLatLng().latitude;
                         mLongitude = currentPlace.getLatLng().longitude;
                     }
-                    Toast coords = Toast.makeText(LocationActivity.this, " Id " + mLatitude + "," + mLongitude + "Pref: " + SunshinePreferences.getLocationCoordinates(LocationActivity.this)[0] + "," + SunshinePreferences.getLocationCoordinates(LocationActivity.this)[1], Toast.LENGTH_SHORT);
-                    coords.show();
+
                     SunshinePreferences.setLocationDetails(LocationActivity.this, mLatitude, mLongitude);
+
+                    // Coordinates changed so I need to fetch data from server
                     SunshineSyncUtils.startImmediateSync(getApplicationContext());
+
+                    //Release buffer to avoid memory leaks
                     placeBuffer.release();
                 } else{
                     Exception exception = task.getException();

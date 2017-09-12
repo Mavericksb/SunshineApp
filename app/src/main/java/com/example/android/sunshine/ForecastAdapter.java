@@ -139,7 +139,7 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
         /****************
          * Weather Icon *
          ****************/
-        int weatherId = mCursor.getInt(MainActivity.INDEX_WEATHER_CONDITION_ID);
+        String weatherId = mCursor.getString(MainActivity.INDEX_WEATHER_CONDITION_ID);
         int weatherImageId;
 
         int viewType = getItemViewType(position);
@@ -148,12 +148,12 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
 
             case VIEW_TYPE_TODAY:
                 weatherImageId = SunshineWeatherUtils
-                        .getLargeArtResourceIdForWeatherCondition(weatherId);
+                        .getDSLargeArtResourceIdForWeatherCondition(weatherId);
                 break;
 
             case VIEW_TYPE_FUTURE_DAY:
                 weatherImageId = SunshineWeatherUtils
-                        .getSmallArtResourceIdForWeatherCondition(weatherId);
+                        .getDSSmallArtResourceIdForWeatherCondition(weatherId);
                 break;
 
             default:
@@ -176,7 +176,7 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
         /***********************
          * Weather Description *
          ***********************/
-        String description = SunshineWeatherUtils.getStringForWeatherCondition(mContext, weatherId);
+        String description = SunshineWeatherUtils.getDSStringForWeatherCondition(mContext, weatherId);
          /* Create the accessibility (a11y) String from the weather description */
         String descriptionA11y = mContext.getString(R.string.a11y_forecast, description);
 

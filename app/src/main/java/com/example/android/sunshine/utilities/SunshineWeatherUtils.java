@@ -311,6 +311,46 @@ public final class SunshineWeatherUtils {
         return context.getString(stringId);
     }
 
+    public static String getDSStringForWeatherCondition(Context context, String weatherId) {
+        int stringId;
+        switch (weatherId) {
+            case "rain":
+                stringId = R.string.condition_501;
+                break;
+            case "snow":
+                stringId = R.string.condition_601;
+                break;
+            case "clear-day":
+                stringId = R.string.condition_800;
+                break;
+            case "clear-night":
+                stringId = R.string.condition_800;
+                break;
+            case "sleet":
+                stringId = R.string.condition_611;
+                break;
+            case "fog":
+                stringId = R.string.condition_741;
+                break;
+            case "wind":
+                stringId = R.string.condition_905;
+                break;
+            case "cloudy":
+                stringId = R.string.condition_804;
+                break;
+            case "partly-cloudy-day":
+                stringId = R.string.condition_804;
+                break;
+            case "partly-cloudy-night":
+                stringId = R.string.condition_804;
+                break;
+            default:
+                stringId = R.string.condition_unknown;
+                break;
+        }
+
+        return context.getString(stringId);
+    }
     /**
      * Helper method to provide the icon resource id according to the weather condition id returned
      * by the OpenWeatherMap call. This method is very similar to
@@ -364,6 +404,45 @@ public final class SunshineWeatherUtils {
         return R.drawable.ic_storm;
     }
 
+    public static int getDSSmallArtResourceIdForWeatherCondition(String weatherId) {
+
+        /*
+         * Based on weather code data for Open Weather Map.
+         */
+        if (weatherId.equals("rain")) {
+            return R.drawable.ic_storm;
+        } else if (weatherId.equals("rain")) {
+            return R.drawable.ic_light_rain;
+        } else if (weatherId.equals("rain")) {
+            return R.drawable.ic_rain;
+        } else if (weatherId.equals("snow")) {
+            return R.drawable.ic_snow;
+        } else if (weatherId.equals("rain")) {
+            return R.drawable.ic_rain;
+        } else if (weatherId.equals("sleet")) {
+            return R.drawable.ic_snow;
+        } else if (weatherId.equals("fog")) {
+            return R.drawable.ic_fog;
+        } else if (weatherId.equals("rain")) {
+            return R.drawable.ic_storm;
+        } else if (weatherId.equals("clear-day")) {
+            return R.drawable.ic_clear;
+        } else if (weatherId.equals("partly-cloudy-day")) {
+            return R.drawable.ic_light_clouds;
+        } else if (weatherId.equals("cloudy")) {
+            return R.drawable.ic_cloudy;
+        } else if (weatherId.equals("partly-cloudy-day")) {
+            return R.drawable.ic_storm;
+        } else if (weatherId.equals("partly-cloudy-night")) {
+            return R.drawable.ic_storm;
+        } else if (weatherId.equals("clear-night")) {
+            return R.drawable.ic_clear;
+        }
+
+        Log.e(LOG_TAG, "Unknown Weather: " + weatherId);
+        return R.drawable.ic_storm;
+    }
+
     /**
      * Helper method to provide the art resource ID according to the weather condition ID returned
      * by the OpenWeatherMap call. This method is very similar to
@@ -410,6 +489,45 @@ public final class SunshineWeatherUtils {
         } else if (weatherId >= 958 && weatherId <= 962) {
             return R.drawable.art_storm;
         } else if (weatherId >= 951 && weatherId <= 957) {
+            return R.drawable.art_clear;
+        }
+
+        Log.e(LOG_TAG, "Unknown Weather: " + weatherId);
+        return R.drawable.art_storm;
+    }
+
+    public static int getDSLargeArtResourceIdForWeatherCondition(String weatherId) {
+
+        /*
+         * Based on weather code data for Open Weather Map.
+         */
+        if (weatherId.equals("rain")) {
+            return R.drawable.art_storm;
+        } else if (weatherId.equals("rain")) {
+            return R.drawable.art_light_rain;
+        } else if (weatherId.equals("rain")) {
+            return R.drawable.art_rain;
+        } else if (weatherId.equals("snow")) {
+            return R.drawable.art_snow;
+        } else if (weatherId.equals("rain")) {
+            return R.drawable.art_rain;
+        } else if (weatherId.equals("sleet")) {
+            return R.drawable.art_snow;
+        } else if (weatherId.equals("fog")) {
+            return R.drawable.art_fog;
+        } else if (weatherId.equals("rain")) {
+            return R.drawable.art_storm;
+        } else if (weatherId.equals("clear-day")) {
+            return R.drawable.art_clear;
+        } else if (weatherId.equals("partly-cloudy-day")) {
+            return R.drawable.art_light_clouds;
+        } else if (weatherId.equals("cloudy")) {
+            return R.drawable.art_clouds;
+        } else if (weatherId.equals("partly-cloudy-day")) {
+            return R.drawable.art_storm;
+        } else if (weatherId.equals("partly-cloudy-night")) {
+            return R.drawable.art_storm;
+        } else if (weatherId.equals("clear-night")) {
             return R.drawable.art_clear;
         }
 

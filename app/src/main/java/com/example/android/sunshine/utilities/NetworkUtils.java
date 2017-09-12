@@ -66,7 +66,7 @@ public final class NetworkUtils {
     /* The format we want our API to return */
     private static final String format = "json";
     /* The units we want our API to return */
-    private static final String units = "metric";
+    private static final String units = "ca";
     /* The number of days we want our API to return */
     private static final int numDays = 14;
 
@@ -75,6 +75,13 @@ public final class NetworkUtils {
 
     private static final String LAT_PARAM = "lat";
     private static final String LON_PARAM = "lon";
+
+    private static final String EXCLUDE_PARAM = "exclude";
+    private static final String exclude = "currently,minutely,hourly,alerts,flags";
+
+    private static final String LANG_PARAM = "lang";
+    private static final String language = "it";
+
 
     /* The format parameter allows us to designate whether we want JSON or XML from our API */
     private static final String FORMAT_PARAM = "mode";
@@ -120,13 +127,11 @@ public final class NetworkUtils {
      * @return The Url to use to query the weather server.
      */
     private static URL buildUrlWithLatitudeLongitude(Double latitude, Double longitude) {
-        Uri weatherQueryUri = Uri.parse(STATIC_WEATHER_URL).buildUpon()
-                
-                .appendQueryParameter(LAT_PARAM, String.valueOf(latitude))
-                .appendQueryParameter(LON_PARAM, String.valueOf(longitude))
-                .appendQueryParameter(FORMAT_PARAM, format)
+        String URL_WITH_COORDS = DYNAMIC_WEATHER_URL + String.valueOf(latitude) + "," + String.valueOf(longitude);
+        Uri weatherQueryUri = Uri.parse(URL_WITH_COORDS).buildUpon()
+                .appendQueryParameter(EXCLUDE_PARAM, exclude)
+                .appendQueryParameter(LANG_PARAM, language)
                 .appendQueryParameter(UNITS_PARAM, units)
-                .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
                 .build();
         Log.e("Build URL", "Url : " + weatherQueryUri);
 
