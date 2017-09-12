@@ -116,6 +116,11 @@ public final class SunshinePreferences {
         return sp.getString(keyForLocation, defaultLocation);
     }
 
+    public static String getPreferredLocationPlaceId(Context context) {
+
+        return context.getString(R.string.pref_placeid_default);
+    }
+
     /**
      * Returns true if the user has selected metric temperature display.
      *

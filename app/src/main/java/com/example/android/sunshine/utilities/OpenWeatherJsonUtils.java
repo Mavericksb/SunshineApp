@@ -158,7 +158,7 @@ public final class OpenWeatherJsonUtils {
             double pressure;
             double humidity;
             double windSpeed;
-            int windDirection;
+            double windDirection;
             double precipIntensity;
             double cloudCover;
 
@@ -178,9 +178,9 @@ public final class OpenWeatherJsonUtils {
             dateTimeMillis = normalizedUtcStartDay + SunshineDateUtils.DAY_IN_MILLIS * i;
 
             pressure = dayForecast.getDouble(DS_PRESSURE);
-            humidity = dayForecast.getDouble(DS_HUMIDITY);
+            humidity = (dayForecast.getDouble(DS_HUMIDITY)) * 100;
             windSpeed = dayForecast.getDouble(DS_WINDSPEED);
-            windDirection = dayForecast.getInt(DS_WIND_DIRECTION);
+            windDirection = dayForecast.getDouble(DS_WIND_DIRECTION);
             precipIntensity = dayForecast.getDouble(DS_PRECIP_INTENSITY);
             cloudCover = dayForecast.getDouble(DS_CLOUD_COVER);
 
@@ -281,7 +281,7 @@ public final class OpenWeatherJsonUtils {
                     exactId = "mostly_clear";
                 } else if (cloudCover < 0.50) {
                     exactId = "scattered_clouds" + id;
-                } else if (cloudCover < 0.75) {
+                } else if (cloudCover < 0.80) {
                     exactId = "broken_clouds";
                 } else {
                     exactId = "overcast_clouds";

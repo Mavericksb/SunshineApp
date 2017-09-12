@@ -19,14 +19,25 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import com.example.android.sunshine.LocationActivity;
 import com.example.android.sunshine.data.SunshinePreferences;
+import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBufferResponse;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * These utilities will be used to communicate with the weather servers.
@@ -48,6 +59,8 @@ public final class NetworkUtils {
      * If you'd prefer to test with the weather data that you will see in the videos on Udacity,
      * you can do so by setting the FORECAST_BASE_URL to STATIC_WEATHER_URL below.
      */
+
+
     private static final String DYNAMIC_WEATHER_URL =
             "https://api.darksky.net/forecast/86e612f54bf44d5992b101d39f9640f4/";
 
@@ -55,6 +68,12 @@ public final class NetworkUtils {
             "https://andfun-weather.udacity.com/staticweather";
 
     private static final String FORECAST_BASE_URL = STATIC_WEATHER_URL;
+
+    private static GeoDataClient mGeoDataClient;
+
+    private static double mLatitude;
+    private static double mLongitude;
+
 
     /*
      * NOTE: These values only effect responses from OpenWeatherMap, NOT from the fake weather
@@ -106,15 +125,54 @@ public final class NetworkUtils {
      */
     public static URL getUrl(Context context) {
 
-
+        Log.e("getUrl", "I'm here!");
         if (SunshinePreferences.isLocationLatLonAvailable(context)) {
+            Log.e("getUrl", "In pref coord");
             double[] preferredCoordinates = SunshinePreferences.getLocationCoordinates(context);
             double latitude = preferredCoordinates[0];
             double longitude = preferredCoordinates[1];
+            Log.e("getUrl", "pref coords : " + preferredCoordinates);
             return buildUrlWithLatitudeLongitude(latitude, longitude);
         } else {
-            String locationQuery = SunshinePreferences.getPreferredWeatherLocation(context);
-            return buildUrlWithLocationQuery(locationQuery);
+            String placeId = SunshinePreferences.getPreferredLocationPlaceId(context);
+            boolean isInitializing = true;
+            Log.e("getUrl", "In coords");
+            mGeoDataClient = Places.getGeoDataClient(context, null);
+            try {
+                Task<PlaceBufferResponse> placeBufferResponseTask = mGeoDataClient.getPlaceById(placeId);
+
+                PlaceBufferResponse placeBufferResponse = Tasks.await(placeBufferResponseTask, 30, TimeUnit.SECONDS);
+
+                if(placeBufferResponseTask.isSuccessful()) {
+                    Iterator<Place> iterator = placeBufferResponse.iterator();
+                    while (iterator.hasNext()) {
+                        Place place = iterator.next();
+                        mLatitude = place.getLatLng().latitude;
+                        mLongitude = place.getLatLng().longitude;
+                    }
+                    Log.e("getUrl", "coords : " + mLatitude + " " + mLongitude);
+                    placeBufferResponse.release();
+                    return buildUrlWithLatitudeLongitude(mLatitude, mLongitude);
+                } else{
+                    Exception exception = placeBufferResponseTask.getException();
+                    Log.e("OnCompleteAutocomplete", "Exception " + exception);
+                    placeBufferResponse.release();
+                    return null;
+                    }
+            } catch (IllegalStateException e){
+                Log.e(TAG, "Retrieve Coords failed: " + e);
+                return null;
+            }
+            catch (ExecutionException e) {
+                Log.e(TAG, "Retrieve Coords failed: " + e);
+                return null;
+            } catch (InterruptedException e) {
+                Log.e(TAG, "Request Coords interrupted: " + e);
+                return null;
+            } catch (TimeoutException e){
+                Log.e(TAG, "Request Coords Timeout: " + e);
+                return null;
+            }
         }
     }
 

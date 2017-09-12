@@ -180,27 +180,6 @@ class AutoCompleteAdapter extends ArrayAdapter<AutoCompleteAdapter.PlaceAutocomp
                 autocompletePredictions.release();
                 return null;
             }
-
-//            result.addOnCompleteListener(new OnCompleteListener<AutocompletePredictionBufferResponse>() {
-//                @Override
-//                public void onComplete(@NonNull Task<AutocompletePredictionBufferResponse> task) {
-//                    if (task.isSuccessful()) {
-//                        AutocompletePredictionBufferResponse autocompletePredictions = task.getResult();
-//                        for (AutocompletePrediction placeLikelihood : autocompletePredictions) {
-//
-//                            String city = placeLikelihood.getPrimaryText(null).toString() + " " + placeLikelihood.getSecondaryText(null).toString();
-//                            results.add(city);
-//                            placeId.add(placeLikelihood.getPlaceId());
-//                        }
-//                        notifyDataSetChanged();
-//                        autocompletePredictions.release();
-//                    } else{
-//                        Exception exception = task.getException();
-//                        Log.e("OnCompleteAutocomplete", "Exception " + exception);
-//
-//                    }
-//                }
-//            });
         } catch (ExecutionException e) {
             Log.e(LOG_TAG, "AutoComplete request failed: " + e);
             return null;

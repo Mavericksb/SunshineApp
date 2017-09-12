@@ -242,9 +242,9 @@ public class DetailActivity extends AppCompatActivity implements
          * Weather Icon *
          ****************/
         /* Read weather condition ID from the cursor (ID provided by Open Weather Map) */
-        int weatherId = data.getInt(INDEX_WEATHER_CONDITION_ID);
+        String weatherId = data.getString(INDEX_WEATHER_CONDITION_ID);
         /* Use our utility method to determine the resource ID for the proper art */
-        int weatherImageId = SunshineWeatherUtils.getLargeArtResourceIdForWeatherCondition(weatherId);
+        int weatherImageId = SunshineWeatherUtils.getDSLargeArtResourceIdForWeatherCondition(weatherId);
 
         /* Set the resource ID on the icon to display the art */
         mDetailBinding.primaryInfo.weatherIcon.setImageResource(weatherImageId);
@@ -270,7 +270,7 @@ public class DetailActivity extends AppCompatActivity implements
          * Weather Description *
          ***********************/
         /* Use the weatherId to obtain the proper description */
-        String description = SunshineWeatherUtils.getStringForWeatherCondition(this, weatherId);
+        String description = SunshineWeatherUtils.getDSStringForWeatherCondition(this, weatherId);
 
         /* Create the accessibility (a11y) String from the weather description */
         String descriptionA11y = getString(R.string.a11y_forecast, description);
@@ -323,7 +323,7 @@ public class DetailActivity extends AppCompatActivity implements
          * Humidity *
          ************/
         /* Read humidity from the cursor */
-        float humidity = data.getFloat(INDEX_WEATHER_HUMIDITY);
+        double humidity = data.getFloat(INDEX_WEATHER_HUMIDITY);
         String humidityString = getString(R.string.format_humidity, humidity);
 
         String humidityA11y = getString(R.string.a11y_humidity, humidityString);
@@ -338,8 +338,8 @@ public class DetailActivity extends AppCompatActivity implements
          * Wind speed and direction *
          ****************************/
         /* Read wind speed (in MPH) and direction (in compass degrees) from the cursor  */
-        float windSpeed = data.getFloat(INDEX_WEATHER_WIND_SPEED);
-        float windDirection = data.getFloat(INDEX_WEATHER_DEGREES);
+        double windSpeed = data.getDouble(INDEX_WEATHER_WIND_SPEED);
+        double windDirection = data.getDouble(INDEX_WEATHER_DEGREES);
         String windString = SunshineWeatherUtils.getFormattedWind(this, windSpeed, windDirection);
 
         String windA11y = getString(R.string.a11y_wind, windString);
@@ -354,7 +354,7 @@ public class DetailActivity extends AppCompatActivity implements
          * Pressure *
          ************/
         /* Read pressure from the cursor */
-        float pressure = data.getFloat(INDEX_WEATHER_PRESSURE);
+        double pressure = data.getDouble(INDEX_WEATHER_PRESSURE);
 
         /*
          * Format the pressure text using string resources. The reason we directly access

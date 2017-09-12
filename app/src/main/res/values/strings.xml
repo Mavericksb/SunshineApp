@@ -78,7 +78,11 @@
     <string name="pref_location_key" translatable="false">location</string>
 
     <!-- Default postal code for location preference -->
-    <string name="pref_location_default" translatable="false">Mountain View, CA 94043</string>
+    <string name="pref_location_default" translatable="false">Milano</string>
+
+    <!-- Default placeID for location preference -->
+    <string name="pref_placeid_default" translatable="false">ChIJ53USP0nBhkcRjQ50xhPN_zw</string>
+
 
     <!-- Label for the temperature units preference -->
     <string name="pref_units_label">Temperature Units</string>
@@ -138,13 +142,13 @@
     <string name="wind_label">Wind</string>
     <!-- Wind in kph -->
     <string name="format_wind_kmh">
-        <xliff:g id="speed">%1$1.0f</xliff:g> km/h
+        <xliff:g id="speed">%1$1.1f</xliff:g> km/h
         <xliff:g id="direction">%2$s</xliff:g>
     </string>
 
     <!-- Wind in mph -->
     <string name="format_wind_mph">
-        <xliff:g id="speed">%1$1.0f</xliff:g> mph
+        <xliff:g id="speed">%1$1.1f</xliff:g> mph
         <xliff:g id="direction">%2$s</xliff:g>
     </string>
 
@@ -200,8 +204,8 @@
     <string name="condition_802">Scattered Clouds</string>
     <string name="condition_803">Broken Clouds</string>
     <string name="condition_804">Overcast Clouds</string>
-    <string name="condition_8041">Partly Cloudy Day</string>
-    <string name="condition_8042">Partly Cloudy Night</string>
+    <string name="condition_8041">Partly Cloudy</string>
+    <string name="condition_8042">Partly Cloudy</string>
     <string name="condition_900">Tornado</string>
     <string name="condition_901">Tropical Storm</string>
     <string name="condition_902">Hurricane</string>
