@@ -10,17 +10,12 @@
         android:id="@+id/autoCompleteTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginStart="4dp"
+
         android:ems="10"
         android:hint="Cerca città"
         android:paddingEnd="@dimen/forecast_detail_horizontal_padding"
         android:popupBackground="@android:color/transparent"
         android:dropDownListViewStyle="@style/DropDownListViewStyle"
-
-        android:popupTheme="@style/DropDownListViewStyle"
         android:maxLines="1"
         android:maxEms="15"
         android:paddingLeft="@dimen/forecast_detail_horizontal_padding"
@@ -32,16 +27,6 @@
 
     </AutoCompleteTextView>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
 
-        <include android:id="@+id/list_view"
-            layout="@layout/list_item_location_autocomplete"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
-            />
-    </FrameLayout>
 
     </LinearLayout>

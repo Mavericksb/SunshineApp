@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+<TextView
 
     android:id="@+id/textViewListLocation"
     android:textColor="@color/white"
@@ -13,10 +18,16 @@
     android:paddingStart="@dimen/forecast_detail_horizontal_padding"
     android:paddingTop="@dimen/forecast_detail_vertical_padding"
     android:paddingBottom="@dimen/forecast_detail_vertical_padding"
-    style="@style/DropDownListViewStyle"
     tools:text="Questa è una città"
     tools:background="#000000"
 
 />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#FFFFFF">
+
+    </View>
 
 
+</LinearLayout>

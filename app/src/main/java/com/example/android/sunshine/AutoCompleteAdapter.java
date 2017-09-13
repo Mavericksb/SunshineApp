@@ -70,9 +70,10 @@ class AutoCompleteAdapter extends ArrayAdapter<AutoCompleteAdapter.PlaceAutocomp
     private Context mContext;
 
 
-    public AutoCompleteAdapter(Context context, int textViewResId) {
-        super(context,textViewResId);
-        setDropDownViewResource(textViewResId);
+    public AutoCompleteAdapter(Context context, int layoutResId, int textViewResId) {
+        super(context,layoutResId, textViewResId);
+
+
 
         mContext = context;
 

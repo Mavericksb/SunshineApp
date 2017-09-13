@@ -55,7 +55,7 @@ public class AutoCompleteActivity extends AppCompatActivity implements AdapterVi
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mAutoComplete = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
-        mAutoCompleteAdapter = new AutoCompleteAdapter(this, R.layout.list_item_location_autocomplete);
+        mAutoCompleteAdapter = new AutoCompleteAdapter(this, R.layout.list_item_location_autocomplete, R.id.textViewListLocation);
 
         mAutoCompleteAdapter.setDropDownViewResource(R.layout.list_item_location_autocomplete);
         mAutoComplete.setAdapter(mAutoCompleteAdapter);
