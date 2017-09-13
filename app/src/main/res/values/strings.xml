@@ -59,6 +59,8 @@
     <string name="title_activity_settings">Settings</string>
     <!-- Title of the AutoCompleteActivity -->
     <string name="title_activity_location">Location</string>
+    <!-- Title of the LocationActivity -->
+    <string name="title_activity_pref_location">Manage cities</string>
 
 
     <string name="content_authority">com.example.android.sunshine</string>
@@ -252,5 +254,6 @@
         High:<xliff:g id="high">%2$s</xliff:g>
         Low:<xliff:g id="low">%3$s</xliff:g>
     </string>
+
 
 </resources>

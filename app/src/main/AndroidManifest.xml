@@ -68,7 +68,7 @@
 
         <activity
             android:name=".LocationActivity"
-            android:label="Pref Locations"
+            android:label="@string/title_activity_pref_location"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
