@@ -66,6 +66,16 @@
                 android:value=".MainActivity" />
         </activity>
 
+        <activity
+            android:name=".LocationActivity"
+            android:label="Pref Locations"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".MainActivity" />
+        </activity>
+
         <!-- Our ContentProvider -->
         <provider
             android:name=".data.WeatherProvider"
@@ -86,7 +96,6 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".LocationActivity"></activity>
     </application>
 
 </manifest>

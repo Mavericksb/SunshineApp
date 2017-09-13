@@ -352,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements
             return true;
         }
         if (id == R.id.action_location) {
-            startActivity(new Intent(this, AutoCompleteActivity.class));
+            startActivity(new Intent(this, LocationActivity.class));
             //openPreferredLocationInMap();
             return true;
         }
