@@ -26,9 +26,9 @@
         <item name="dropDownListViewStyle">@style/DropDownListViewStyle</item>
     </style>
 
-    <style name="DropDownListViewStyle">
-        <item name="android:divider">#4F4F4F</item>
-        <item name="android:dividerHeight">1dp</item>
+    <style name="DropDownListViewStyle" parent="Widget.AppCompat.Light.ListView.DropDown">
+        <item name="android:divider">#000000</item>
+        <item name="android:dividerHeight">4dp</item>
     </style>
 
     <!-- forecast activity action bar styles -->

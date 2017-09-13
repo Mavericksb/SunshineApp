@@ -72,6 +72,8 @@ class AutoCompleteAdapter extends ArrayAdapter<AutoCompleteAdapter.PlaceAutocomp
 
     public AutoCompleteAdapter(Context context, int textViewResId) {
         super(context,textViewResId);
+        setDropDownViewResource(textViewResId);
+
         mContext = context;
 
         // Construct a GeoDataClient.

@@ -31,7 +31,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -353,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements
             return true;
         }
         if (id == R.id.action_location) {
-            startActivity(new Intent(this, LocationActivity.class));
+            startActivity(new Intent(this, AutoCompleteActivity.class));
             //openPreferredLocationInMap();
             return true;
         }
