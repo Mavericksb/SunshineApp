@@ -17,6 +17,7 @@ package com.example.android.sunshine.data;
 
 import android.annotation.TargetApi;
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -99,7 +100,7 @@ public class WeatherProvider extends ContentProvider {
         matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/#", CODE_WEATHER_WITH_DATE);
 
         matcher.addURI(authority, LocationsContract.PATH_LOCATIONS, CODE_LOCATIONS);
-        matcher.addURI(authority, LocationsContract.PATH_LOCATIONS, CODE_SINGLE_LOCATION);
+        matcher.addURI(authority, LocationsContract.PATH_LOCATIONS + "/#", CODE_SINGLE_LOCATION);
 
         return matcher;
     }
@@ -425,16 +426,17 @@ public class WeatherProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
 
             case CODE_LOCATIONS:
-                long _id = db.insert(LocationsContract.LocationsEntry.TABLE_NAME, null, values);
-                if (0 != _id) {
-                    getContext().getContentResolver().notifyChange(uri, null);
-                    // return uri ?
+                Uri insertedUri;
+                long rowId;
+                rowId = db.insert(LocationsContract.LocationsEntry.TABLE_NAME, null, values);
+                if (-1 == rowId) {
+                    return null;
                 }
-                return uri;
+                getContext().getContentResolver().notifyChange(uri, null);
+                return ContentUris.withAppendedId(uri, rowId);
 
             default:
-                return null;
-
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
     }
 

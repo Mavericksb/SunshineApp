@@ -73,8 +73,6 @@ class AutoCompleteAdapter extends ArrayAdapter<AutoCompleteAdapter.PlaceAutocomp
     public AutoCompleteAdapter(Context context, int layoutResId, int textViewResId) {
         super(context,layoutResId, textViewResId);
 
-
-
         mContext = context;
 
         // Construct a GeoDataClient.

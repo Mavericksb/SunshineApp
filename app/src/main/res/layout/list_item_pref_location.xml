@@ -6,12 +6,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:background="#000000">
     <TextView
 
         android:id="@+id/textViewPrefLocation"
         android:textColor="@color/white"
         android:textSize="18sp"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingEnd="@dimen/forecast_detail_horizontal_padding"
         android:paddingLeft="@dimen/forecast_detail_horizontal_padding"
@@ -20,9 +25,23 @@
         android:paddingTop="@dimen/forecast_detail_vertical_padding"
         android:paddingBottom="@dimen/forecast_detail_vertical_padding"
         tools:text="Questa è una città"
-        tools:background="#000000"
 
         />
+
+        <ImageButton
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:layout_width="wrap_content"
+            android:background="@android:color/transparent"
+            android:layout_height="wrap_content"
+            android:paddingRight="@dimen/forecast_detail_horizontal_padding"
+            android:layout_centerInParent="true"
+            android:layout_alignParentRight="true"
+
+            android:src="@drawable/ic_delete_location"/>
+
+    </RelativeLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"

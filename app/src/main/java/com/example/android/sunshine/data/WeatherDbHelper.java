@@ -44,7 +44,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
      * use-case, we wanted to watch out for it and warn you what could happen if you mistakenly
      * version your databases.
      */
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     public WeatherDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -111,6 +111,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
 
                         LocationsEntry.COLUMN_LATITUDE   + " REAL NOT NULL, "                    +
                         LocationsEntry.COLUMN_LONGITUDE   + " REAL NOT NULL, "                    +
+                        LocationsEntry.COLUMN_PLACEID + " STRING NOT NULL, "                     +
 
                 /* To ensure this table can only contain one location entry per PlaceId */
                         " UNIQUE (" + LocationsEntry.COLUMN_PLACEID + ") ON CONFLICT REPLACE);";
@@ -132,6 +133,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + WeatherEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + LocationsEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }

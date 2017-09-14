@@ -1,5 +1,7 @@
 package com.example.android.sunshine;
 
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,7 +11,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.Toast;
 
+import com.example.android.sunshine.data.LocationsContract;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.sync.SunshineSyncUtils;
 import com.google.android.gms.location.places.GeoDataClient;
@@ -97,7 +101,7 @@ public class AutoCompleteActivity extends AppCompatActivity implements AdapterVi
     }
 
 
-    private class GetCoordsTask extends AsyncTask<Void, Void, Void>{
+    private class GetCoordsTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -131,8 +135,31 @@ public class AutoCompleteActivity extends AppCompatActivity implements AdapterVi
             }
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            //Create a Content value table pairing
+            ContentValues values = new ContentValues();
+
+            values.put(LocationsContract.LocationsEntry.COLUMN_NAME, mCity);
+            values.put(LocationsContract.LocationsEntry.COLUMN_LATITUDE, mLatitude);
+            values.put(LocationsContract.LocationsEntry.COLUMN_LONGITUDE, mLongitude);
+            values.put(LocationsContract.LocationsEntry.COLUMN_PLACEID, mPlaceId);
+
+            Uri newUri = getContentResolver().insert(LocationsContract.LocationsEntry.CONTENT_URI, values);
+
+
+                if(newUri==null){
+                    Toast notSucceded = Toast.makeText(getApplicationContext(), "Failed to add city", Toast.LENGTH_SHORT);
+                    notSucceded.show();
+                } else {
+                    finish();
+                }
+
+            }
         }
-    }
+
+}
 
 
 
