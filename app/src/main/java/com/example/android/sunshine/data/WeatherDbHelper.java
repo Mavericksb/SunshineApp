@@ -20,6 +20,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.android.sunshine.data.WeatherContract.WeatherEntry;
+import com.example.android.sunshine.data.LocationsContract.LocationsEntry;
 
 /**
  * Manages a local database for weather data.
@@ -75,7 +76,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
 
                 WeatherEntry.COLUMN_DATE       + " INTEGER NOT NULL, "                 +
 
-                WeatherEntry.COLUMN_WEATHER_ID + " INTEGER NOT NULL,"                  +
+                WeatherEntry.COLUMN_WEATHER_ID + " STRING NOT NULL,"                  +
 
                 WeatherEntry.COLUMN_MIN_TEMP   + " REAL NOT NULL, "                    +
                 WeatherEntry.COLUMN_MAX_TEMP   + " REAL NOT NULL, "                    +
@@ -93,12 +94,27 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
                  * insert another weather entry with that date, we replace the old weather entry.
                  */
                 " UNIQUE (" + WeatherEntry.COLUMN_DATE + ") ON CONFLICT REPLACE);";
+        sqLiteDatabase.execSQL(SQL_CREATE_WEATHER_TABLE);
+
 
         /*
-         * After we've spelled out our SQLite table creation statement above, we actually execute
-         * that SQL with the execSQL method of our SQLite database object.
+         * This String will contain a simple SQL statement that will create a table that will
+         * cache our weather data.
          */
-        sqLiteDatabase.execSQL(SQL_CREATE_WEATHER_TABLE);
+        final String SQL_CREATE_LOCATIONS_TABLE =
+
+                "CREATE TABLE " + LocationsEntry.TABLE_NAME + " (" +
+
+                        LocationsEntry._ID               + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+
+                        LocationsEntry.COLUMN_NAME       + " STRING NOT NULL, "                 +
+
+                        LocationsEntry.COLUMN_LATITUDE   + " REAL NOT NULL, "                    +
+                        LocationsEntry.COLUMN_LONGITUDE   + " REAL NOT NULL, "                    +
+
+                /* To ensure this table can only contain one location entry per PlaceId */
+                        " UNIQUE (" + LocationsEntry.COLUMN_PLACEID + ") ON CONFLICT REPLACE);";
+        sqLiteDatabase.execSQL(SQL_CREATE_LOCATIONS_TABLE);
     }
 
     /**

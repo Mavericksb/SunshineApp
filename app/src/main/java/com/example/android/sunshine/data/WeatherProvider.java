@@ -45,6 +45,8 @@ public class WeatherProvider extends ContentProvider {
      */
     public static final int CODE_WEATHER = 100;
     public static final int CODE_WEATHER_WITH_DATE = 101;
+    public static final int CODE_LOCATIONS = 200;
+    public static final int CODE_SINGLE_LOCATION = 201;
 
     /*
      * The URI Matcher used by this content provider. The leading "s" in this variable name
@@ -95,6 +97,9 @@ public class WeatherProvider extends ContentProvider {
          * that it should return the CODE_WEATHER_WITH_DATE code
          */
         matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/#", CODE_WEATHER_WITH_DATE);
+
+        matcher.addURI(authority, LocationsContract.PATH_LOCATIONS, CODE_LOCATIONS);
+        matcher.addURI(authority, LocationsContract.PATH_LOCATIONS, CODE_SINGLE_LOCATION);
 
         return matcher;
     }
@@ -285,6 +290,39 @@ public class WeatherProvider extends ContentProvider {
                 break;
             }
 
+            case CODE_LOCATIONS:
+            {
+                String selectedId = uri.getLastPathSegment();
+                String[] selectionArguments = new String[]{selectedId};
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        LocationsContract.LocationsEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+
+                break;
+            }
+
+            case CODE_SINGLE_LOCATION:
+            {
+                String selectedId = uri.getLastPathSegment();
+                String[] selectionArguments = new String[]{selectedId};
+
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        LocationsContract.LocationsEntry.TABLE_NAME,
+                        projection,
+                        LocationsContract.LocationsEntry._ID + " = ?",
+                        selectionArguments,
+                        null,
+                        null,
+                        sortOrder);
+
+                break;
+            }
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -323,6 +361,22 @@ public class WeatherProvider extends ContentProvider {
                         WeatherContract.WeatherEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
+
+                break;
+            case CODE_LOCATIONS:
+                numRowsDeleted = mOpenHelper.getWritableDatabase().delete(
+                        LocationsContract.LocationsEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+
+                break;
+            case CODE_SINGLE_LOCATION:
+                String selectedId = uri.getLastPathSegment();
+                String[] selectionArguments = new String[]{selectedId};
+                numRowsDeleted = mOpenHelper.getWritableDatabase().delete(
+                        LocationsContract.LocationsEntry.TABLE_NAME,
+                        LocationsContract.LocationsEntry._ID + " = ?",
+                        selectionArguments);
 
                 break;
 
@@ -366,8 +420,22 @@ public class WeatherProvider extends ContentProvider {
      */
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
-        throw new RuntimeException(
-                "We are not implementing insert in Sunshine. Use bulkInsert instead");
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+
+        switch (sUriMatcher.match(uri)) {
+
+            case CODE_LOCATIONS:
+                long _id = db.insert(LocationsContract.LocationsEntry.TABLE_NAME, null, values);
+                if (0 != _id) {
+                    getContext().getContentResolver().notifyChange(uri, null);
+                    // return uri ?
+                }
+                return uri;
+
+            default:
+                return null;
+
+        }
     }
 
     @Override
