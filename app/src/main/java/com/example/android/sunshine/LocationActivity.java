@@ -9,6 +9,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -20,12 +21,15 @@ import com.example.android.sunshine.data.WeatherContract;
 import java.util.ArrayList;
 
 public class LocationActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor>{
+        LoaderManager.LoaderCallbacks<Cursor>,
+        LocationAdapter.LocationAdapterOnClickHandler{
 
     private static final int LOCATION_LOADER_ID = 13;
 
     private LocationAdapter mLocationAdapter;
     private ImageButton mButtonAddCity;
+    private ImageButton mDeleteCity;
+    private OnClickListener mOnClickListener;
 
     private static final String[] LOCATION_PROJECTION = {
             LocationsContract.LocationsEntry._ID,
@@ -45,19 +49,27 @@ public class LocationActivity extends AppCompatActivity implements
 
         ListView listView = (ListView) findViewById(R.id.PrefLocationlist);
 
-        mButtonAddCity = (ImageButton) findViewById(R.id.button_add_acity);
+        mButtonAddCity = (ImageButton) findViewById(R.id.button_add_city);
 
-        mButtonAddCity.setOnClickListener(new View.OnClickListener() {
+
+        mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent launchAutoComplete = new Intent(getApplicationContext(), AutoCompleteActivity.class);
-                startActivity(launchAutoComplete);
+                int id = view.getId();
+                switch(id){
+                    case R.id.button_add_city:
+                        Intent launchAutoComplete = new Intent(getApplicationContext(), AutoCompleteActivity.class);
+                        startActivity(launchAutoComplete);
+                        break;
+                    default:
+                        break;
+                }
             }
-        });
+        };
 
+        mButtonAddCity.setOnClickListener(mOnClickListener);
 
-        mLocationAdapter = new LocationAdapter(this, null);
-
+        mLocationAdapter = new LocationAdapter(this, null, this);
 
         listView.setAdapter(mLocationAdapter);
 
@@ -71,6 +83,8 @@ public class LocationActivity extends AppCompatActivity implements
             case LOCATION_LOADER_ID:
                 /* URI for all rows of weather data in our weather table */
                 Uri locationQueryUri = LocationsContract.LocationsEntry.CONTENT_URI;
+
+                String sortOrder = LocationsContract.LocationsEntry._ID + " DESC";
 
                 return new CursorLoader(this,
                         locationQueryUri,
@@ -92,5 +106,10 @@ public class LocationActivity extends AppCompatActivity implements
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mLocationAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onClick() {
+
     }
 }

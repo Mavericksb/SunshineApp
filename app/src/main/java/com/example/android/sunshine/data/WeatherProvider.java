@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.example.android.sunshine.utilities.SunshineDateUtils;
 
@@ -315,7 +316,7 @@ public class WeatherProvider extends ContentProvider {
                 cursor = mOpenHelper.getReadableDatabase().query(
                         LocationsContract.LocationsEntry.TABLE_NAME,
                         projection,
-                        LocationsContract.LocationsEntry._ID + " = ?",
+                        LocationsContract.LocationsEntry._ID + "=?",
                         selectionArguments,
                         null,
                         null,
@@ -353,11 +354,11 @@ public class WeatherProvider extends ContentProvider {
          * passing "1" for the selection will delete all rows and return the number of rows
          * deleted, which is what the caller of this method expects.
          */
-        if (null == selection) selection = "1";
 
         switch (sUriMatcher.match(uri)) {
 
             case CODE_WEATHER:
+                if (null == selection) selection = "1";
                 numRowsDeleted = mOpenHelper.getWritableDatabase().delete(
                         WeatherContract.WeatherEntry.TABLE_NAME,
                         selection,
@@ -365,6 +366,7 @@ public class WeatherProvider extends ContentProvider {
 
                 break;
             case CODE_LOCATIONS:
+                if (null == selection) selection = "1";
                 numRowsDeleted = mOpenHelper.getWritableDatabase().delete(
                         LocationsContract.LocationsEntry.TABLE_NAME,
                         selection,
@@ -372,12 +374,14 @@ public class WeatherProvider extends ContentProvider {
 
                 break;
             case CODE_SINGLE_LOCATION:
-                String selectedId = uri.getLastPathSegment();
-                String[] selectionArguments = new String[]{selectedId};
+                //String selectedId = uri.getLastPathSegment();
+
+                String[] selectionArguments = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 numRowsDeleted = mOpenHelper.getWritableDatabase().delete(
                         LocationsContract.LocationsEntry.TABLE_NAME,
-                        LocationsContract.LocationsEntry._ID + " = ?",
+                        LocationsContract.LocationsEntry._ID + "=?",
                         selectionArguments);
+                Log.e("Id is ", "id " + String.valueOf(ContentUris.parseId(uri)) + " rowsDel " + numRowsDeleted);
 
                 break;
 
@@ -433,6 +437,7 @@ public class WeatherProvider extends ContentProvider {
                     return null;
                 }
                 getContext().getContentResolver().notifyChange(uri, null);
+                Log.e("Inserted", " " + ContentUris.withAppendedId(uri, rowId));
                 return ContentUris.withAppendedId(uri, rowId);
 
             default:
