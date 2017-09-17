@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.example.android.sunshine.data.LocationsContract;
 import com.example.android.sunshine.data.SunshinePreferences;
+import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.sync.SunshineSyncUtils;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompleteFilter;
@@ -62,7 +63,7 @@ import static com.google.android.gms.location.places.AutocompleteFilter.TYPE_FIL
  * Created by ROBERTO on 08/09/2017.
  */
 
-class LocationAdapter extends CursorAdapter implements View.OnClickListener{
+class LocationAdapter extends CursorAdapter implements View.OnClickListener {
 
     private static final String LOG_TAG = "Location Adapter";
 
@@ -75,7 +76,7 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener{
     private final LocationAdapterOnClickHandler mClickHandler;
 
 
-    public interface LocationAdapterOnClickHandler{
+    public interface LocationAdapterOnClickHandler {
         void onClick();
     }
 
@@ -103,20 +104,28 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener{
 
     @Override
     public void onClick(View view) {
-            int position = (int) view.getTag();
-            Cursor cursor = getCursor();
-            cursor.moveToPosition(position);
-            double latitude = Double.valueOf(cursor.getString(LocationActivity.INDEX_CITY_LATITUDE));
-            double longitude = Double.valueOf(cursor.getString(LocationActivity.INDEX_CITY_LONGITUDE));
-        SunshinePreferences.setLocationDetails(mContext, latitude, longitude);
+        int position = (int) view.getTag();
+        Cursor cursor = getCursor();
+        cursor.moveToPosition(position);
+        long cityId = cursor.getLong(LocationActivity.INDEX_ID);
+        Log.e("Loc Adapt", "City id " + cityId);
+
+        SunshinePreferences.setCityId(mContext, cityId);
+        double latitude = Double.valueOf(cursor.getString(LocationActivity.INDEX_CITY_LATITUDE));
+        double longitude = Double.valueOf(cursor.getString(LocationActivity.INDEX_CITY_LONGITUDE));
+        String city = cursor.getString(LocationActivity.INDEX_CITY_NAME);
+        String placeId = cursor.getString(LocationActivity.INDEX_PLACE_ID);
+        SunshinePreferences.setLocationDetails(mContext, latitude, longitude, city, placeId);
         SunshineSyncUtils.startImmediateSync(mContext);
-        ((Activity)mContext).finish();
+        MainActivity.reload();
+        HourlyActivity.reload();
+        ((Activity) mContext).finish();
     }
 
     @Override
     public void bindView(View view, Context context, final Cursor cursor) {
         TextView textViewPrefLocation = (TextView) view.findViewById(R.id.textViewPrefLocation);
-        ImageButton deleteCity = (ImageButton)view.findViewById(R.id.button_delete_city);
+        ImageButton deleteCity = (ImageButton) view.findViewById(R.id.button_delete_city);
 
         final int position = cursor.getInt(cursor.getColumnIndex(LocationsContract.LocationsEntry._ID));
 
@@ -124,8 +133,20 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener{
         deleteCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Delete this city from location table
                 Uri uri = ContentUris.withAppendedId(LocationsContract.LocationsEntry.CONTENT_URI, Long.valueOf(position));
                 mContext.getContentResolver().delete(uri, null, null);
+
+                // Delete this city's weather forecast from weather table
+                String cityId = String.valueOf(SunshinePreferences.getCityId(mContext));
+                Log.e("Sync Task", "City id " + cityId);
+
+                String[] selectionArgs = new String[]{cityId};
+
+                mContext.getContentResolver().delete(
+                        WeatherContract.WeatherEntry.CONTENT_URI,
+                        WeatherContract.WeatherEntry.COLUMN_CITY_ID + "=?",
+                        selectionArgs);
             }
         });
 
@@ -137,5 +158,8 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener{
         view.setOnClickListener(this);
     }
 
-
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        return super.getView(position, convertView, parent);
+    }
 }

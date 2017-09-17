@@ -76,6 +76,16 @@
             android:value=".MainActivity" />
         </activity>
 
+        <activity
+            android:name=".HourlyActivity"
+            android:label="@string/title_activity_hourly_forecast"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
         <!-- Our ContentProvider -->
         <provider
             android:name=".data.WeatherProvider"

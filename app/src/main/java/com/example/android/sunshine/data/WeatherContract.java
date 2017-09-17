@@ -88,6 +88,17 @@ public class WeatherContract {
         /* Weather ID as returned by API, used to identify the icon to be used */
         public static final String COLUMN_WEATHER_ID = "weather_id";
 
+        /* City ID as returned by Locations Table, used to relate weather entries to city in preferred locations */
+        public static final String COLUMN_CITY_ID = "city_id";
+
+        public static final String COLUMN_PRECIP_INTENSITY = "precip_intensity";
+        public static final String COLUMN_PRECIP_PROBABILITY = "precip_prob";
+        public static final String COLUMN_PRECIP_TYPE = "precip_type";
+
+        public static final String COLUMN_SUNRISE_TIME = "sunrise_time";
+        public static final String COLUMN_SUNSET_TIME = "sunset_time";
+        public static final String COLUMN_MOON_PHASE = "moon_phase";
+
         /* Min and max temperatures in °C for the day (stored as floats in the database) */
         public static final String COLUMN_MIN_TEMP = "min";
         public static final String COLUMN_MAX_TEMP = "max";

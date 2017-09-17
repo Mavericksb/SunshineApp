@@ -16,11 +16,16 @@
 package com.example.android.sunshine.utilities;
 
 import android.content.Context;
+import android.icu.text.TimeZoneFormat;
+import android.icu.text.TimeZoneNames;
 import android.text.format.DateUtils;
+import android.util.TimeUtils;
 
 import com.example.android.sunshine.R;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -55,19 +60,20 @@ public final class SunshineDateUtils {
      * @return The number of milliseconds (UTC / GMT) for today's date at midnight in the local
      * time zone
      */
-    public static long getNormalizedUtcDateForToday() {
+    public static long getNormalizedUtcDateForToday(long utcNowMillis, String tz) {
 
         /*
          * This number represents the number of milliseconds that have elapsed since January
          * 1st, 1970 at midnight in the GMT time zone.
          */
-        long utcNowMillis = System.currentTimeMillis();
+        //long utcNowMillis = System.currentTimeMillis();
+
 
         /*
          * This TimeZone represents the device's current time zone. It provides us with a means
          * of acquiring the offset for local time from a UTC time stamp.
          */
-        TimeZone currentTimeZone = TimeZone.getDefault();
+        TimeZone currentTimeZone = TimeZone.getTimeZone(tz);
 
         /*
          * The getOffset method returns the number of milliseconds to add to UTC time to get the
@@ -97,6 +103,39 @@ public final class SunshineDateUtils {
         return normalizedUtcMidnightMillis;
     }
 
+    public static long getNormalizedHourlyUtcDate(long utcNowMillis, String tz) {
+
+        /*
+         * This number represents the number of milliseconds that have elapsed since January
+         * 1st, 1970 at midnight in the GMT time zone.
+         */
+        //long utcNowMillis = System.currentTimeMillis();
+
+
+        /*
+         * This TimeZone represents the device's current time zone. It provides us with a means
+         * of acquiring the offset for local time from a UTC time stamp.
+         */
+        TimeZone currentTimeZone = TimeZone.getTimeZone(tz);
+
+        /*
+         * The getOffset method returns the number of milliseconds to add to UTC time to get the
+         * elapsed time since the epoch for our current time zone. We pass the current UTC time
+         * into this method so it can determine changes to account for daylight savings time.
+         */
+        long gmtOffsetMillis = currentTimeZone.getOffset(utcNowMillis);
+
+        /*
+         * UTC time is measured in milliseconds from January 1, 1970 at midnight from the GMT
+         * time zone. Depending on your time zone, the time since January 1, 1970 at midnight (GMT)
+         * will be greater or smaller. This variable represents the number of milliseconds since
+         * January 1, 1970 (GMT) time.
+         */
+        long timeSinceEpochLocalTimeMillis = utcNowMillis + gmtOffsetMillis;
+
+        return timeSinceEpochLocalTimeMillis;
+    }
+
     /**
      * This method returns the number of days since the epoch (January 01, 1970, 12:00 Midnight UTC)
      * in UTC time from the current date.
@@ -105,7 +144,7 @@ public final class SunshineDateUtils {
      *
      * @return The number of days from the epoch to the date argument.
      */
-    private static long elapsedDaysSinceEpoch(long utcDate) {
+    public static long elapsedDaysSinceEpoch(long utcDate) {
         return TimeUnit.MILLISECONDS.toDays(utcDate);
     }
 
@@ -136,6 +175,8 @@ public final class SunshineDateUtils {
      * @return The UTC date at 12 midnight of the date
      */
     public static long normalizeDate(long date) {
+
+
         long daysSinceEpoch = elapsedDaysSinceEpoch(date);
         long millisFromEpochToTodayAtMidnightUtc = daysSinceEpoch * DAY_IN_MILLIS;
         return millisFromEpochToTodayAtMidnightUtc;
@@ -175,7 +216,7 @@ public final class SunshineDateUtils {
          * time.
          */
         long gmtOffset = timeZone.getOffset(normalizedUtcDate);
-        long localMidnightMillis = normalizedUtcDate - gmtOffset;
+        long localMidnightMillis = normalizedUtcDate + gmtOffset;
         return localMidnightMillis;
     }
 
@@ -208,6 +249,8 @@ public final class SunshineDateUtils {
          * that normalized date and produce a date (in UTC time) that represents the local time
          * zone at midnight.
          */
+
+
         long localDate = getLocalMidnightFromNormalizedUtcDate(normalizedUtcMidnight);
 
         /*
@@ -306,4 +349,11 @@ public final class SunshineDateUtils {
                 return dayFormat.format(dateInMillis);
         }
     }
+
+    public static String getNormalDate(long utc){
+        Date time = new Date(utc);
+        String formatted = new SimpleDateFormat("EEE dd  HH:mm", Locale.getDefault()).format(time);
+        return formatted;
+    }
+
 }

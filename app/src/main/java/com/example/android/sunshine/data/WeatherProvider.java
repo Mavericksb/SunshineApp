@@ -49,6 +49,9 @@ public class WeatherProvider extends ContentProvider {
     public static final int CODE_WEATHER_WITH_DATE = 101;
     public static final int CODE_LOCATIONS = 200;
     public static final int CODE_SINGLE_LOCATION = 201;
+    public static final int CODE_CURRENT_FORECAST = 300;
+    public static final int CODE_HOURLY_FORECAST = 400;
+
 
     /*
      * The URI Matcher used by this content provider. The leading "s" in this variable name
@@ -58,29 +61,9 @@ public class WeatherProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private WeatherDbHelper mOpenHelper;
 
-    /**
-     * Creates the UriMatcher that will match each URI to the CODE_WEATHER and
-     * CODE_WEATHER_WITH_DATE constants defined above.
-     * <p>
-     * It's possible you might be thinking, "Why create a UriMatcher when you can use regular
-     * expressions instead? After all, we really just need to match some patterns, and we can
-     * use regular expressions to do that right?" Because you're not crazy, that's why.
-     * <p>
-     * UriMatcher does all the hard work for you. You just have to tell it which code to match
-     * with which URI, and it does the rest automagically. Remember, the best programmers try
-     * to never reinvent the wheel. If there is a solution for a problem that exists and has
-     * been tested and proven, you should almost always use it unless there is a compelling
-     * reason not to.
-     *
-     * @return A UriMatcher that correctly matches the constants for CODE_WEATHER and CODE_WEATHER_WITH_DATE
-     */
     public static UriMatcher buildUriMatcher() {
 
-        /*
-         * All paths added to the UriMatcher have a corresponding code to return when a match is
-         * found. The code passed into the constructor of UriMatcher here represents the code to
-         * return for the root URI. It's common to use NO_MATCH as the code for this case.
-         */
+
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = WeatherContract.CONTENT_AUTHORITY;
 
@@ -92,35 +75,19 @@ public class WeatherProvider extends ContentProvider {
 
         /* This URI is content://com.example.android.sunshine/weather/ */
         matcher.addURI(authority, WeatherContract.PATH_WEATHER, CODE_WEATHER);
-
-        /*
-         * This URI would look something like content://com.example.android.sunshine/weather/1472214172
-         * The "/#" signifies to the UriMatcher that if PATH_WEATHER is followed by ANY number,
-         * that it should return the CODE_WEATHER_WITH_DATE code
-         */
         matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/#", CODE_WEATHER_WITH_DATE);
 
         matcher.addURI(authority, LocationsContract.PATH_LOCATIONS, CODE_LOCATIONS);
         matcher.addURI(authority, LocationsContract.PATH_LOCATIONS + "/#", CODE_SINGLE_LOCATION);
 
+        matcher.addURI(authority, CurrentWeatherContract.PATH_CURRENT_FORECAST, CODE_CURRENT_FORECAST);
+
+        matcher.addURI(authority, HourlyWeatherContract.PATH_HOURLY_FORECAST, CODE_HOURLY_FORECAST);
+
         return matcher;
     }
 
-    /**
-     * In onCreate, we initialize our content provider on startup. This method is called for all
-     * registered content providers on the application main thread at application launch time.
-     * It must not perform lengthy operations, or application startup will be delayed.
-     *
-     * Nontrivial initialization (such as opening, upgrading, and scanning
-     * databases) should be deferred until the content provider is used (via {@link #query},
-     * {@link #bulkInsert(Uri, ContentValues[])}, etc).
-     *
-     * Deferred initialization keeps application startup fast, avoids unnecessary work if the
-     * provider turns out not to be needed, and stops database errors (such as a full disk) from
-     * halting application launch.
-     *
-     * @return true if the provider was successfully loaded, false otherwise
-     */
+
     @Override
     public boolean onCreate() {
         /*
@@ -149,11 +116,13 @@ public class WeatherProvider extends ContentProvider {
     public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 
+        int rowsInserted = 0;
+
         switch (sUriMatcher.match(uri)) {
+
 
             case CODE_WEATHER:
                 db.beginTransaction();
-                int rowsInserted = 0;
                 try {
                     for (ContentValues value : values) {
                         long weatherDate =
@@ -175,12 +144,66 @@ public class WeatherProvider extends ContentProvider {
                 if (rowsInserted > 0) {
                     getContext().getContentResolver().notifyChange(uri, null);
                 }
+                break;
 
-                return rowsInserted;
+
+            case CODE_CURRENT_FORECAST:
+                db.beginTransaction();
+                try {
+                    for (ContentValues value : values) {
+                        long weatherDate =
+                                value.getAsLong(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_DATE);
+                        if (!SunshineDateUtils.isDateNormalized(weatherDate)) {
+                            throw new IllegalArgumentException("Date must be normalized to insert");
+                        }
+
+                        long _id = db.insert(CurrentWeatherContract.CurrentWeatherEntry.TABLE_NAME, null, value);
+                        if (_id != -1) {
+                            rowsInserted++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+
+                if (rowsInserted > 0) {
+                    getContext().getContentResolver().notifyChange(uri, null);
+                }
+                break;
+
+            case CODE_HOURLY_FORECAST:
+                db.beginTransaction();
+                try {
+                    for (ContentValues value : values) {
+//                        long weatherDate =
+//                                value.getAsLong(HourlyWeatherContract.HourlyWeatherEntry.COLUMN_DATE);
+//                        if (!SunshineDateUtils.isDateNormalized(weatherDate)) {
+//                            throw new IllegalArgumentException("Date must be normalized to insert");
+//                        }
+
+                        long _id = db.insert(HourlyWeatherContract.HourlyWeatherEntry.TABLE_NAME, null, value);
+                        if (_id != -1) {
+                            rowsInserted++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+
+                if (rowsInserted > 0) {
+                    getContext().getContentResolver().notifyChange(uri, null);
+                }
+                break;
+
 
             default:
                 return super.bulkInsert(uri, values);
+
+
         }
+        return rowsInserted;
     }
 
     /**
@@ -224,61 +247,22 @@ public class WeatherProvider extends ContentProvider {
              * a particular date.
              */
             case CODE_WEATHER_WITH_DATE: {
-
-                /*
-                 * In order to determine the date associated with this URI, we look at the last
-                 * path segment. In the comment above, the last path segment is 1472214172 and
-                 * represents the number of seconds since the epoch, or UTC time.
-                 */
                 String normalizedUtcDateString = uri.getLastPathSegment();
 
-                /*
-                 * The query method accepts a string array of arguments, as there may be more
-                 * than one "?" in the selection statement. Even though in our case, we only have
-                 * one "?", we have to create a string array that only contains one element
-                 * because this method signature accepts a string array.
-                 */
                 String[] selectionArguments = new String[]{normalizedUtcDateString};
 
                 cursor = mOpenHelper.getReadableDatabase().query(
                         /* Table we are going to query */
                         WeatherContract.WeatherEntry.TABLE_NAME,
-                        /*
-                         * A projection designates the columns we want returned in our Cursor.
-                         * Passing null will return all columns of data within the Cursor.
-                         * However, if you don't need all the data from the table, it's best
-                         * practice to limit the columns returned in the Cursor with a projection.
-                         */
                         projection,
-                        /*
-                         * The URI that matches CODE_WEATHER_WITH_DATE contains a date at the end
-                         * of it. We extract that date and use it with these next two lines to
-                         * specify the row of weather we want returned in the cursor. We use a
-                         * question mark here and then designate selectionArguments as the next
-                         * argument for performance reasons. Whatever Strings are contained
-                         * within the selectionArguments array will be inserted into the
-                         * selection statement by SQLite under the hood.
-                         */
                         WeatherContract.WeatherEntry.COLUMN_DATE + " = ? ",
                         selectionArguments,
                         null,
                         null,
                         sortOrder);
-
                 break;
             }
 
-            /*
-             * When sUriMatcher's match method is called with a URI that looks EXACTLY like this
-             *
-             *      content://com.example.android.sunshine/weather/
-             *
-             * sUriMatcher's match method will return the code that indicates to us that we need
-             * to return all of the weather in our weather table.
-             *
-             * In this case, we want to return a cursor that contains every row of weather data
-             * in our weather table.
-             */
             case CODE_WEATHER: {
                 cursor = mOpenHelper.getReadableDatabase().query(
                         WeatherContract.WeatherEntry.TABLE_NAME,
@@ -288,7 +272,9 @@ public class WeatherProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
-
+                if(selectionArgs!=null) {
+                    Log.e("QUERYING ", "uri " + uri + " SEL: " + selection + " SELSARGS: " + selectionArgs[0].toString());
+                }
                 break;
             }
 
@@ -324,6 +310,17 @@ public class WeatherProvider extends ContentProvider {
 
                 break;
             }
+
+            case CODE_HOURLY_FORECAST:
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        HourlyWeatherContract.HourlyWeatherEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -358,31 +355,38 @@ public class WeatherProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
 
             case CODE_WEATHER:
-                if (null == selection) selection = "1";
                 numRowsDeleted = mOpenHelper.getWritableDatabase().delete(
                         WeatherContract.WeatherEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
-
+                Log.e("DELETING ", "uri " + uri + " SEL: " + selection + " SELSARGS: " +  selectionArgs[0].toString() + " ROWSDEL: " + numRowsDeleted);
                 break;
             case CODE_LOCATIONS:
-                if (null == selection) selection = "1";
                 numRowsDeleted = mOpenHelper.getWritableDatabase().delete(
                         LocationsContract.LocationsEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
-
                 break;
             case CODE_SINGLE_LOCATION:
-                //String selectedId = uri.getLastPathSegment();
-
                 String[] selectionArguments = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 numRowsDeleted = mOpenHelper.getWritableDatabase().delete(
                         LocationsContract.LocationsEntry.TABLE_NAME,
                         LocationsContract.LocationsEntry._ID + "=?",
                         selectionArguments);
-                Log.e("Id is ", "id " + String.valueOf(ContentUris.parseId(uri)) + " rowsDel " + numRowsDeleted);
-
+                break;
+            case CODE_CURRENT_FORECAST:
+                numRowsDeleted = mOpenHelper.getWritableDatabase().delete(
+                        CurrentWeatherContract.CurrentWeatherEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                Log.e("DELETING ", "uri " + uri + " SEL: " + selection + " SELSARGS: " +  selectionArgs[0].toString() + " ROWSDEL: " + numRowsDeleted);
+                break;
+            case CODE_HOURLY_FORECAST:
+                numRowsDeleted = mOpenHelper.getWritableDatabase().delete(
+                        HourlyWeatherContract.HourlyWeatherEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                Log.e("DELETING ", "uri " + uri + " SEL: " + selection + " SELSARGS: " +  selectionArgs[0].toString() + " ROWSDEL: " + numRowsDeleted);
                 break;
 
             default:

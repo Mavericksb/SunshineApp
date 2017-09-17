@@ -22,7 +22,7 @@
     android:background="@drawable/gradient_background">
 
     <ImageView
-        android:id="@+id/cloudView"
+        android:id="@+id/cloudView_hourly"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:src="@drawable/cloud1"
@@ -44,7 +44,7 @@
       - clipToPadding to "false" again and observe how the gap is gone.                        -
       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerview_forecast"
+        android:id="@+id/recyclerview_hourly_forecast"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
@@ -52,9 +52,10 @@
 
         />
 
+
     <!-- A progress bar that will be shown to users to indicate that weather data is loading -->
     <ProgressBar
-        android:id="@+id/pb_loading_indicator"
+        android:id="@+id/pb_hourly_loading_indicator"
         android:layout_width="42dp"
         android:layout_height="42dp"
         android:layout_gravity="center"

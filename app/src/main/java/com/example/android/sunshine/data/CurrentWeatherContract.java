@@ -24,27 +24,48 @@ import com.example.android.sunshine.utilities.SunshineDateUtils;
  * Defines table and column names for the weather database. This class is not necessary, but keeps
  * the code organized.
  */
-public class HourlyWeatherContract {
+public class CurrentWeatherContract {
 
-
+    /*
+     * The "Content authority" is a name for the entire content provider, similar to the
+     * relationship between a domain name and its website. A convenient string to use for the
+     * content authority is the package name for the app, which is guaranteed to be unique on the
+     * Play Store.
+     */
     public static final String CONTENT_AUTHORITY = "com.example.android.sunshine";
 
-
+    /*
+     * Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
+     * the content provider for Sunshine.
+     */
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
-
-    public static final String PATH_HOURLY_FORECAST = "hourly_forecast";
+    /*
+     * Possible paths that can be appended to BASE_CONTENT_URI to form valid URI's that Sunshine
+     * can handle. For instance,
+     *
+     *     content://com.example.android.sunshine/weather/
+     *     [           BASE_CONTENT_URI         ][ PATH_WEATHER ]
+     *
+     * is a valid path for looking at weather data.
+     *
+     *      content://com.example.android.sunshine/givemeroot/
+     *
+     * will fail, as the ContentProvider hasn't been given any information on what to do with
+     * "givemeroot". At least, let's hope not. Don't be that dev, reader. Don't be that dev.
+     */
+    public static final String PATH_CURRENT_FORECAST = "current_forecast";
 
     /* Inner class that defines the table contents of the weather table */
-    public static final class HourlyWeatherEntry implements BaseColumns {
+    public static final class CurrentWeatherEntry implements BaseColumns {
 
         /* The base CONTENT_URI used to query the Weather table from the content provider */
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
-                .appendPath(PATH_HOURLY_FORECAST)
+                .appendPath(PATH_CURRENT_FORECAST)
                 .build();
 
         /* Used internally as the name of our weather table. */
-        public static final String TABLE_NAME = "hourly_forecast";
+        public static final String TABLE_NAME = "current_forecast";
 
         /*
          * The date column will store the UTC date that correlates to the local date for which
@@ -67,9 +88,8 @@ public class HourlyWeatherContract {
         /* Weather ID as returned by API, used to identify the icon to be used */
         public static final String COLUMN_WEATHER_ID = "weather_id";
 
+        /* City ID as returned by Locations Table, used to relate weather entries to city in preferred locations */
         public static final String COLUMN_CITY_ID = "city_id";
-
-        public static final String COLUMN_SUMMARY = "summary";
 
         public static final String COLUMN_PRECIP_INTENSITY = "precip_intensity";
         public static final String COLUMN_PRECIP_PROBABILITY = "precip_prob";
@@ -94,5 +114,30 @@ public class HourlyWeatherContract {
          */
         public static final String COLUMN_DEGREES = "degrees";
 
+        /**
+         * Builds a URI that adds the weather date to the end of the forecast content URI path.
+         * This is used to query details about a single weather entry by date. This is what we
+         * use for the detail view query. We assume a normalized date is passed to this method.
+         *
+         * @param date Normalized date in milliseconds
+         * @return Uri to query details about a single weather entry
+         */
+        public static Uri buildWeatherUriWithDate(long date) {
+            return CONTENT_URI.buildUpon()
+                    .appendPath(Long.toString(date))
+                    .build();
+        }
+
+        /**
+         * Returns just the selection part of the weather query from a normalized today value.
+         * This is used to get a weather forecast from today's date. To make this easy to use
+         * in compound selection, we embed today's date as an argument in the query.
+         *
+         * @return The selection part of the weather query for today onwards
+         */
+        public static String getSqlSelectForTodayOnwards() {
+            long normalizedUtcNow = SunshineDateUtils.normalizeDate(System.currentTimeMillis());
+            return WeatherContract.WeatherEntry.COLUMN_DATE + " >= " + normalizedUtcNow;
+        }
     }
 }

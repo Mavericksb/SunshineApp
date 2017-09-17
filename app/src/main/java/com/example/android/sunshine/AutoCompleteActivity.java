@@ -1,5 +1,6 @@
 package com.example.android.sunshine;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -95,7 +96,6 @@ public class AutoCompleteActivity extends AppCompatActivity implements AdapterVi
         AutoCompleteAdapter.PlaceAutocomplete item = mAutoCompleteAdapter.getItem(position);
         mPlaceId = String.valueOf(item.placeId);
         mCity = (String) item.city;
-        SunshinePreferences.setLocationName(this, mCity);
 
         new GetCoordsTask().execute();
     }
@@ -117,10 +117,9 @@ public class AutoCompleteActivity extends AppCompatActivity implements AdapterVi
                         mLatitude = place.getLatLng().latitude;
                         mLongitude = place.getLatLng().longitude;
                     }
-                    SunshinePreferences.setLocationDetails(AutoCompleteActivity.this, mLatitude, mLongitude);
+
                     placeBufferResponse.release();
-                    // Coordinates changed so I need to fetch data from server
-                    SunshineSyncUtils.startImmediateSync(AutoCompleteActivity.this);
+
                 } else {
                     Exception exception = placeResponse.getException();
                     Log.e("OnCompleteAutocomplete", "Exception " + exception);
@@ -148,11 +147,19 @@ public class AutoCompleteActivity extends AppCompatActivity implements AdapterVi
 
             Uri newUri = getContentResolver().insert(LocationsContract.LocationsEntry.CONTENT_URI, values);
 
-
                 if(newUri==null){
                     Toast notSucceded = Toast.makeText(getApplicationContext(), "Failed to add city", Toast.LENGTH_SHORT);
                     notSucceded.show();
                 } else {
+                    // Get the Location Table ID for this city and store it in Shared preference in order to be
+                    // used whenever Weather table creates the data for a given city to store its city reference under
+                    // CITY_ID
+                    long cityId = ContentUris.parseId(newUri);
+                    SunshinePreferences.setCityId(AutoCompleteActivity.this, cityId);
+
+                    SunshinePreferences.setLocationDetails(AutoCompleteActivity.this, mLatitude, mLongitude, mCity, mPlaceId);
+                    // Coordinates changed so I need to fetch data from server
+                    SunshineSyncUtils.startImmediateSync(AutoCompleteActivity.this);
                     finish();
                 }
 

@@ -30,7 +30,13 @@ public final class SunshinePreferences {
      */
     public static final String PREF_COORD_LAT = "coord_lat";
     public static final String PREF_COORD_LONG = "coord_long";
-    public static final String PREF_LOCATION = "location";
+    // Actual city name
+    public static final String PREF_CITY = "city";
+    // Unique selected city Id based on _ID of locations table
+    public static final String PREF_CITY_ID = "city_id";
+    // place Id of actual city
+    public static final String PREF_PLACE_ID = "place_id";
+
 
 
     /**
@@ -43,10 +49,12 @@ public final class SunshinePreferences {
      * @param lat      the latitude of the city
      * @param lon      the longitude of the city
      */
-    public static void setLocationDetails(Context context, double lat, double lon) {
+    public static void setLocationDetails(Context context, double lat, double lon, String city, String placeId) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sp.edit();
 
+        editor.putString(PREF_PLACE_ID, placeId);
+        editor.putString(PREF_CITY, city);
         editor.putLong(PREF_COORD_LAT, Double.doubleToRawLongBits(lat));
         editor.putLong(PREF_COORD_LONG, Double.doubleToRawLongBits(lon));
         editor.apply();
@@ -60,15 +68,11 @@ public final class SunshinePreferences {
      * @param context  Context used to get the SharedPreferences
      * @param city     the name of the city
      */
-    public static void setLocationName(Context context, String city) {
+    public static void setCityName(Context context, String city ) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sp.edit();
 
-        String keyForLocation = context.getString(R.string.pref_location_key);
-        String defaultLocation = context.getString(R.string.pref_location_default);
-
-        editor.putString(keyForLocation, city);
-        editor.putString(PREF_LOCATION, city);
+        editor.putString(PREF_CITY, city);
         editor.apply();
     }
 
@@ -79,10 +83,37 @@ public final class SunshinePreferences {
      *
      * @param context  Context used to get the SharedPreferences
      */
-    public static String getLocationName(Context context) {
+    public static String getCityName(Context context) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 
-        return sp.getString(PREF_LOCATION, "");
+        return sp.getString(PREF_CITY, "");
+    }
+
+    public static void setCityId(Context context, long locationId) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sp.edit();
+
+        editor.putLong(PREF_CITY_ID, locationId);
+        editor.apply();
+    }
+
+    public static long getCityId(Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return sp.getLong(PREF_CITY_ID, 0);
+    }
+
+    public static void setPlaceId(Context context, String placeId) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sp.edit();
+
+        editor.putString(PREF_PLACE_ID, placeId);
+    }
+
+    public static String getPlaceId(Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return sp.getString(PREF_PLACE_ID, "");
     }
 
     /**
@@ -124,15 +155,25 @@ public final class SunshinePreferences {
 
         String latKey = context.getString(R.string.pref_latitude_key);
         String latDef = context.getString(R.string.pref_latitude_default);
+
         String lonKey = context.getString(R.string.pref_longitude_key);
         String lonDef = context.getString(R.string.pref_longitude_default);
+
+        String keyForLocation = context.getString(R.string.pref_location_key);
+        String defaultLocation = context.getString(R.string.pref_location_default);
+
+        String placeIdKey = context.getString(R.string.pref_place_id_key);
+        String placeIdDefault = context.getString(R.string.pref_place_id_default);
+
+        String location = sp.getString(keyForLocation, defaultLocation);
+        String placeId = sp.getString(placeIdKey, placeIdDefault);
 
         double latitude = Double.valueOf(sp.getString(latKey, latDef));
         double longitude = Double.valueOf(sp.getString(lonKey, lonDef));
 
         double[] coords = {latitude, longitude};
 
-        setLocationDetails(context, latitude, longitude);
+        setLocationDetails(context, latitude, longitude, location, placeId);
 
         return coords;
     }

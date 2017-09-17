@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 The Android Open Source Project
+ * Copyright (C) 2014 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,11 @@ package com.example.android.sunshine;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.database.Cursor;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -38,46 +40,64 @@ import android.widget.ProgressBar;
 import com.example.android.sunshine.data.HourlyWeatherContract;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
+import com.example.android.sunshine.databinding.ActivityDetailBinding;
 import com.example.android.sunshine.sync.SunshineSyncUtils;
+import com.example.android.sunshine.utilities.SunshineDateUtils;
+import com.example.android.sunshine.utilities.SunshineWeatherUtils;
 
-public class MainActivity extends AppCompatActivity implements
+public class HourlyActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
-        ForecastAdapter.ForecastAdapterOnClickHandler {
-
-    private final String TAG = MainActivity.class.getSimpleName();
+        HourlyForecastAdapter.HourlyForecastAdapterOnClickHandler{
 
     /*
-     * The columns of data that we are interested in displaying within our MainActivity's list of
-     * weather data.
+     * In this Activity, you can share the selected day's forecast. No social sharing is complete
+     * without using a hashtag. #BeTogetherNotTheSame
      */
-    public static final String[] MAIN_FORECAST_PROJECTION = {
-            WeatherContract.WeatherEntry.COLUMN_DATE,
-            WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
-            WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
-            WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
+    private static final String HOURLY_FORECAST_SHARE_HASHTAG = " #SunshineApp";
+
+    /*
+     * The columns of data that we are interested in displaying within our DetailActivity's
+     * weather display.
+     */
+    public static final String[] HOURLY_WEATHER_DETAIL_PROJECTION = {
+            HourlyWeatherContract.HourlyWeatherEntry.COLUMN_DATE,
+            HourlyWeatherContract.HourlyWeatherEntry.COLUMN_SUMMARY,
+            HourlyWeatherContract.HourlyWeatherEntry.COLUMN_PRECIP_INTENSITY,
+            HourlyWeatherContract.HourlyWeatherEntry.COLUMN_PRECIP_PROBABILITY,
+            HourlyWeatherContract.HourlyWeatherEntry.COLUMN_TEMPERATURE,
+            HourlyWeatherContract.HourlyWeatherEntry.COLUMN_HUMIDITY,
+            HourlyWeatherContract.HourlyWeatherEntry.COLUMN_PRESSURE,
+            HourlyWeatherContract.HourlyWeatherEntry.COLUMN_WIND_SPEED,
+            HourlyWeatherContract.HourlyWeatherEntry.COLUMN_DEGREES,
+            HourlyWeatherContract.HourlyWeatherEntry.COLUMN_WEATHER_ID
     };
 
     /*
-     * We store the indices of the values in the array of Strings above to more quickly be able to
-     * access the data from our query. If the order of the Strings above changes, these indices
-     * must be adjusted to match the order of the Strings.
+     * We store the indices of the values in the array of Strings above to more quickly be able
+     * to access the data from our query. If the order of the Strings above changes, these
+     * indices must be adjusted to match the order of the Strings.
      */
     public static final int INDEX_WEATHER_DATE = 0;
-    public static final int INDEX_WEATHER_MAX_TEMP = 1;
-    public static final int INDEX_WEATHER_MIN_TEMP = 2;
-    public static final int INDEX_WEATHER_CONDITION_ID = 3;
-
+    public static final int INDEX_WEATHER_SUMMARY = 1;
+    public static final int INDEX_WEATHER_PRECIP_INTENSITY = 2;
+    public static final int INDEX_WEATHER_PRECIP_PROBABILITY = 3;
+    public static final int INDEX_WEATHER_TEMPERATURE = 4;
+    public static final int INDEX_WEATHER_HUMIDITY = 5;
+    public static final int INDEX_WEATHER_PRESSURE = 6;
+    public static final int INDEX_WEATHER_WIND_SPEED = 7;
+    public static final int INDEX_WEATHER_DEGREES = 8;
+    public static final int INDEX_WEATHER_CONDITION_ID = 9;
 
     /*
-     * This ID will be used to identify the Loader responsible for loading our weather forecast. In
-     * some cases, one Activity can deal with many Loaders. However, in our case, there is only one.
-     * We will still use this ID to initialize the loader and create the loader for best practice.
-     * Please note that 44 was chosen arbitrarily. You can use whatever number you like, so long as
-     * it is unique and consistent.
+     * This ID will be used to identify the Loader responsible for loading the weather details
+     * for a particular day. In some cases, one Activity can deal with many Loaders. However, in
+     * our case, there is only one. We will still use this ID to initialize the loader and create
+     * the loader for best practice. Please note that 353 was chosen arbitrarily. You can use
+     * whatever number you like, so long as it is unique and consistent.
      */
-    private static final int ID_FORECAST_LOADER = 44;
+    private static final int ID_HOURLY_FORECAST_LOADER = 453;
 
-    private ForecastAdapter mForecastAdapter;
+    private HourlyForecastAdapter mHourlyForecastAdapter;
     private RecyclerView mRecyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
 
@@ -89,26 +109,26 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_forecast);
+        setContentView(R.layout.activity_hourly);
         getSupportActionBar().setElevation(0f);
 
-            ImageView img_animation = (ImageView) findViewById(R.id.cloudView);
+        ImageView img_animation = (ImageView) findViewById(R.id.cloudView_hourly);
 
-            TranslateAnimation animation = new TranslateAnimation(1200.0f, -1200.0f,
-                    0.0f, 0.0f);          //  new TranslateAnimation(xFrom,xTo, yFrom,yTo)
-            animation.setDuration(35000);  // animation duration
-            animation.setRepeatCount(ValueAnimator.INFINITE);  // animation repeat count
-            animation.setRepeatMode(1);   // repeat animation (left to right, right to left )
-            //animation.setFillAfter(true);
+        TranslateAnimation animation = new TranslateAnimation(1200.0f, -1200.0f,
+                0.0f, 0.0f);          //  new TranslateAnimation(xFrom,xTo, yFrom,yTo)
+        animation.setDuration(35000);  // animation duration
+        animation.setRepeatCount(ValueAnimator.INFINITE);  // animation repeat count
+        animation.setRepeatMode(1);   // repeat animation (left to right, right to left )
+        //animation.setFillAfter(true);
 
 
-            img_animation.startAnimation(animation);  // start animation
+        img_animation.startAnimation(animation);  // start animation
 
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
          * do things like set the adapter of the RecyclerView and toggle the visibility.
          */
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_forecast);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_hourly_forecast);
 
         /*
          * The ProgressBar that will indicate to the user that we are loading data. It will be
@@ -117,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements
          * Please note: This so called "ProgressBar" isn't a bar by default. It is more of a
          * circle. We didn't make the rules (or the names of Views), we just follow them.
          */
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_hourly_loading_indicator);
 
         /*
          * A LinearLayoutManager is responsible for measuring and positioning item views within a
@@ -155,10 +175,10 @@ public class MainActivity extends AppCompatActivity implements
          * MainActivity implements the ForecastAdapter ForecastOnClickHandler interface, "this"
          * is also an instance of that type of handler.
          */
-        mForecastAdapter = new ForecastAdapter(this, this);
+        mHourlyForecastAdapter = new HourlyForecastAdapter(this, this);
 
         /* Setting the adapter attaches it to the RecyclerView in our layout. */
-        mRecyclerView.setAdapter(mForecastAdapter);
+        mRecyclerView.setAdapter(mHourlyForecastAdapter);
 
 
         showLoading();
@@ -168,38 +188,12 @@ public class MainActivity extends AppCompatActivity implements
          * created and (if the activity/fragment is currently started) starts the loader. Otherwise
          * the last created loader is re-used.
          */
-        mLoaderCallbacks = this;
         mSupportLoaderManager = getSupportLoaderManager();
-        mSupportLoaderManager.initLoader(ID_FORECAST_LOADER, null, this);
+        mLoaderCallbacks = this;
+        mSupportLoaderManager.initLoader(ID_HOURLY_FORECAST_LOADER, null, this);
 
         SunshineSyncUtils.initialize(this);
 
-    }
-
-    /**
-     * Uses the URI scheme for showing a location found on a map in conjunction with
-     * an implicit Intent. This super-handy Intent is detailed in the "Common Intents" page of
-     * Android's developer site:
-     *
-     * @see "http://developer.android.com/guide/components/intents-common.html#Maps"
-     * <p>
-     * Protip: Hold Command on Mac or Control on Windows and click that link to automagically
-     * open the Common Intents page
-     */
-    private void openPreferredLocationInMap() {
-        double[] coords = SunshinePreferences.getLocationCoordinates(this);
-        String posLat = Double.toString(coords[0]);
-        String posLong = Double.toString(coords[1]);
-        Uri geoLocation = Uri.parse("geo:" + posLat + "," + posLong);
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(geoLocation);
-
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        } else {
-            Log.d(TAG, "Couldn't call " + geoLocation.toString() + ", no receiving apps installed!");
-        }
     }
 
     /**
@@ -217,26 +211,31 @@ public class MainActivity extends AppCompatActivity implements
 
         switch (loaderId) {
 
-            case ID_FORECAST_LOADER:
+            case ID_HOURLY_FORECAST_LOADER:
                 /* URI for all rows of weather data in our weather table */
-                Uri forecastQueryUri = WeatherContract.WeatherEntry.CONTENT_URI;
+                Uri hourlyForecastQueryUri = HourlyWeatherContract.HourlyWeatherEntry.CONTENT_URI;
                 /* Sort order: Ascending by date */
-                String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
+                String sortOrder = HourlyWeatherContract.HourlyWeatherEntry.COLUMN_DATE + " ASC";
 
-                //String selection = WeatherContract.WeatherEntry.getSqlSelectForTodayOnwards() + " AND " + WeatherContract.WeatherEntry.COLUMN_CITY_ID + "=?";
-                String selection = WeatherContract.WeatherEntry.COLUMN_CITY_ID + "=?";
+                String selection = WeatherContract.WeatherEntry.getSqlSelectForTodayOnwards();
                 String[] selectionArgs = new String[]{String.valueOf(SunshinePreferences.getCityId(this))};
 
-                Cursor c = getContentResolver().query(forecastQueryUri, MAIN_FORECAST_PROJECTION, null, null, null);
+                Cursor cursor = getContentResolver().query(
+                        hourlyForecastQueryUri,
+                        HOURLY_WEATHER_DETAIL_PROJECTION,
+                        null,
+                        null,
+                        sortOrder);
 
-                Log.e("COUNT !", "" + c.getCount());
+                Log.e("LOADING CURSOR ", "Count " + cursor.getCount());
 
                 return new CursorLoader(this,
-                        forecastQueryUri,
-                        MAIN_FORECAST_PROJECTION,
-                        selection,
+                        hourlyForecastQueryUri,
+                        HOURLY_WEATHER_DETAIL_PROJECTION,
+                        HourlyWeatherContract.HourlyWeatherEntry.COLUMN_CITY_ID + "=?",
                         selectionArgs,
                         sortOrder);
+
             default:
                 throw new RuntimeException("Loader Not Implemented: " + loaderId);
         }
@@ -257,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
 
-        mForecastAdapter.swapCursor(data);
+        mHourlyForecastAdapter.swapCursor(data);
         if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
         mRecyclerView.smoothScrollToPosition(mPosition);
         if (data.getCount() != 0) showWeatherDataView();
@@ -275,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements
          * Since this Loader's data is now invalid, we need to clear the Adapter that is
          * displaying the data.
          */
-        mForecastAdapter.swapCursor(null);
+        mHourlyForecastAdapter.swapCursor(null);
     }
 
     /**
@@ -286,10 +285,10 @@ public class MainActivity extends AppCompatActivity implements
      */
     @Override
     public void onClick(long date) {
-        Intent weatherHourlyIntent = new Intent(MainActivity.this, HourlyActivity.class);
+        Intent weatherDetailIntent = new Intent(this, DetailActivity.class);
         Uri uriForDateClicked = WeatherContract.WeatherEntry.buildWeatherUriWithDate(date);
-        weatherHourlyIntent.setData(uriForDateClicked);
-        startActivity(weatherHourlyIntent);
+        weatherDetailIntent.setData(uriForDateClicked);
+        startActivity(weatherDetailIntent);
     }
 
     /**
@@ -367,6 +366,8 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public static void reload(){
-        mSupportLoaderManager.restartLoader(ID_FORECAST_LOADER, null, mLoaderCallbacks);
+        mSupportLoaderManager.restartLoader(ID_HOURLY_FORECAST_LOADER, null, mLoaderCallbacks);
     }
+
+
 }

@@ -18,9 +18,12 @@ package com.example.android.sunshine.sync;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
 import android.text.format.DateUtils;
 import android.util.Log;
 
+import com.example.android.sunshine.data.CurrentWeatherContract;
+import com.example.android.sunshine.data.HourlyWeatherContract;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.utilities.NetworkUtils;
@@ -28,8 +31,11 @@ import com.example.android.sunshine.utilities.NotificationUtils;
 import com.example.android.sunshine.utilities.OpenWeatherJsonUtils;
 
 import java.net.URL;
+import java.util.ArrayList;
 
 public class SunshineSyncTask {
+
+    public final static String LOG_TAG = SunshineSyncTask.class.getSimpleName().toString();
 
     /**
      * Performs the network request for updated weather, parses the JSON from that request, and
@@ -52,9 +58,12 @@ public class SunshineSyncTask {
             /* Use the URL to retrieve the JSON */
             String jsonWeatherResponse = NetworkUtils.getResponseFromHttpUrl(weatherRequestUrl);
 
-            /* Parse the JSON into a list of weather values */
-            ContentValues[] weatherValues = OpenWeatherJsonUtils
+            ArrayList<ContentValues[]> weatherArray = OpenWeatherJsonUtils
                     .getWeatherContentValuesFromJson(context, jsonWeatherResponse);
+            /* Parse the JSON into a list of weather values */
+            ContentValues[] currentWeatherValues = weatherArray.get(0);
+            ContentValues[] dailyWeatherValues = weatherArray.get(1);
+            ContentValues[] hourlyWeatherValues = weatherArray.get(2);
 
             /*
              * In cases where our JSON contained an error code, getWeatherContentValuesFromJson
@@ -62,20 +71,45 @@ public class SunshineSyncTask {
              * NullPointerExceptions being thrown. We also have no reason to insert fresh data if
              * there isn't any to insert.
              */
-            if (weatherValues != null && weatherValues.length != 0) {
+            if ((currentWeatherValues != null && currentWeatherValues.length != 0) ||
+            (dailyWeatherValues != null && dailyWeatherValues.length != 0) ||
+            (hourlyWeatherValues != null && hourlyWeatherValues.length != 0)){
                 /* Get a handle on the ContentResolver to delete and insert data */
                 ContentResolver sunshineContentResolver = context.getContentResolver();
 
-                /* Delete old weather data because we don't need to keep multiple days' data */
-                sunshineContentResolver.delete(
+                /* Delete old weather data only if we are going to update forecast for a city already present in database
+                *  so DELETE from table_name WHERE city_id = location_id
+                *   for ease I'm storing location_id in Shared Preference, so I can get it from there.
+                * */
+                String cityId = String.valueOf(SunshinePreferences.getCityId(context));
+                Log.e("Sync Task", "City id " + cityId);
+
+                String[] selectionArgs = new String[]{cityId};
+
+                Uri[] contentUris = new Uri[]{CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI,
                         WeatherContract.WeatherEntry.CONTENT_URI,
-                        null,
-                        null);
+                        HourlyWeatherContract.HourlyWeatherEntry.CONTENT_URI};
+                String[] selectionUris = new String[]{CurrentWeatherContract.CurrentWeatherEntry.COLUMN_CITY_ID,
+                        WeatherContract.WeatherEntry.COLUMN_CITY_ID,
+                        HourlyWeatherContract.HourlyWeatherEntry.COLUMN_CITY_ID};
+
+
+
+
+                for(int i = 0; i < contentUris.length; i++) {
+                    long delRows = sunshineContentResolver.delete(
+                            contentUris[i],
+                            selectionUris[i] + "=?",
+                            selectionArgs);
 
                 /* Insert our new weather data into Sunshine's ContentProvider */
-                sunshineContentResolver.bulkInsert(
-                        WeatherContract.WeatherEntry.CONTENT_URI,
-                        weatherValues);
+                    long insRows = sunshineContentResolver.bulkInsert(
+                            contentUris[i],
+                            weatherArray.get(i));
+
+                    //Log.e(LOG_TAG, "" + contentUris[i] + " Deleted # rows: " + delRows +  ". Inserted # rows: " + insRows);
+                }
+
 
                 /*
                  * Finally, after we insert data into the ContentProvider, determine whether or not
@@ -112,6 +146,7 @@ public class SunshineSyncTask {
         } catch (Exception e) {
             /* Server probably invalid */
             e.printStackTrace();
+            Log.e(LOG_TAG, "Failed to sync weather: " + e);
         }
     }
 }

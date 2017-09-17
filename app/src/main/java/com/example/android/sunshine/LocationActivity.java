@@ -8,6 +8,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -16,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.example.android.sunshine.data.LocationsContract;
+import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
 
 import java.util.ArrayList;
@@ -35,12 +37,15 @@ public class LocationActivity extends AppCompatActivity implements
             LocationsContract.LocationsEntry._ID,
             LocationsContract.LocationsEntry.COLUMN_NAME,
             LocationsContract.LocationsEntry.COLUMN_LATITUDE,
-            LocationsContract.LocationsEntry.COLUMN_LONGITUDE
+            LocationsContract.LocationsEntry.COLUMN_LONGITUDE,
+            LocationsContract.LocationsEntry.COLUMN_PLACEID
     };
 
+    public static final int INDEX_ID = 0;
     public static final int INDEX_CITY_NAME = 1;
     public static final int INDEX_CITY_LATITUDE = 2;
     public static final int INDEX_CITY_LONGITUDE = 3;
+    public static final int INDEX_PLACE_ID = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +65,7 @@ public class LocationActivity extends AppCompatActivity implements
                     case R.id.button_add_city:
                         Intent launchAutoComplete = new Intent(getApplicationContext(), AutoCompleteActivity.class);
                         startActivity(launchAutoComplete);
+                        Log.e("PREF CITY ID?", "" + SunshinePreferences.getCityId(getApplicationContext()));
                         break;
                     default:
                         break;
@@ -105,6 +111,7 @@ public class LocationActivity extends AppCompatActivity implements
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+
         mLocationAdapter.swapCursor(null);
     }
 
@@ -112,4 +119,5 @@ public class LocationActivity extends AppCompatActivity implements
     public void onClick() {
 
     }
+
 }

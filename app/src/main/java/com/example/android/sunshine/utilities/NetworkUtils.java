@@ -15,10 +15,16 @@
  */
 package com.example.android.sunshine.utilities;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.example.android.sunshine.AutoCompleteActivity;
+import com.example.android.sunshine.data.LocationsContract;
 import com.example.android.sunshine.data.SunshinePreferences;
 
 import java.io.IOException;
@@ -80,7 +86,7 @@ public final class NetworkUtils {
     private static final String LON_PARAM = "lon";
 
     private static final String EXCLUDE_PARAM = "exclude";
-    private static final String exclude = "currently,minutely,hourly,alerts,flags";
+    private static final String exclude = "minutely,alerts,flags";
 
     private static final String LANG_PARAM = "lang";
     private static final String language = "it";
@@ -118,6 +124,30 @@ public final class NetworkUtils {
             double[] coords = SunshinePreferences.getPreferredLocationCoords(context);
             double latitude = coords[0];
             double longitude = coords[1];
+            String city = SunshinePreferences.getCityName(context);
+            String placeId = SunshinePreferences.getPlaceId(context);
+            // Creating first table entry for LOCATION table to store it in preferred location.
+            ContentValues values = new ContentValues();
+
+            values.put(LocationsContract.LocationsEntry.COLUMN_NAME, city);
+            values.put(LocationsContract.LocationsEntry.COLUMN_LATITUDE, latitude);
+            values.put(LocationsContract.LocationsEntry.COLUMN_LONGITUDE, longitude);
+            values.put(LocationsContract.LocationsEntry.COLUMN_PLACEID, placeId);
+
+            Uri newUri = context.getContentResolver().insert(LocationsContract.LocationsEntry.CONTENT_URI, values);
+
+            if(newUri==null){
+                Toast notSucceded = Toast.makeText(context, "Failed to add city", Toast.LENGTH_SHORT);
+                notSucceded.show();
+            } else {
+                // Get the Location Table ID for this city and store it in Shared preference in order to be
+                // used whenever Weather table creates the data for a given city to store its city reference under
+                // CITY_ID
+                long cityId = ContentUris.parseId(newUri);
+                //Set City Id to relate WEATHER table entry to this given preferred city.
+                SunshinePreferences.setCityId(context, cityId);
+            }
+
             return buildUrlWithLatitudeLongitude(latitude, longitude);
         }
 
