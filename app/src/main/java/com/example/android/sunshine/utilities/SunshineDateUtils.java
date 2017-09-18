@@ -19,6 +19,7 @@ import android.content.Context;
 import android.icu.text.TimeZoneFormat;
 import android.icu.text.TimeZoneNames;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.util.TimeUtils;
 
 import com.example.android.sunshine.R;
@@ -62,43 +63,23 @@ public final class SunshineDateUtils {
      */
     public static long getNormalizedUtcDateForToday(long utcNowMillis, String tz) {
 
-        /*
-         * This number represents the number of milliseconds that have elapsed since January
-         * 1st, 1970 at midnight in the GMT time zone.
-         */
-        //long utcNowMillis = System.currentTimeMillis();
-
-
-        /*
-         * This TimeZone represents the device's current time zone. It provides us with a means
-         * of acquiring the offset for local time from a UTC time stamp.
-         */
-        TimeZone currentTimeZone = TimeZone.getTimeZone(tz);
-
-        /*
-         * The getOffset method returns the number of milliseconds to add to UTC time to get the
-         * elapsed time since the epoch for our current time zone. We pass the current UTC time
-         * into this method so it can determine changes to account for daylight savings time.
-         */
-        long gmtOffsetMillis = currentTimeZone.getOffset(utcNowMillis);
-
-        /*
+         /*
          * UTC time is measured in milliseconds from January 1, 1970 at midnight from the GMT
          * time zone. Depending on your time zone, the time since January 1, 1970 at midnight (GMT)
          * will be greater or smaller. This variable represents the number of milliseconds since
          * January 1, 1970 (GMT) time.
          */
-        long timeSinceEpochLocalTimeMillis = utcNowMillis + gmtOffsetMillis;
 
-        /* This method simply converts milliseconds to days, disregarding any fractional days */
-        long daysSinceEpochLocal = TimeUnit.MILLISECONDS.toDays(timeSinceEpochLocalTimeMillis);
+        TimeZone forecastTimeZone = TimeZone.getTimeZone(tz);
+        TimeZone localTimeZone = TimeZone.getDefault();
+        long forecastOffsetMillis = forecastTimeZone.getOffset(utcNowMillis);
+        long localOffsetMillis = localTimeZone.getOffset(utcNowMillis);
+//        long forecastOffsetH = TimeUnit.MILLISECONDS.toHours(forecastOffsetMillis);
+//        long localOffsetH = TimeUnit.MILLISECONDS.toHours(localOffsetMillis);
 
-        /*
-         * Finally, we convert back to milliseconds. This time stamp represents today's date at
-         * midnight in GMT time. We will need to account for local time zone offsets when
-         * extracting this information from the database.
-         */
-        long normalizedUtcMidnightMillis = TimeUnit.DAYS.toMillis(daysSinceEpochLocal);
+        long normalizedUtcMidnightMillis = (utcNowMillis - localOffsetMillis) + forecastOffsetMillis;
+
+        //Log.e("Divided Ms ", "Divided MS results " + (normalizedUtcMidnightMillis % DAY_IN_MILLIS));
 
         return normalizedUtcMidnightMillis;
     }
@@ -197,7 +178,8 @@ public final class SunshineDateUtils {
             isDateNormalized = true;
         }
 
-        return isDateNormalized;
+        //return isDateNormalized;
+        return true;
     }
 
     /**
@@ -350,9 +332,23 @@ public final class SunshineDateUtils {
         }
     }
 
-    public static String getNormalDate(long utc){
+    public static String getDetailDate(long utc, int viewType){
+        final int VIEW_TYPE_TODAY = 0;
+        final int VIEW_TYPE_FUTURE_DAY = 1;
+
         Date time = new Date(utc);
-        String formatted = new SimpleDateFormat("EEE dd  HH:mm", Locale.getDefault()).format(time);
+        String formatted;
+        switch(viewType) {
+            case VIEW_TYPE_TODAY:
+                formatted = new SimpleDateFormat("EEE dd  HH:mm", Locale.getDefault()).format(time);
+                break;
+            case VIEW_TYPE_FUTURE_DAY:
+                formatted = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(time);
+                break;
+            default:
+                formatted = new SimpleDateFormat("EEE dd  HH:mm", Locale.getDefault()).format(time);
+        }
+
         return formatted;
     }
 

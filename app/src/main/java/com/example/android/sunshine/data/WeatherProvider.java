@@ -51,6 +51,7 @@ public class WeatherProvider extends ContentProvider {
     public static final int CODE_SINGLE_LOCATION = 201;
     public static final int CODE_CURRENT_FORECAST = 300;
     public static final int CODE_HOURLY_FORECAST = 400;
+    public static final int CODE_HOURLY_FORECAST_WITH_DATE = 500;
 
 
     /*
@@ -83,6 +84,7 @@ public class WeatherProvider extends ContentProvider {
         matcher.addURI(authority, CurrentWeatherContract.PATH_CURRENT_FORECAST, CODE_CURRENT_FORECAST);
 
         matcher.addURI(authority, HourlyWeatherContract.PATH_HOURLY_FORECAST, CODE_HOURLY_FORECAST);
+        matcher.addURI(authority, HourlyWeatherContract.PATH_HOURLY_FORECAST + "/#", CODE_HOURLY_FORECAST_WITH_DATE);
 
         return matcher;
     }
@@ -125,11 +127,11 @@ public class WeatherProvider extends ContentProvider {
                 db.beginTransaction();
                 try {
                     for (ContentValues value : values) {
-                        long weatherDate =
-                                value.getAsLong(WeatherContract.WeatherEntry.COLUMN_DATE);
-                        if (!SunshineDateUtils.isDateNormalized(weatherDate)) {
-                            throw new IllegalArgumentException("Date must be normalized to insert");
-                        }
+//                        long weatherDate =
+//                                value.getAsLong(WeatherContract.WeatherEntry.COLUMN_DATE);
+//                        if (!SunshineDateUtils.isDateNormalized(weatherDate)) {
+//                            throw new IllegalArgumentException("Date must be normalized to insert");
+//                        }
 
                         long _id = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, value);
                         if (_id != -1) {
@@ -151,11 +153,6 @@ public class WeatherProvider extends ContentProvider {
                 db.beginTransaction();
                 try {
                     for (ContentValues value : values) {
-                        long weatherDate =
-                                value.getAsLong(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_DATE);
-                        if (!SunshineDateUtils.isDateNormalized(weatherDate)) {
-                            throw new IllegalArgumentException("Date must be normalized to insert");
-                        }
 
                         long _id = db.insert(CurrentWeatherContract.CurrentWeatherEntry.TABLE_NAME, null, value);
                         if (_id != -1) {
@@ -264,11 +261,15 @@ public class WeatherProvider extends ContentProvider {
             }
 
             case CODE_WEATHER: {
+                String cityId = String.valueOf(SunshinePreferences.getCityId(getContext()));
+                String select = WeatherContract.WeatherEntry.COLUMN_CITY_ID + "=?";
+                String[] selectArgs = new String[]{cityId};
+
                 cursor = mOpenHelper.getReadableDatabase().query(
                         WeatherContract.WeatherEntry.TABLE_NAME,
                         projection,
-                        selection,
-                        selectionArgs,
+                        select,
+                        selectArgs,
                         null,
                         null,
                         sortOrder);
@@ -317,6 +318,25 @@ public class WeatherProvider extends ContentProvider {
                         projection,
                         selection,
                         selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            case CODE_HOURLY_FORECAST_WITH_DATE:
+                String normalizedUtcDateString = uri.getLastPathSegment();
+                String cityId = String.valueOf(SunshinePreferences.getCityId(getContext()));
+                long normalizedUtcDate = Long.valueOf(normalizedUtcDateString);
+                long endDayDate = normalizedUtcDate + SunshineDateUtils.DAY_IN_MILLIS;
+                String endDayDateString = String.valueOf(endDayDate);
+
+                String[] selectionArguments = new String[]{cityId, normalizedUtcDateString, endDayDateString};
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        HourlyWeatherContract.HourlyWeatherEntry.TABLE_NAME,
+                        projection,
+                        HourlyWeatherContract.HourlyWeatherEntry.COLUMN_CITY_ID + "=?" +
+                        " AND " + HourlyWeatherContract.HourlyWeatherEntry.COLUMN_DATE + " >= ? " +
+                                " AND " + HourlyWeatherContract.HourlyWeatherEntry.COLUMN_DATE + " < ?",
+                        selectionArguments,
                         null,
                         null,
                         sortOrder);

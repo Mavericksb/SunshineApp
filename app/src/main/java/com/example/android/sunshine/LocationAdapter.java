@@ -118,7 +118,7 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener {
         SunshinePreferences.setLocationDetails(mContext, latitude, longitude, city, placeId);
         SunshineSyncUtils.startImmediateSync(mContext);
         MainActivity.reload();
-        HourlyActivity.reload();
+        //HourlyActivity.reload();
         ((Activity) mContext).finish();
     }
 

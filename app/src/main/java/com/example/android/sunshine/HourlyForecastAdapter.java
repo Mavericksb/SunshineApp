@@ -167,7 +167,7 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
         long dateInMillis = mCursor.getLong(HourlyActivity.INDEX_WEATHER_DATE);
          /* Get human readable string using our utility method */
         //String dateString = SunshineDateUtils.getFriendlyDateString(mContext, dateInMillis, false);
-        String dateString = SunshineDateUtils.getNormalDate(dateInMillis);
+        String dateString = SunshineDateUtils.getDetailDate(dateInMillis, viewType);
 
          /* Display friendly date string */
         hourlyForecastAdapterViewHolder.dateView.setText(dateString);

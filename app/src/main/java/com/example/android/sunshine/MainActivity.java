@@ -234,8 +234,8 @@ public class MainActivity extends AppCompatActivity implements
                 return new CursorLoader(this,
                         forecastQueryUri,
                         MAIN_FORECAST_PROJECTION,
-                        selection,
-                        selectionArgs,
+                        null, //selection,
+                        null, //selectionArgs,
                         sortOrder);
             default:
                 throw new RuntimeException("Loader Not Implemented: " + loaderId);
@@ -287,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onClick(long date) {
         Intent weatherHourlyIntent = new Intent(MainActivity.this, HourlyActivity.class);
-        Uri uriForDateClicked = WeatherContract.WeatherEntry.buildWeatherUriWithDate(date);
+        Uri uriForDateClicked = HourlyWeatherContract.HourlyWeatherEntry.buildWeatherUriWithDate(date);
         weatherHourlyIntent.setData(uriForDateClicked);
         startActivity(weatherHourlyIntent);
     }

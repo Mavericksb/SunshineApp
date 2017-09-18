@@ -88,6 +88,9 @@ public final class NetworkUtils {
     private static final String EXCLUDE_PARAM = "exclude";
     private static final String exclude = "minutely,alerts,flags";
 
+    private static final String EXTEND_PARAM = "extend";
+    private static final String extend = "hourly";
+
     private static final String LANG_PARAM = "lang";
     private static final String language = "it";
 
@@ -166,6 +169,7 @@ public final class NetworkUtils {
     private static URL buildUrlWithLatitudeLongitude(Double latitude, Double longitude) {
         String URL_WITH_COORDS = DYNAMIC_WEATHER_URL + String.valueOf(latitude) + "," + String.valueOf(longitude);
         Uri weatherQueryUri = Uri.parse(URL_WITH_COORDS).buildUpon()
+                .appendQueryParameter(EXTEND_PARAM, extend)
                 .appendQueryParameter(EXCLUDE_PARAM, exclude)
                 .appendQueryParameter(LANG_PARAM, language)
                 .appendQueryParameter(UNITS_PARAM, units)

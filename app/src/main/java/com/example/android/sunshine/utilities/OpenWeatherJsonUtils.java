@@ -341,10 +341,6 @@ public final class OpenWeatherJsonUtils {
             /* Get the JSON object representing the day */
             JSONObject dayForecast = jsonDailyWeatherArray.getJSONObject(i);
 
-            /*
-             * We ignore all the datetime values embedded in the JSON and assume that
-             * the values are returned in-order by day (which is not guaranteed to be correct).
-             */
             dateTimeMillis = SunshineDateUtils.getNormalizedUtcDateForToday((dayForecast.getLong(DS_TIME)*1000), mTimeZone);
 
             pressure = dayForecast.getDouble(DS_PRESSURE);

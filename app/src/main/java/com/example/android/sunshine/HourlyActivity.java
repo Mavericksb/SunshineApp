@@ -36,6 +36,7 @@ import android.view.View;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.android.sunshine.data.HourlyWeatherContract;
 import com.example.android.sunshine.data.SunshinePreferences;
@@ -105,12 +106,17 @@ public class HourlyActivity extends AppCompatActivity implements
     private static LoaderManager mSupportLoaderManager;
     private static LoaderManager.LoaderCallbacks mLoaderCallbacks;
 
+    private Uri mUri;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hourly);
         getSupportActionBar().setElevation(0f);
+
+        mUri = getIntent().getData();
+        if (mUri == null) throw new NullPointerException("URI for DetailActivity cannot be null");
 
         ImageView img_animation = (ImageView) findViewById(R.id.cloudView_hourly);
 
@@ -212,28 +218,15 @@ public class HourlyActivity extends AppCompatActivity implements
         switch (loaderId) {
 
             case ID_HOURLY_FORECAST_LOADER:
-                /* URI for all rows of weather data in our weather table */
-                Uri hourlyForecastQueryUri = HourlyWeatherContract.HourlyWeatherEntry.CONTENT_URI;
+
                 /* Sort order: Ascending by date */
                 String sortOrder = HourlyWeatherContract.HourlyWeatherEntry.COLUMN_DATE + " ASC";
 
-                String selection = WeatherContract.WeatherEntry.getSqlSelectForTodayOnwards();
-                String[] selectionArgs = new String[]{String.valueOf(SunshinePreferences.getCityId(this))};
-
-                Cursor cursor = getContentResolver().query(
-                        hourlyForecastQueryUri,
-                        HOURLY_WEATHER_DETAIL_PROJECTION,
-                        null,
-                        null,
-                        sortOrder);
-
-                Log.e("LOADING CURSOR ", "Count " + cursor.getCount());
-
                 return new CursorLoader(this,
-                        hourlyForecastQueryUri,
+                        mUri,
                         HOURLY_WEATHER_DETAIL_PROJECTION,
-                        HourlyWeatherContract.HourlyWeatherEntry.COLUMN_CITY_ID + "=?",
-                        selectionArgs,
+                        null, //HourlyWeatherContract.HourlyWeatherEntry.COLUMN_CITY_ID + "=?",
+                        null, //selectionArgs,
                         sortOrder);
 
             default:
@@ -260,6 +253,10 @@ public class HourlyActivity extends AppCompatActivity implements
         if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
         mRecyclerView.smoothScrollToPosition(mPosition);
         if (data.getCount() != 0) showWeatherDataView();
+        else{
+            Toast noData = Toast.makeText(this, "There is no forecast for this day", Toast.LENGTH_SHORT);
+            noData.show();
+        }
     }
 
     /**
