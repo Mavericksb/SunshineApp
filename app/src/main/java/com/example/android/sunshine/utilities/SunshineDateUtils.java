@@ -332,7 +332,7 @@ public final class SunshineDateUtils {
         }
     }
 
-    public static String getDetailDate(long utc, int viewType){
+    public static String getHourlyDetailDate(long utc, int viewType){
         final int VIEW_TYPE_TODAY = 0;
         final int VIEW_TYPE_FUTURE_DAY = 1;
 
@@ -347,6 +347,27 @@ public final class SunshineDateUtils {
                 break;
             default:
                 formatted = new SimpleDateFormat("EEE dd  HH:mm", Locale.getDefault()).format(time);
+        }
+
+        return formatted;
+    }
+
+    public static String getDailyDetailDate(Context context, long utc, int viewType){
+        final int VIEW_TYPE_TODAY = 0;
+        final int VIEW_TYPE_FUTURE_DAY = 1;
+
+        Date time = new Date(utc);
+        String formatted;
+        switch(viewType) {
+            case VIEW_TYPE_TODAY:
+                String format = new SimpleDateFormat(" EEEE dd", Locale.getDefault()).format(time);
+                formatted = context.getString(R.string.today) + format;
+                break;
+            case VIEW_TYPE_FUTURE_DAY:
+                formatted = new SimpleDateFormat("EEEE", Locale.getDefault()).format(time);
+                break;
+            default:
+                formatted = new SimpleDateFormat("EEE dd", Locale.getDefault()).format(time);
         }
 
         return formatted;

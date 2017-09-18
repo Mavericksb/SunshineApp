@@ -169,7 +169,7 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
         long dateInMillis = mCursor.getLong(MainActivity.INDEX_WEATHER_DATE);
          /* Get human readable string using our utility method */
         //String dateString = SunshineDateUtils.getFriendlyDateString(mContext, dateInMillis, false);
-        String dateString = SunshineDateUtils.getDetailDate(dateInMillis, viewType);
+        String dateString = SunshineDateUtils.getDailyDetailDate(mContext, dateInMillis, viewType);
 
          /* Display friendly date string */
         forecastAdapterViewHolder.dateView.setText(dateString);

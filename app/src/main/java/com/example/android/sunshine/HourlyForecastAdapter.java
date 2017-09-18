@@ -104,7 +104,7 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
             }
 
             case VIEW_TYPE_FUTURE_DAY: {
-                layoutId = R.layout.forecast_list_item;
+                layoutId = R.layout.list_item_hourly_forecast;
                 break;
             }
 
@@ -167,7 +167,7 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
         long dateInMillis = mCursor.getLong(HourlyActivity.INDEX_WEATHER_DATE);
          /* Get human readable string using our utility method */
         //String dateString = SunshineDateUtils.getFriendlyDateString(mContext, dateInMillis, false);
-        String dateString = SunshineDateUtils.getDetailDate(dateInMillis, viewType);
+        String dateString = SunshineDateUtils.getHourlyDetailDate(dateInMillis, viewType);
 
          /* Display friendly date string */
         hourlyForecastAdapterViewHolder.dateView.setText(dateString);
@@ -187,36 +187,20 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
          * High (max) temperature *
          **************************/
          /* Read high temperature from the cursor (in degrees celsius) */
-        double highInCelsius = mCursor.getDouble(HourlyActivity.INDEX_WEATHER_TEMPERATURE);
+        double temperature = mCursor.getDouble(HourlyActivity.INDEX_WEATHER_TEMPERATURE);
          /*
           * If the user's preference for weather is fahrenheit, formatTemperature will convert
           * the temperature. This method will also append either °C or °F to the temperature
           * String.
           */
-        String highString = SunshineWeatherUtils.formatTemperature(mContext, highInCelsius);
+        String tempString = SunshineWeatherUtils.formatTemperature(mContext, temperature);
          /* Create the accessibility (a11y) String from the weather description */
-        String highA11y = mContext.getString(R.string.a11y_high_temp, highString);
+        String highA11y = mContext.getString(R.string.a11y_temp, tempString);
 
          /* Set the text and content description (for accessibility purposes) */
-        hourlyForecastAdapterViewHolder.highTempView.setText(highString);
-        hourlyForecastAdapterViewHolder.highTempView.setContentDescription(highA11y);
+        hourlyForecastAdapterViewHolder.tempView.setText(tempString);
+        hourlyForecastAdapterViewHolder.tempView.setContentDescription(highA11y);
 
-        /*************************
-         * Low (min) temperature *
-         *************************/
-         /* Read low temperature from the cursor (in degrees celsius) */
-        double lowInCelsius = mCursor.getDouble(HourlyActivity.INDEX_WEATHER_TEMPERATURE);
-         /*
-          * If the user's preference for weather is fahrenheit, formatTemperature will convert
-          * the temperature. This method will also append either °C or °F to the temperature
-          * String.
-          */
-        String lowString = SunshineWeatherUtils.formatTemperature(mContext, lowInCelsius);
-        String lowA11y = mContext.getString(R.string.a11y_low_temp, lowString);
-
-         /* Set the text and content description (for accessibility purposes) */
-        hourlyForecastAdapterViewHolder.lowTempView.setText(lowString);
-        hourlyForecastAdapterViewHolder.lowTempView.setContentDescription(lowA11y);
     }
 
     /**
@@ -273,17 +257,17 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
 
         final TextView dateView;
         final TextView descriptionView;
-        final TextView highTempView;
-        final TextView lowTempView;
+        final TextView tempView;
+
 
         HourlyForecastAdapterViewHolder(View view) {
             super(view);
 
-            iconView = (ImageView) view.findViewById(R.id.weather_icon);
-            dateView = (TextView) view.findViewById(R.id.date);
-            descriptionView = (TextView) view.findViewById(R.id.weather_description);
-            highTempView = (TextView) view.findViewById(R.id.high_temperature);
-            lowTempView = (TextView) view.findViewById(R.id.low_temperature);
+            iconView = (ImageView) view.findViewById(R.id.hourly_weather_icon);
+            dateView = (TextView) view.findViewById(R.id.hourly_date);
+            descriptionView = (TextView) view.findViewById(R.id.hourly_weather_description);
+            tempView = (TextView) view.findViewById(R.id.hourly_temperature);
+
 
             view.setOnClickListener(this);
         }
