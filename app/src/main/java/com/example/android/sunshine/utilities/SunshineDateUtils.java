@@ -24,6 +24,8 @@ import android.util.TimeUtils;
 
 import com.example.android.sunshine.R;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -349,7 +351,7 @@ public final class SunshineDateUtils {
                 formatted = new SimpleDateFormat("EEE dd  HH:mm", Locale.getDefault()).format(time);
         }
 
-        return formatted;
+        return WordUtils.capitalize(formatted);
     }
 
     public static String getDailyDetailDate(Context context, long utc, int viewType){
@@ -370,7 +372,7 @@ public final class SunshineDateUtils {
                 formatted = new SimpleDateFormat("EEE dd", Locale.getDefault()).format(time);
         }
 
-        return formatted;
+        return WordUtils.capitalize(formatted);
     }
 
 }

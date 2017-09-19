@@ -18,10 +18,16 @@ package com.example.android.sunshine;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.v4.animation.ValueAnimatorCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -196,11 +202,13 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
           * String.
           */
         String highString = SunshineWeatherUtils.formatTemperature(mContext, highInCelsius);
+        Spannable highSpan = new SpannableString(highString);
+        highSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.high_temp_text)), highSpan.length()-2, highSpan.length()-1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
          /* Create the accessibility (a11y) String from the weather description */
         String highA11y = mContext.getString(R.string.a11y_high_temp, highString);
 
          /* Set the text and content description (for accessibility purposes) */
-        forecastAdapterViewHolder.highTempView.setText(highString);
+        forecastAdapterViewHolder.highTempView.setText(highSpan);
         forecastAdapterViewHolder.highTempView.setContentDescription(highA11y);
 
         /*************************
@@ -208,16 +216,19 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
          *************************/
          /* Read low temperature from the cursor (in degrees celsius) */
         double lowInCelsius = mCursor.getDouble(MainActivity.INDEX_WEATHER_MIN_TEMP);
+
          /*
           * If the user's preference for weather is fahrenheit, formatTemperature will convert
           * the temperature. This method will also append either °C or °F to the temperature
           * String.
           */
         String lowString = SunshineWeatherUtils.formatTemperature(mContext, lowInCelsius);
+        Spannable lowSpan = new SpannableString(lowString);
+        lowSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.low_temp_text)), lowSpan.length()-2, lowSpan.length()-1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
         String lowA11y = mContext.getString(R.string.a11y_low_temp, lowString);
 
          /* Set the text and content description (for accessibility purposes) */
-        forecastAdapterViewHolder.lowTempView.setText(lowString);
+        forecastAdapterViewHolder.lowTempView.setText(lowSpan);
         forecastAdapterViewHolder.lowTempView.setContentDescription(lowA11y);
     }
 

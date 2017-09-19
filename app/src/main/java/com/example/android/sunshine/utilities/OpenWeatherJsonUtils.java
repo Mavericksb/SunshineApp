@@ -190,7 +190,7 @@ public final class OpenWeatherJsonUtils {
         long cityId;
 
 
-        dateTimeMillis = SunshineDateUtils.normalizeDate(dayForecast.getLong(DS_TIME));
+        dateTimeMillis = SunshineDateUtils.getNormalizedUtcDateForToday((dayForecast.getLong(DS_TIME)*1000), mTimeZone);
 
         pressure = dayForecast.getDouble(DS_PRESSURE);
         humidity = (dayForecast.getDouble(DS_HUMIDITY)) * 100;
@@ -259,7 +259,7 @@ public final class OpenWeatherJsonUtils {
              * We ignore all the datetime values embedded in the JSON and assume that
              * the values are returned in-order by day (which is not guaranteed to be correct).
              */
-            dateTimeMillis = SunshineDateUtils.getNormalizedHourlyUtcDate((dayForecast.getLong(DS_TIME)*1000), mTimeZone); //  + SunshineDateUtils.DAY_IN_MILLIS * i;
+            dateTimeMillis = SunshineDateUtils.getNormalizedUtcDateForToday((dayForecast.getLong(DS_TIME)*1000), mTimeZone);
 
             pressure = dayForecast.getDouble(DS_PRESSURE);
             humidity = (dayForecast.getDouble(DS_HUMIDITY)) * 100;

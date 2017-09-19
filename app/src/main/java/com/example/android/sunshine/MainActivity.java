@@ -85,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements
     private static LoaderManager mSupportLoaderManager;
     private static LoaderManager.LoaderCallbacks mLoaderCallbacks;
 
+    private static ImageAnimator mImageAnimator;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,17 +94,26 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_forecast);
         getSupportActionBar().setElevation(0f);
 
-            ImageView img_animation = (ImageView) findViewById(R.id.cloudView);
 
-            TranslateAnimation animation = new TranslateAnimation(1200.0f, -1200.0f,
-                    0.0f, 0.0f);          //  new TranslateAnimation(xFrom,xTo, yFrom,yTo)
-            animation.setDuration(35000);  // animation duration
-            animation.setRepeatCount(ValueAnimator.INFINITE);  // animation repeat count
-            animation.setRepeatMode(1);   // repeat animation (left to right, right to left )
-            //animation.setFillAfter(true);
+        ImageView background = (ImageView) findViewById(R.id.cloudView);
+        ImageView foreground = (ImageView) findViewById(R.id.cloudView2);
+
+        mImageAnimator = new ImageAnimator(this, background, foreground);
+        mImageAnimator.playAnimation();
 
 
-            img_animation.startAnimation(animation);  // start animation
+//            ImageView img_animation = (ImageView) findViewById(R.id.cloudView);
+//            img_animation.setImageAlpha(180);
+//
+//            TranslateAnimation animation = new TranslateAnimation(1200.0f, -1200.0f,
+//                    0.0f, 0.0f);          //  new TranslateAnimation(xFrom,xTo, yFrom,yTo)
+//            animation.setDuration(35000);  // animation duration
+//            animation.setRepeatCount(ValueAnimator.INFINITE);  // animation repeat count
+//            animation.setRepeatMode(1);   // repeat animation (left to right, right to left )
+//            //animation.setFillAfter(true);
+//
+//
+//            img_animation.startAnimation(animation);  // start animation
 
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
@@ -227,9 +238,7 @@ public class MainActivity extends AppCompatActivity implements
                 String selection = WeatherContract.WeatherEntry.COLUMN_CITY_ID + "=?";
                 String[] selectionArgs = new String[]{String.valueOf(SunshinePreferences.getCityId(this))};
 
-                Cursor c = getContentResolver().query(forecastQueryUri, MAIN_FORECAST_PROJECTION, null, null, null);
 
-                Log.e("COUNT !", "" + c.getCount());
 
                 return new CursorLoader(this,
                         forecastQueryUri,

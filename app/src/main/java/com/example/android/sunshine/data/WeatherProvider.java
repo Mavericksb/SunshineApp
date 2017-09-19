@@ -22,6 +22,7 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.icu.util.TimeUnit;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -326,7 +327,7 @@ public class WeatherProvider extends ContentProvider {
                 String normalizedUtcDateString = uri.getLastPathSegment();
                 String cityId = String.valueOf(SunshinePreferences.getCityId(getContext()));
                 long normalizedUtcDate = Long.valueOf(normalizedUtcDateString);
-                long endDayDate = normalizedUtcDate + SunshineDateUtils.DAY_IN_MILLIS;
+                long endDayDate = normalizedUtcDate + SunshineDateUtils.DAY_IN_MILLIS + java.util.concurrent.TimeUnit.HOURS.toMillis(1);
                 String endDayDateString = String.valueOf(endDayDate);
 
                 String[] selectionArguments = new String[]{cityId, normalizedUtcDateString, endDayDateString};
@@ -335,7 +336,7 @@ public class WeatherProvider extends ContentProvider {
                         projection,
                         HourlyWeatherContract.HourlyWeatherEntry.COLUMN_CITY_ID + "=?" +
                         " AND " + HourlyWeatherContract.HourlyWeatherEntry.COLUMN_DATE + " >= ? " +
-                                " AND " + HourlyWeatherContract.HourlyWeatherEntry.COLUMN_DATE + " < ?",
+                                " AND " + HourlyWeatherContract.HourlyWeatherEntry.COLUMN_DATE + " <= ?",
                         selectionArguments,
                         null,
                         null,

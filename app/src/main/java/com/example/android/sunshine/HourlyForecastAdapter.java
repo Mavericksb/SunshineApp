@@ -99,7 +99,7 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
         switch (viewType) {
 
             case VIEW_TYPE_TODAY: {
-                layoutId = R.layout.list_item_forecast_today;
+                layoutId = R.layout.list_item_hourly_summary;
                 break;
             }
 

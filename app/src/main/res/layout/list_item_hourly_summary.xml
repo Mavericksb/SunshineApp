@@ -35,6 +35,7 @@
     android:layout_height="wrap_content"
     android:paddingBottom="@dimen/today_forecast_list_item_vertical_padding"
     android:paddingTop="@dimen/today_forecast_list_item_vertical_padding"
+    tools:background="@android:color/black"
 >
 
 
@@ -61,22 +62,22 @@
      - ignored on devices that run an Android version less than 16.                              -
      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <TextView
-        android:id="@+id/date"
+        android:id="@+id/hourly_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:fontFamily="sans-serif"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         android:textColor="@color/white"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/weather_icon"
+        app:layout_constraintBottom_toTopOf="@+id/hourly_weather_icon"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        tools:text="Today, April 03"/>
+        tools:text="Today, April 03"
+        android:fontFamily="sans-serif-condensed"/>
 
     <!-- Icon indicating weather condition -->
     <ImageView
-        android:id="@+id/weather_icon"
+        android:id="@+id/hourly_weather_icon"
         android:layout_width="96dp"
         android:layout_height="96dp"
         android:adjustViewBounds="true"
@@ -88,40 +89,19 @@
 
     <!-- Text that describes weather condition -->
     <TextView
-        android:id="@+id/weather_description"
+        android:id="@+id/hourly_weather_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintHorizontal_bias="0.52"
-        app:layout_constraintLeft_toLeftOf="@+id/weather_icon"
-        app:layout_constraintRight_toRightOf="@+id/weather_icon"
-        app:layout_constraintTop_toBottomOf="@+id/weather_icon"
-        tools:text="Rainy"/>
+        app:layout_constraintLeft_toLeftOf="@+id/hourly_weather_icon"
+        app:layout_constraintRight_toRightOf="@+id/hourly_weather_icon"
+        app:layout_constraintTop_toBottomOf="@+id/hourly_weather_icon"
+        tools:text="Rainy"
+        android:fontFamily="sans-serif-condensed"/>
 
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-     - High temperature for today                                                                -
-     -                                                                                           -
-     - You may notice that the line android:fontFamily="sans-serif" is highlighted in yellow.    -
-     - The reason for the highlighted line is that the fontFamily attribute is not available on  -
-     - versions of Android before 16, and our minimum supported version of Android is 10. This   -
-     - particular issue won't break the app, but you should note that this attribute will be     -
-     - ignored on devices that run an Android version less than 16.                              -
-     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <TextView
-        android:id="@+id/high_temperature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-light"
-        android:textColor="@color/white"
-        android:textSize="72sp"
-        app:layout_constraintBottom_toBottomOf="@+id/weather_icon"
-        app:layout_constraintHorizontal_bias="0.45"
-        app:layout_constraintLeft_toLeftOf="@+id/horizontal_middle"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/weather_icon"
-        tools:text="19\u00b0"/>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - Low temperature for today                                                                 -
@@ -133,16 +113,18 @@
      - ignored on devices that run an Android version less than 16.                              -
      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <TextView
-        android:id="@+id/low_temperature"
+        android:id="@+id/hourly_temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-light"
+        android:fontFamily="sans-serif-condensed"
         android:textColor="@color/white"
         android:textSize="36sp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/weather_description"
-        app:layout_constraintLeft_toLeftOf="@+id/high_temperature"
-        app:layout_constraintRight_toRightOf="@+id/high_temperature"
-        tools:text="10\u00b0"/>
+        app:layout_constraintBaseline_toBaselineOf="@+id/hourly_weather_description"
+        app:layout_constraintLeft_toLeftOf="@+id/horizontal_middle"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:text="10\u00b0"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp" />
 
 
         

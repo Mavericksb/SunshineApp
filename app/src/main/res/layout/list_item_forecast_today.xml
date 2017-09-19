@@ -35,6 +35,7 @@
     android:layout_height="wrap_content"
     android:paddingBottom="@dimen/today_forecast_list_item_vertical_padding"
     android:paddingTop="@dimen/today_forecast_list_item_vertical_padding"
+    tools:background="@android:color/black"
 >
 
 
@@ -65,14 +66,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:fontFamily="sans-serif"
+        android:fontFamily="sans-serif-condensed"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/weather_icon"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        tools:text="Today, April 03"/>
+        tools:text="Today, April 03"
+        />
 
     <!-- Icon indicating weather condition -->
     <ImageView
@@ -98,7 +100,8 @@
         app:layout_constraintLeft_toLeftOf="@+id/weather_icon"
         app:layout_constraintRight_toRightOf="@+id/weather_icon"
         app:layout_constraintTop_toBottomOf="@+id/weather_icon"
-        tools:text="Rainy"/>
+        tools:text="Rainy"
+        android:fontFamily="sans-serif-condensed"/>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - High temperature for today                                                                -
@@ -115,13 +118,14 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-light"
         android:textColor="@color/white"
-        android:textSize="72sp"
+        android:textSize="48sp"
         app:layout_constraintBottom_toBottomOf="@+id/weather_icon"
         app:layout_constraintHorizontal_bias="0.45"
         app:layout_constraintLeft_toLeftOf="@+id/horizontal_middle"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@+id/weather_icon"
-        tools:text="19\u00b0"/>
+        tools:text="19\u00b0"
+        />
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - Low temperature for today                                                                 -

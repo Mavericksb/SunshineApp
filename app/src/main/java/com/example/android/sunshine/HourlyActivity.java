@@ -118,17 +118,7 @@ public class HourlyActivity extends AppCompatActivity implements
         mUri = getIntent().getData();
         if (mUri == null) throw new NullPointerException("URI for DetailActivity cannot be null");
 
-        ImageView img_animation = (ImageView) findViewById(R.id.cloudView_hourly);
 
-        TranslateAnimation animation = new TranslateAnimation(1200.0f, -1200.0f,
-                0.0f, 0.0f);          //  new TranslateAnimation(xFrom,xTo, yFrom,yTo)
-        animation.setDuration(35000);  // animation duration
-        animation.setRepeatCount(ValueAnimator.INFINITE);  // animation repeat count
-        animation.setRepeatMode(1);   // repeat animation (left to right, right to left )
-        //animation.setFillAfter(true);
-
-
-        img_animation.startAnimation(animation);  // start animation
 
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
