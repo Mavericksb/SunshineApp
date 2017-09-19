@@ -47,7 +47,7 @@
     <!-- Used to share the weather forecast on a given day from the DetailActivity -->
     <string name="action_share">Share</string>
 
-    <!-- Used to open Settings Menu from MainActivity and DetailActivity -->
+    <!-- Used to open Settings Menu from ForecastActivity and DetailActivity -->
     <string name="action_settings">Settings</string>
 
     <!--Used in overflow menu to refresh weather data-->

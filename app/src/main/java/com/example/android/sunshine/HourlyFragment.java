@@ -21,6 +21,8 @@ import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.CursorLoader;
@@ -29,10 +31,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -46,7 +50,9 @@ import com.example.android.sunshine.sync.SunshineSyncUtils;
 import com.example.android.sunshine.utilities.SunshineDateUtils;
 import com.example.android.sunshine.utilities.SunshineWeatherUtils;
 
-public class HourlyActivity extends AppCompatActivity implements
+import java.net.URI;
+
+public class HourlyFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
         HourlyForecastAdapter.HourlyForecastAdapterOnClickHandler{
 
@@ -107,15 +113,18 @@ public class HourlyActivity extends AppCompatActivity implements
     private static LoaderManager.LoaderCallbacks mLoaderCallbacks;
 
     private Uri mUri;
-
+    public static final String URI_WITH_DATE = "uri";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_hourly);
-        getSupportActionBar().setElevation(0f);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        mUri = getIntent().getData();
+        View hourlyForecastView = inflater.inflate(R.layout.activity_hourly, container, false);
+
+
+        //mUri = getIntent().getData();
+        //mUri = getActivity().getFr;
+        mUri = getArguments().getParcelable(URI_WITH_DATE);
+
         if (mUri == null) throw new NullPointerException("URI for DetailActivity cannot be null");
 
 
@@ -124,7 +133,7 @@ public class HourlyActivity extends AppCompatActivity implements
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
          * do things like set the adapter of the RecyclerView and toggle the visibility.
          */
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_hourly_forecast);
+        mRecyclerView = (RecyclerView) hourlyForecastView.findViewById(R.id.recyclerview_hourly_forecast);
 
         /*
          * The ProgressBar that will indicate to the user that we are loading data. It will be
@@ -133,7 +142,7 @@ public class HourlyActivity extends AppCompatActivity implements
          * Please note: This so called "ProgressBar" isn't a bar by default. It is more of a
          * circle. We didn't make the rules (or the names of Views), we just follow them.
          */
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_hourly_loading_indicator);
+        mLoadingIndicator = (ProgressBar) hourlyForecastView.findViewById(R.id.pb_hourly_loading_indicator);
 
         /*
          * A LinearLayoutManager is responsible for measuring and positioning item views within a
@@ -150,7 +159,7 @@ public class HourlyActivity extends AppCompatActivity implements
          * right-to-left layout.
          */
         LinearLayoutManager layoutManager =
-                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+                new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 
         /* setLayoutManager associates the LayoutManager we created above with our RecyclerView */
         mRecyclerView.setLayoutManager(layoutManager);
@@ -168,10 +177,10 @@ public class HourlyActivity extends AppCompatActivity implements
          * Although passing in "this" twice may seem strange, it is actually a sign of separation
          * of concerns, which is best programming practice. The ForecastAdapter requires an
          * Android Context (which all Activities are) as well as an onClickHandler. Since our
-         * MainActivity implements the ForecastAdapter ForecastOnClickHandler interface, "this"
+         * ForecastFragment implements the ForecastAdapter ForecastOnClickHandler interface, "this"
          * is also an instance of that type of handler.
          */
-        mHourlyForecastAdapter = new HourlyForecastAdapter(this, this);
+        mHourlyForecastAdapter = new HourlyForecastAdapter(getActivity(), this);
 
         /* Setting the adapter attaches it to the RecyclerView in our layout. */
         mRecyclerView.setAdapter(mHourlyForecastAdapter);
@@ -184,11 +193,13 @@ public class HourlyActivity extends AppCompatActivity implements
          * created and (if the activity/fragment is currently started) starts the loader. Otherwise
          * the last created loader is re-used.
          */
-        mSupportLoaderManager = getSupportLoaderManager();
+        mSupportLoaderManager = getActivity().getSupportLoaderManager();
         mLoaderCallbacks = this;
         mSupportLoaderManager.initLoader(ID_HOURLY_FORECAST_LOADER, null, this);
 
-        SunshineSyncUtils.initialize(this);
+        SunshineSyncUtils.initialize(getActivity());
+
+        return hourlyForecastView;
 
     }
 
@@ -212,7 +223,7 @@ public class HourlyActivity extends AppCompatActivity implements
                 /* Sort order: Ascending by date */
                 String sortOrder = HourlyWeatherContract.HourlyWeatherEntry.COLUMN_DATE + " ASC";
 
-                return new CursorLoader(this,
+                return new CursorLoader(getActivity(),
                         mUri,
                         HOURLY_WEATHER_DETAIL_PROJECTION,
                         null, //HourlyWeatherContract.HourlyWeatherEntry.COLUMN_CITY_ID + "=?",
@@ -244,7 +255,7 @@ public class HourlyActivity extends AppCompatActivity implements
         mRecyclerView.smoothScrollToPosition(mPosition);
         if (data.getCount() != 0) showWeatherDataView();
         else{
-            Toast noData = Toast.makeText(this, "There is no forecast for this day", Toast.LENGTH_SHORT);
+            Toast noData = Toast.makeText(getActivity(), "There is no forecast for this day", Toast.LENGTH_SHORT);
             noData.show();
         }
     }
@@ -272,7 +283,7 @@ public class HourlyActivity extends AppCompatActivity implements
      */
     @Override
     public void onClick(long date) {
-        Intent weatherDetailIntent = new Intent(this, DetailActivity.class);
+        Intent weatherDetailIntent = new Intent(getActivity(), DetailActivity.class);
         Uri uriForDateClicked = WeatherContract.WeatherEntry.buildWeatherUriWithDate(date);
         weatherDetailIntent.setData(uriForDateClicked);
         startActivity(weatherDetailIntent);
@@ -306,51 +317,7 @@ public class HourlyActivity extends AppCompatActivity implements
         mLoadingIndicator.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * This is where we inflate and set up the menu for this Activity.
-     *
-     * @param menu The options menu in which you place your items.
-     *
-     * @return You must return true for the menu to be displayed;
-     *         if you return false it will not be shown.
-     *
-     * @see #onPrepareOptionsMenu
-     * @see #onOptionsItemSelected
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        /* Use AppCompatActivity's method getMenuInflater to get a handle on the menu inflater */
-        MenuInflater inflater = getMenuInflater();
-        /* Use the inflater's inflate method to inflate our menu layout to this menu */
-        inflater.inflate(R.menu.forecast, menu);
-        /* Return true so that the menu is displayed in the Toolbar */
-        return true;
-    }
 
-    /**
-     * Callback invoked when a menu item was selected from this Activity's menu.
-     *
-     * @param item The menu item that was selected by the user
-     *
-     * @return true if you handle the menu click here, false otherwise
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
-            return true;
-        }
-        if (id == R.id.action_location) {
-            startActivity(new Intent(this, LocationActivity.class));
-            //openPreferredLocationInMap();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     public static void reload(){
         mSupportLoaderManager.restartLoader(ID_HOURLY_FORECAST_LOADER, null, mLoaderCallbacks);

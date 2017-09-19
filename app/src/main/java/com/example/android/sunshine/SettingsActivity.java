@@ -27,8 +27,8 @@ import android.view.MenuItem;
  * <p>
  * For example, when the user is in the DetailActivity and clicks the settings option in the menu,
  * and then clicks the up button, we want to navigate back to the DetailActivity. If the user
- * navigates to the SettingsActivity from the MainActivity, then we want to navigate back to the
- * MainActivity when the user clicks the up button from the SettingsActivity.
+ * navigates to the SettingsActivity from the ForecastFragment, then we want to navigate back to the
+ * ForecastFragment when the user clicks the up button from the SettingsActivity.
  */
 public class SettingsActivity extends AppCompatActivity {
 

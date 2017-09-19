@@ -137,7 +137,7 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
         /****************
          * Weather Icon *
          ****************/
-        String weatherId = mCursor.getString(HourlyActivity.INDEX_WEATHER_CONDITION_ID);
+        String weatherId = mCursor.getString(HourlyFragment.INDEX_WEATHER_CONDITION_ID);
         int weatherImageId;
 
         int viewType = getItemViewType(position);
@@ -164,7 +164,7 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
          * Weather Date *
          ****************/
          /* Read date from the cursor */
-        long dateInMillis = mCursor.getLong(HourlyActivity.INDEX_WEATHER_DATE);
+        long dateInMillis = mCursor.getLong(HourlyFragment.INDEX_WEATHER_DATE);
          /* Get human readable string using our utility method */
         //String dateString = SunshineDateUtils.getFriendlyDateString(mContext, dateInMillis, false);
         String dateString = SunshineDateUtils.getHourlyDetailDate(dateInMillis, viewType);
@@ -187,7 +187,7 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
          * High (max) temperature *
          **************************/
          /* Read high temperature from the cursor (in degrees celsius) */
-        double temperature = mCursor.getDouble(HourlyActivity.INDEX_WEATHER_TEMPERATURE);
+        double temperature = mCursor.getDouble(HourlyFragment.INDEX_WEATHER_TEMPERATURE);
          /*
           * If the user's preference for weather is fahrenheit, formatTemperature will convert
           * the temperature. This method will also append either °C or °F to the temperature
@@ -236,7 +236,7 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
 
     /**
      * Swaps the cursor used by the ForecastAdapter for its weather data. This method is called by
-     * MainActivity after a load has finished, as well as when the Loader responsible for loading
+     * ForecastFragment after a load has finished, as well as when the Loader responsible for loading
      * the weather data is reset. When this method is called, we assume we have a completely new
      * set of data, so we call notifyDataSetChanged to tell the RecyclerView to update.
      *
@@ -283,7 +283,7 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
-            long dateInMillis = mCursor.getLong(HourlyActivity.INDEX_WEATHER_DATE);
+            long dateInMillis = mCursor.getLong(HourlyFragment.INDEX_WEATHER_DATE);
         }
     }
 }

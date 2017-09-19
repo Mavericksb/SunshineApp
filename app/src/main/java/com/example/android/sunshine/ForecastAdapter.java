@@ -15,15 +15,10 @@
  */
 package com.example.android.sunshine;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
-import android.support.v4.animation.ValueAnimatorCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -31,7 +26,6 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -145,7 +139,7 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
         /****************
          * Weather Icon *
          ****************/
-        String weatherId = mCursor.getString(MainActivity.INDEX_WEATHER_CONDITION_ID);
+        String weatherId = mCursor.getString(ForecastFragment.INDEX_WEATHER_CONDITION_ID);
         int weatherImageId;
 
         int viewType = getItemViewType(position);
@@ -172,7 +166,7 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
          * Weather Date *
          ****************/
          /* Read date from the cursor */
-        long dateInMillis = mCursor.getLong(MainActivity.INDEX_WEATHER_DATE);
+        long dateInMillis = mCursor.getLong(ForecastFragment.INDEX_WEATHER_DATE);
          /* Get human readable string using our utility method */
         //String dateString = SunshineDateUtils.getFriendlyDateString(mContext, dateInMillis, false);
         String dateString = SunshineDateUtils.getDailyDetailDate(mContext, dateInMillis, viewType);
@@ -195,7 +189,7 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
          * High (max) temperature *
          **************************/
          /* Read high temperature from the cursor (in degrees celsius) */
-        double highInCelsius = mCursor.getDouble(MainActivity.INDEX_WEATHER_MAX_TEMP);
+        double highInCelsius = mCursor.getDouble(ForecastFragment.INDEX_WEATHER_MAX_TEMP);
          /*
           * If the user's preference for weather is fahrenheit, formatTemperature will convert
           * the temperature. This method will also append either °C or °F to the temperature
@@ -215,7 +209,7 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
          * Low (min) temperature *
          *************************/
          /* Read low temperature from the cursor (in degrees celsius) */
-        double lowInCelsius = mCursor.getDouble(MainActivity.INDEX_WEATHER_MIN_TEMP);
+        double lowInCelsius = mCursor.getDouble(ForecastFragment.INDEX_WEATHER_MIN_TEMP);
 
          /*
           * If the user's preference for weather is fahrenheit, formatTemperature will convert
@@ -265,7 +259,7 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
 
     /**
      * Swaps the cursor used by the ForecastAdapter for its weather data. This method is called by
-     * MainActivity after a load has finished, as well as when the Loader responsible for loading
+     * ForecastFragment after a load has finished, as well as when the Loader responsible for loading
      * the weather data is reset. When this method is called, we assume we have a completely new
      * set of data, so we call notifyDataSetChanged to tell the RecyclerView to update.
      *
@@ -312,7 +306,7 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
-            long dateInMillis = mCursor.getLong(MainActivity.INDEX_WEATHER_DATE);
+            long dateInMillis = mCursor.getLong(ForecastFragment.INDEX_WEATHER_DATE);
             mClickHandler.onClick(dateInMillis);
         }
     }
