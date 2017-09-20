@@ -56,6 +56,8 @@ public class HourlyFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
         HourlyForecastAdapter.HourlyForecastAdapterOnClickHandler{
 
+    Loader hourlyLoader;
+
     /*
      * In this Activity, you can share the selected day's forecast. No social sharing is complete
      * without using a hashtag. #BeTogetherNotTheSame
@@ -112,6 +114,7 @@ public class HourlyFragment extends Fragment implements
     private static LoaderManager mSupportLoaderManager;
     private static LoaderManager.LoaderCallbacks mLoaderCallbacks;
 
+    private Uri mOldUri;
     private Uri mUri;
     public static final String URI_WITH_DATE = "uri";
 
@@ -123,9 +126,15 @@ public class HourlyFragment extends Fragment implements
 
         //mUri = getIntent().getData();
         //mUri = getActivity().getFr;
-        mUri = getArguments().getParcelable(URI_WITH_DATE);
 
-        if (mUri == null) throw new NullPointerException("URI for DetailActivity cannot be null");
+        Uri uri = getArguments().getParcelable(URI_WITH_DATE);
+        Log.e("before IF URI", " " + uri);
+
+        if (uri == null) throw new NullPointerException("URI for DetailActivity cannot be null");
+        if(uri != mUri){
+            Log.e("after IF URI", " " + uri);
+            mUri = uri;
+        }
 
 
 
@@ -193,9 +202,14 @@ public class HourlyFragment extends Fragment implements
          * created and (if the activity/fragment is currently started) starts the loader. Otherwise
          * the last created loader is re-used.
          */
-        mSupportLoaderManager = getActivity().getSupportLoaderManager();
+        mSupportLoaderManager = this.getActivity().getSupportLoaderManager();
         mLoaderCallbacks = this;
-        mSupportLoaderManager.initLoader(ID_HOURLY_FORECAST_LOADER, null, this);
+
+
+        hourlyLoader =  mSupportLoaderManager.initLoader(ID_HOURLY_FORECAST_LOADER, null, this);
+        if((hourlyLoader.isStarted()) && (mOldUri!=mUri)){
+            reload();
+        }
 
         SunshineSyncUtils.initialize(getActivity());
 
@@ -223,7 +237,9 @@ public class HourlyFragment extends Fragment implements
                 /* Sort order: Ascending by date */
                 String sortOrder = HourlyWeatherContract.HourlyWeatherEntry.COLUMN_DATE + " ASC";
 
-                return new CursorLoader(getActivity(),
+                Log.e("URI", " " + mUri);
+
+                return new CursorLoader(getContext(),
                         mUri,
                         HOURLY_WEATHER_DETAIL_PROJECTION,
                         null, //HourlyWeatherContract.HourlyWeatherEntry.COLUMN_CITY_ID + "=?",
@@ -250,10 +266,14 @@ public class HourlyFragment extends Fragment implements
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
 
+        mOldUri = mUri;
         mHourlyForecastAdapter.swapCursor(data);
         if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
         mRecyclerView.smoothScrollToPosition(mPosition);
-        if (data.getCount() != 0) showWeatherDataView();
+        if (data.getCount() != 0){
+            showWeatherDataView();
+            data.setNotificationUri(getActivity().getContentResolver(), mUri);
+        }
         else{
             Toast noData = Toast.makeText(getActivity(), "There is no forecast for this day", Toast.LENGTH_SHORT);
             noData.show();

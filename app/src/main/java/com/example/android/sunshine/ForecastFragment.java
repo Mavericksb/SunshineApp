@@ -100,32 +100,6 @@ public class ForecastFragment extends Fragment implements
 
         View forecastView =  inflater.inflate(R.layout.activity_forecast, container, false);
 
-
-
-//        ImageView background = (ImageView) findViewById(R.id.cloudView);
-//        ImageView foreground = (ImageView) findViewById(R.id.cloudView2);
-//
-//        mImageAnimator = new ImageAnimator(this, background, foreground);
-//        mImageAnimator.playAnimation();
-
-
-//            ImageView img_animation = (ImageView) findViewById(R.id.cloudView);
-//            img_animation.setImageAlpha(180);
-//
-//            TranslateAnimation animation = new TranslateAnimation(1200.0f, -1200.0f,
-//                    0.0f, 0.0f);          //  new TranslateAnimation(xFrom,xTo, yFrom,yTo)
-//            animation.setDuration(35000);  // animation duration
-//            animation.setRepeatCount(ValueAnimator.INFINITE);  // animation repeat count
-//            animation.setRepeatMode(1);   // repeat animation (left to right, right to left )
-//            //animation.setFillAfter(true);
-//
-//
-//            img_animation.startAnimation(animation);  // start animation
-
-        /*
-         * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
-         * do things like set the adapter of the RecyclerView and toggle the visibility.
-         */
         mRecyclerView = (RecyclerView) forecastView.findViewById(R.id.recyclerview_forecast);
 
         /*
@@ -137,20 +111,6 @@ public class ForecastFragment extends Fragment implements
          */
         mLoadingIndicator = (ProgressBar) forecastView.findViewById(R.id.pb_loading_indicator);
 
-        /*
-         * A LinearLayoutManager is responsible for measuring and positioning item views within a
-         * RecyclerView into a linear list. This means that it can produce either a horizontal or
-         * vertical list depending on which parameter you pass in to the LinearLayoutManager
-         * constructor. In our case, we want a vertical list, so we pass in the constant from the
-         * LinearLayoutManager class for vertical lists, LinearLayoutManager.VERTICAL.
-         *
-         * There are other LayoutManagers available to display your data in uniform grids,
-         * staggered grids, and more! See the developer documentation for more details.
-         *
-         * The third parameter (shouldReverseLayout) should be true if you want to reverse your
-         * layout. Generally, this is only true with horizontal lists that need to support a
-         * right-to-left layout.
-         */
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 
