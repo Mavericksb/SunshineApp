@@ -209,6 +209,7 @@ public class HourlyFragment extends Fragment implements
         hourlyLoader =  mSupportLoaderManager.initLoader(ID_HOURLY_FORECAST_LOADER, null, this);
         if((hourlyLoader.isStarted()) && (mOldUri!=mUri)){
             reload();
+            mOldUri = mUri;
         }
 
         SunshineSyncUtils.initialize(getActivity());
@@ -266,13 +267,12 @@ public class HourlyFragment extends Fragment implements
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
 
-        mOldUri = mUri;
+
         mHourlyForecastAdapter.swapCursor(data);
         if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
         mRecyclerView.smoothScrollToPosition(mPosition);
         if (data.getCount() != 0){
             showWeatherDataView();
-            data.setNotificationUri(getActivity().getContentResolver(), mUri);
         }
         else{
             Toast noData = Toast.makeText(getActivity(), "There is no forecast for this day", Toast.LENGTH_SHORT);
