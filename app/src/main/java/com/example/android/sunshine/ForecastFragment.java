@@ -92,8 +92,11 @@ public class ForecastFragment extends Fragment implements
 
     private static ImageAnimator mImageAnimator;
 
-
-
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -264,6 +267,9 @@ public class ForecastFragment extends Fragment implements
     @Override
     public void onClick(long date) {
         HourlyFragment hourlyFragment = new HourlyFragment();
+        hourlyFragment.setAllowEnterTransitionOverlap(false);
+        hourlyFragment.setAllowReturnTransitionOverlap(false);
+
         Bundle args = new Bundle();
         Uri uriForDateClicked = HourlyWeatherContract.HourlyWeatherEntry.buildWeatherUriWithDate(date);
         args.putParcelable(HourlyFragment.URI_WITH_DATE, uriForDateClicked);
@@ -271,11 +277,9 @@ public class ForecastFragment extends Fragment implements
         //Log.e("FORECAST FRAGMENT", "I'm here!");
         FragmentManager fm = getActivity().getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-        .hide(this)
-        .add(R.id.fragment_container, hourlyFragment).commit();
-        //ft.add(R.id.fragment_container, hourlyFragment ).commit();
-        ft.addToBackStack(null);
+        ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+        .addToBackStack(null).replace(R.id.fragment_container, hourlyFragment).commit();
+
     }
 
     /**

@@ -119,6 +119,12 @@ public class HourlyFragment extends Fragment implements
     public static final String URI_WITH_DATE = "uri";
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View hourlyForecastView = inflater.inflate(R.layout.activity_hourly, container, false);
@@ -136,12 +142,6 @@ public class HourlyFragment extends Fragment implements
             mUri = uri;
         }
 
-
-
-        /*
-         * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
-         * do things like set the adapter of the RecyclerView and toggle the visibility.
-         */
         mRecyclerView = (RecyclerView) hourlyForecastView.findViewById(R.id.recyclerview_hourly_forecast);
 
         /*
@@ -153,20 +153,6 @@ public class HourlyFragment extends Fragment implements
          */
         mLoadingIndicator = (ProgressBar) hourlyForecastView.findViewById(R.id.pb_hourly_loading_indicator);
 
-        /*
-         * A LinearLayoutManager is responsible for measuring and positioning item views within a
-         * RecyclerView into a linear list. This means that it can produce either a horizontal or
-         * vertical list depending on which parameter you pass in to the LinearLayoutManager
-         * constructor. In our case, we want a vertical list, so we pass in the constant from the
-         * LinearLayoutManager class for vertical lists, LinearLayoutManager.VERTICAL.
-         *
-         * There are other LayoutManagers available to display your data in uniform grids,
-         * staggered grids, and more! See the developer documentation for more details.
-         *
-         * The third parameter (shouldReverseLayout) should be true if you want to reverse your
-         * layout. Generally, this is only true with horizontal lists that need to support a
-         * right-to-left layout.
-         */
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 
@@ -180,7 +166,7 @@ public class HourlyFragment extends Fragment implements
         mRecyclerView.setHasFixedSize(true);
 
         /*
-         * The ForecastAdapter is responsible for linking our weather data with the Views that
+         * HourlyForecastAdapter is responsible for linking our weather data with the Views that
          * will end up displaying our weather data.
          *
          * Although passing in "this" twice may seem strange, it is actually a sign of separation
@@ -197,14 +183,8 @@ public class HourlyFragment extends Fragment implements
 
         showLoading();
 
-        /*
-         * Ensures a loader is initialized and active. If the loader doesn't already exist, one is
-         * created and (if the activity/fragment is currently started) starts the loader. Otherwise
-         * the last created loader is re-used.
-         */
         mSupportLoaderManager = this.getActivity().getSupportLoaderManager();
         mLoaderCallbacks = this;
-
 
         hourlyLoader =  mSupportLoaderManager.initLoader(ID_HOURLY_FORECAST_LOADER, null, this);
         if((hourlyLoader.isStarted()) && (mOldUri!=mUri)){
@@ -342,6 +322,5 @@ public class HourlyFragment extends Fragment implements
     public static void reload(){
         mSupportLoaderManager.restartLoader(ID_HOURLY_FORECAST_LOADER, null, mLoaderCallbacks);
     }
-
 
 }
