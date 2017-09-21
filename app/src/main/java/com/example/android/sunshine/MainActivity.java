@@ -1,5 +1,6 @@
 package com.example.android.sunshine;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,9 +8,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 
 /**
@@ -25,29 +28,33 @@ public class MainActivity extends AppCompatActivity {
     public static final String FORECAST_TAG = "forecast_fragment";
     public static final String HOURLY_TAG = "hourly_fragment";
 
+    private static ImageView mBackground;
+    private static ImageView mForeground;
+    private static View mIncludeBackground;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
 
-        ImageView background = (ImageView) findViewById(R.id.cloudView);
-        ImageView foreground = (ImageView) findViewById(R.id.cloudView2);
+        mIncludeBackground = (View) findViewById(R.id.include_background);
+        mIncludeBackground.setVisibility(View.INVISIBLE);
 
-        mImageAnimator = new ImageAnimator(this, background, foreground);
-        mImageAnimator.playAnimation();
+        mBackground = (ImageView) findViewById(R.id.cloudView);
+        mForeground = (ImageView) findViewById(R.id.cloudView2);
+//
+
+//        mImageAnimator.playAnimation();
 
 
         if(savedInstanceState == null) {
             ForecastFragment forecastFragment = new ForecastFragment();
 
-            forecastFragment.setAllowEnterTransitionOverlap(false);
-            forecastFragment.setAllowReturnTransitionOverlap(false);
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
 
             ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                    .addToBackStack(null).add(R.id.fragment_container, forecastFragment, FORECAST_TAG).commit();
+                    .add(R.id.fragment_container, forecastFragment, FORECAST_TAG).commit();
         }
     }
 
@@ -97,23 +104,9 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-//    @Override
-//    public void onBackPressed() {
-//
-//        int count = getFragmentManager().getBackStackEntryCount();
-//
-//        if (count == 0) {
-//            super.onBackPressed();
-//            //additional code
-//        } else {
-//            FragmentManager fm = getSupportFragmentManager();
-//
-//            Fragment previous = (Fragment) fm.getBackStackEntryAt(count-1);
-//            if(previous.isHidden()){
-//                FragmentTransaction ft = fm.beginTransaction();
-//                ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right).show(previous).commit();
-//            }
-//            getFragmentManager().popBackStack();
-//        }
-//    }
+    public static void startBackground(Context context, String weatherId){
+        Log.e("String Weather", " " + weatherId);
+        mImageAnimator = new ImageAnimator(context, mIncludeBackground, mBackground, mForeground);
+        mImageAnimator.playAnimation();
+    }
 }

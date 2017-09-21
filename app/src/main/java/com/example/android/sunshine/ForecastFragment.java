@@ -40,6 +40,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.example.android.sunshine.data.CurrentWeatherContract;
 import com.example.android.sunshine.data.HourlyWeatherContract;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
@@ -82,11 +83,11 @@ public class ForecastFragment extends Fragment implements
      */
     private static final int ID_FORECAST_LOADER = 44;
 
-    private ForecastAdapter mForecastAdapter;
-    private RecyclerView mRecyclerView;
-    private int mPosition = RecyclerView.NO_POSITION;
+    private static ForecastAdapter mForecastAdapter;
+    private static RecyclerView mRecyclerView;
+    private static int mPosition = RecyclerView.NO_POSITION;
 
-    private ProgressBar mLoadingIndicator;
+    private static ProgressBar mLoadingIndicator;
     private static LoaderManager mSupportLoaderManager;
     private static LoaderManager.LoaderCallbacks mLoaderCallbacks;
 
@@ -209,6 +210,16 @@ public class ForecastFragment extends Fragment implements
                 String selection = WeatherContract.WeatherEntry.COLUMN_CITY_ID + "=?";
                 String[] selectionArgs = new String[]{String.valueOf(SunshinePreferences.getCityId(getActivity()))};
 
+                Cursor cursor = getActivity().getContentResolver().query(CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI,
+                        new String[]{CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID},
+                        null,
+                        null,
+                        null);
+
+                //Log.e("Current cursor", "" + cursor.getColumnIndex(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID));
+
+                cursor.moveToFirst();
+                MainActivity.startBackground(getActivity(), cursor.getString(0));
 
 
                 return new CursorLoader(getActivity(),
@@ -237,9 +248,10 @@ public class ForecastFragment extends Fragment implements
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
 
+
         mForecastAdapter.swapCursor(data);
-        if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
-        mRecyclerView.smoothScrollToPosition(mPosition);
+//        if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+//        mRecyclerView.smoothScrollToPosition(mPosition);
         if (data.getCount() != 0) showWeatherDataView();
     }
 
@@ -268,30 +280,24 @@ public class ForecastFragment extends Fragment implements
     public void onClick(long date) {
         FragmentManager fm = getActivity().getSupportFragmentManager();
 
-
-        Log.e("Fragments", "" + fm.getFragments().toString());
-
-
-
         Bundle args = new Bundle();
         Uri uriForDateClicked = HourlyWeatherContract.HourlyWeatherEntry.buildWeatherUriWithDate(date);
         args.putParcelable(HourlyFragment.URI_WITH_DATE, uriForDateClicked);
 
         //Log.e("FORECAST FRAGMENT", "I'm here!");
         Fragment hourlyFragment = fm.findFragmentByTag(MainActivity.HOURLY_TAG);
-        hourlyFragment.setArguments(args);
+
 
         FragmentTransaction ft = fm.beginTransaction();
         if ( hourlyFragment == null) {
             hourlyFragment = new HourlyFragment();
-            hourlyFragment.setAllowEnterTransitionOverlap(false);
-            hourlyFragment.setAllowReturnTransitionOverlap(false);
+            hourlyFragment.setArguments(args);
             ft
-                    .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                    .hide(this)
+                    .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
                     .addToBackStack(null)
-                    .add(R.id.fragment_container, hourlyFragment, MainActivity.HOURLY_TAG).commit();
+                    .replace(R.id.fragment_container, hourlyFragment, MainActivity.HOURLY_TAG).commit();
         } else {
+            hourlyFragment.setArguments(args);
             ft.show(hourlyFragment);
         }
 
@@ -331,4 +337,6 @@ public class ForecastFragment extends Fragment implements
     public static void reload(){
         mSupportLoaderManager.restartLoader(ID_FORECAST_LOADER, null, mLoaderCallbacks);
     }
+
+
 }

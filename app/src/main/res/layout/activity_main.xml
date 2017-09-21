@@ -6,9 +6,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/gradient_background"
     >
 
-    <include layout="@layout/background_clouds"/>
+    <include layout="@layout/background_clouds"
+        android:id="@+id/include_background"/>
 
     <FrameLayout
         android:id="@+id/fragment_container"

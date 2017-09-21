@@ -274,9 +274,6 @@ public class WeatherProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
-                if(selectionArgs!=null) {
-                    Log.e("QUERYING ", "uri " + uri + " SEL: " + selection + " SELSARGS: " + selectionArgs[0].toString());
-                }
                 break;
             }
 
@@ -323,7 +320,7 @@ public class WeatherProvider extends ContentProvider {
                         null,
                         sortOrder);
                 break;
-            case CODE_HOURLY_FORECAST_WITH_DATE:
+            case CODE_HOURLY_FORECAST_WITH_DATE: {
                 String normalizedUtcDateString = uri.getLastPathSegment();
                 String cityId = String.valueOf(SunshinePreferences.getCityId(getContext()));
                 long normalizedUtcDate = Long.valueOf(normalizedUtcDateString);
@@ -335,13 +332,31 @@ public class WeatherProvider extends ContentProvider {
                         HourlyWeatherContract.HourlyWeatherEntry.TABLE_NAME,
                         projection,
                         HourlyWeatherContract.HourlyWeatherEntry.COLUMN_CITY_ID + "=?" +
-                        " AND " + HourlyWeatherContract.HourlyWeatherEntry.COLUMN_DATE + " >= ? " +
+                                " AND " + HourlyWeatherContract.HourlyWeatherEntry.COLUMN_DATE + " >= ? " +
                                 " AND " + HourlyWeatherContract.HourlyWeatherEntry.COLUMN_DATE + " <= ?",
                         selectionArguments,
                         null,
                         null,
                         sortOrder);
                 break;
+            }
+            case CODE_CURRENT_FORECAST: {
+                String cityId = String.valueOf(SunshinePreferences.getCityId(getContext()));
+                String select = WeatherContract.WeatherEntry.COLUMN_CITY_ID + "=?";
+                String[] selectArgs = new String[]{cityId};
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        CurrentWeatherContract.CurrentWeatherEntry.TABLE_NAME,
+                        projection,
+                        select,
+                        selectArgs,
+                        null,
+                        null,
+                        sortOrder);
+                if (selectArgs != null) {
+                    Log.e("QUERYING ", "uri " + uri + " SEL: " + select + " SELSARGS: " + selectArgs[0].toString());
+                }
+                break;
+            }
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

@@ -37,6 +37,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -56,7 +57,7 @@ public class HourlyFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
         HourlyForecastAdapter.HourlyForecastAdapterOnClickHandler{
 
-    Loader hourlyLoader;
+    private static Loader hourlyLoader;
 
     /*
      * In this Activity, you can share the selected day's forecast. No social sharing is complete
@@ -106,16 +107,16 @@ public class HourlyFragment extends Fragment implements
      */
     private static final int ID_HOURLY_FORECAST_LOADER = 453;
 
-    private HourlyForecastAdapter mHourlyForecastAdapter;
-    private RecyclerView mRecyclerView;
+    private static HourlyForecastAdapter mHourlyForecastAdapter;
+    private static RecyclerView mRecyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
 
-    private ProgressBar mLoadingIndicator;
+    private static ProgressBar mLoadingIndicator;
     private static LoaderManager mSupportLoaderManager;
     private static LoaderManager.LoaderCallbacks mLoaderCallbacks;
 
-    private Uri mOldUri;
-    private Uri mUri;
+    private static Uri mOldUri;
+    private static Uri mUri;
     public static final String URI_WITH_DATE = "uri";
 
     @Override
@@ -134,11 +135,9 @@ public class HourlyFragment extends Fragment implements
         //mUri = getActivity().getFr;
 
         Uri uri = getArguments().getParcelable(URI_WITH_DATE);
-        Log.e("before IF URI", " " + uri);
 
         if (uri == null) throw new NullPointerException("URI for DetailActivity cannot be null");
         if(uri != mUri){
-            Log.e("after IF URI", " " + uri);
             mUri = uri;
         }
 
@@ -187,7 +186,7 @@ public class HourlyFragment extends Fragment implements
         mLoaderCallbacks = this;
 
         hourlyLoader =  mSupportLoaderManager.initLoader(ID_HOURLY_FORECAST_LOADER, null, this);
-        if((hourlyLoader.isStarted()) && (mOldUri!=mUri)){
+        if(hourlyLoader.isStarted() && !mUri.equals(mOldUri)){
             reload();
             mOldUri = mUri;
         }
@@ -217,8 +216,6 @@ public class HourlyFragment extends Fragment implements
 
                 /* Sort order: Ascending by date */
                 String sortOrder = HourlyWeatherContract.HourlyWeatherEntry.COLUMN_DATE + " ASC";
-
-                Log.e("URI", " " + mUri);
 
                 return new CursorLoader(getContext(),
                         mUri,
@@ -322,5 +319,28 @@ public class HourlyFragment extends Fragment implements
     public static void reload(){
         mSupportLoaderManager.restartLoader(ID_HOURLY_FORECAST_LOADER, null, mLoaderCallbacks);
     }
+
+//    @Override
+//    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+//        if (nextAnim == 0) {
+//            return super.onCreateAnimation(transit, enter, nextAnim);
+//        }
+//
+//        Animation anim = android.view.animation.AnimationUtils.loadAnimation(getContext(), nextAnim);
+//        anim.setAnimationListener(new Animation.AnimationListener() {
+//            @Override
+//            public void onAnimationStart(Animation animation) {}
+//
+//            @Override
+//            public void onAnimationEnd(Animation animation) {
+//                // Do any process intensive work that can wait until after fragment has loaded
+//
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animation animation) {}
+//        });
+//        return anim;
+//    }
 
 }
