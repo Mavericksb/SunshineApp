@@ -266,19 +266,35 @@ public class ForecastFragment extends Fragment implements
      */
     @Override
     public void onClick(long date) {
-        HourlyFragment hourlyFragment = new HourlyFragment();
-        hourlyFragment.setAllowEnterTransitionOverlap(false);
-        hourlyFragment.setAllowReturnTransitionOverlap(false);
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+
+
+        Log.e("Fragments", "" + fm.getFragments().toString());
+
+
 
         Bundle args = new Bundle();
         Uri uriForDateClicked = HourlyWeatherContract.HourlyWeatherEntry.buildWeatherUriWithDate(date);
         args.putParcelable(HourlyFragment.URI_WITH_DATE, uriForDateClicked);
-        hourlyFragment.setArguments(args);
+
         //Log.e("FORECAST FRAGMENT", "I'm here!");
-        FragmentManager fm = getActivity().getSupportFragmentManager();
+        Fragment hourlyFragment = fm.findFragmentByTag(MainActivity.HOURLY_TAG);
+        hourlyFragment.setArguments(args);
+
         FragmentTransaction ft = fm.beginTransaction();
-        ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-        .addToBackStack(null).replace(R.id.fragment_container, hourlyFragment).commit();
+        if ( hourlyFragment == null) {
+            hourlyFragment = new HourlyFragment();
+            hourlyFragment.setAllowEnterTransitionOverlap(false);
+            hourlyFragment.setAllowReturnTransitionOverlap(false);
+            ft
+                    .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                    .hide(this)
+                    .addToBackStack(null)
+                    .add(R.id.fragment_container, hourlyFragment, MainActivity.HOURLY_TAG).commit();
+        } else {
+            ft.show(hourlyFragment);
+        }
+
 
     }
 

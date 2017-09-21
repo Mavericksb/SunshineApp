@@ -22,12 +22,14 @@ public class MainActivity extends AppCompatActivity {
 
     private static ImageAnimator mImageAnimator;
 
+    public static final String FORECAST_TAG = "forecast_fragment";
+    public static final String HOURLY_TAG = "hourly_fragment";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-
 
         ImageView background = (ImageView) findViewById(R.id.cloudView);
         ImageView foreground = (ImageView) findViewById(R.id.cloudView2);
@@ -35,15 +37,18 @@ public class MainActivity extends AppCompatActivity {
         mImageAnimator = new ImageAnimator(this, background, foreground);
         mImageAnimator.playAnimation();
 
-        ForecastFragment forecastFragment = new ForecastFragment();
 
-        forecastFragment.setAllowEnterTransitionOverlap(false);
-        forecastFragment.setAllowReturnTransitionOverlap(false);
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
+        if(savedInstanceState == null) {
+            ForecastFragment forecastFragment = new ForecastFragment();
 
-        ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .addToBackStack(null).replace(R.id.fragment_container,forecastFragment ).commit();
+            forecastFragment.setAllowEnterTransitionOverlap(false);
+            forecastFragment.setAllowReturnTransitionOverlap(false);
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+
+            ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .addToBackStack(null).add(R.id.fragment_container, forecastFragment, FORECAST_TAG).commit();
+        }
     }
 
     /**
