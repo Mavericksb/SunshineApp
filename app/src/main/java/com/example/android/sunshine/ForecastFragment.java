@@ -120,59 +120,33 @@ public class ForecastFragment extends Fragment implements
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+
+        Log.e("ForecastFragment", "On create ForecastFragment");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View forecastView =  inflater.inflate(R.layout.activity_forecast, container, false);
+        Log.e("ForecastFragment", "On create View ForecastFragment instance NULL");
+        View forecastView = inflater.inflate(R.layout.activity_forecast, container, false);
 
         mRecyclerView = (RecyclerView) forecastView.findViewById(R.id.recyclerview_forecast);
 
-        /*
-         * The ProgressBar that will indicate to the user that we are loading data. It will be
-         * hidden when no data is loading.
-         *
-         * Please note: This so called "ProgressBar" isn't a bar by default. It is more of a
-         * circle. We didn't make the rules (or the names of Views), we just follow them.
-         */
         mLoadingIndicator = (ProgressBar) forecastView.findViewById(R.id.pb_loading_indicator);
 
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 
-        /* setLayoutManager associates the LayoutManager we created above with our RecyclerView */
         mRecyclerView.setLayoutManager(layoutManager);
 
-        /*
-         * Use this setting to improve performance if you know that changes in content do not
-         * change the child layout size in the RecyclerView
-         */
         mRecyclerView.setHasFixedSize(true);
 
-        /*
-         * The ForecastAdapter is responsible for linking our weather data with the Views that
-         * will end up displaying our weather data.
-         *
-         * Although passing in "this" twice may seem strange, it is actually a sign of separation
-         * of concerns, which is best programming practice. The ForecastAdapter requires an
-         * Android Context (which all Activities are) as well as an onClickHandler. Since our
-         * ForecastFragment implements the ForecastAdapter ForecastOnClickHandler interface, "this"
-         * is also an instance of that type of handler.
-         */
         mForecastAdapter = new ForecastAdapter(getActivity(), this);
 
-        /* Setting the adapter attaches it to the RecyclerView in our layout. */
         mRecyclerView.setAdapter(mForecastAdapter);
-
 
         showLoading();
 
-        /*
-         * Ensures a loader is initialized and active. If the loader doesn't already exist, one is
-         * created and (if the activity/fragment is currently started) starts the loader. Otherwise
-         * the last created loader is re-used.
-         */
         mLoaderCallbacks = this;
         mSupportLoaderManager = getActivity().getSupportLoaderManager();
         mSupportLoaderManager.initLoader(ID_CURRENT_LOADER, null, this);
@@ -183,31 +157,7 @@ public class ForecastFragment extends Fragment implements
         return forecastView;
     }
 
-    /**
-     * Uses the URI scheme for showing a location found on a map in conjunction with
-     * an implicit Intent. This super-handy Intent is detailed in the "Common Intents" page of
-     * Android's developer site:
-     *
-     * @see "http://developer.android.com/guide/components/intents-common.html#Maps"
-     * <p>
-     * Protip: Hold Command on Mac or Control on Windows and click that link to automagically
-     * open the Common Intents page
-     */
-    private void openPreferredLocationInMap() {
-        double[] coords = SunshinePreferences.getLocationCoordinates(getActivity());
-        String posLat = Double.toString(coords[0]);
-        String posLong = Double.toString(coords[1]);
-        Uri geoLocation = Uri.parse("geo:" + posLat + "," + posLong);
 
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(geoLocation);
-
-        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-            startActivity(intent);
-        } else {
-            Log.d(TAG, "Couldn't call " + geoLocation.toString() + ", no receiving apps installed!");
-        }
-    }
 
     /**
      * Called by the {@link android.support.v4.app.LoaderManagerImpl} when a new Loader needs to be
@@ -224,12 +174,11 @@ public class ForecastFragment extends Fragment implements
 
         switch (loaderId) {
 
-
             case ID_CURRENT_LOADER:
 
                 return new CursorLoader(getActivity(),
                         CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI,
-                        new String[]{CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID},
+                        CURRENT_FORECAST_PROJECTION,
                         null,
                         null,
                         null);
@@ -240,7 +189,7 @@ public class ForecastFragment extends Fragment implements
                 /* Sort order: Ascending by date */
                 String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
 
-               return new CursorLoader(getActivity(),
+                return new CursorLoader(getActivity(),
                         forecastQueryUri,
                         MAIN_FORECAST_PROJECTION,
                         null, //selection,
@@ -253,7 +202,7 @@ public class ForecastFragment extends Fragment implements
 
     /**
      * Called when a Loader has finished loading its data.
-     *
+     * <p>
      * NOTE: There is one small bug in this code. If no data is present in the cursor do to an
      * initial load being performed with no access to internet, the loading indicator will show
      * indefinitely, until data is present from the ContentProvider. This will be fixed in a
@@ -266,36 +215,17 @@ public class ForecastFragment extends Fragment implements
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
 
-
-        if(loader.getId()==ID_CURRENT_LOADER){
+        if (loader.getId() == ID_CURRENT_LOADER) {
             mCurrentCursor = data;
+
             return;
         }
 
-        if(mCurrentCursor != null){
-            if(mCurrentCursor.getCount() != 0) {
-                Cursor merged = new MergeCursor(new Cursor[]{mCurrentCursor, data});
+        Cursor merged = new MergeCursor(new Cursor[]{mCurrentCursor, data});
 
-//                Log.e("Cursor", "Merged loader is " + count);
-                if  (merged.moveToFirst()) {
-                    do {
-                        int count = merged.getColumnCount();
-                        for (int i = 0; i < count; i++) {
-                            String col = merged.getString(i);
-                            Log.e("Cursor", "Current loader is " + col);
-                        }
+        mForecastAdapter.swapCursor(merged);
+        if (data.getCount() != 0) showWeatherDataView();
 
-                    }
-                    while (merged.moveToNext());
-                }
-
-//                mForecastAdapter.swapCursor(merged);
-//                if (data.getCount() != 0) showWeatherDataView();
-            } else {
-//                mForecastAdapter.swapCursor(data);
-//                if (data.getCount() != 0) showWeatherDataView();
-            }
-        }
 //        if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
 //        mRecyclerView.smoothScrollToPosition(mPosition);
 
@@ -335,7 +265,7 @@ public class ForecastFragment extends Fragment implements
 
 
         FragmentTransaction ft = fm.beginTransaction();
-        if ( hourlyFragment == null) {
+        if (hourlyFragment == null) {
             hourlyFragment = new HourlyFragment();
             hourlyFragment.setArguments(args);
             ft
@@ -379,8 +309,7 @@ public class ForecastFragment extends Fragment implements
     }
 
 
-
-    public static void reload(){
+    public static void reload() {
         mSupportLoaderManager.restartLoader(ID_FORECAST_LOADER, null, mLoaderCallbacks);
     }
 

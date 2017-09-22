@@ -105,9 +105,9 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static void startBackground(Context context, String weatherId ){
+    public static void startBackground(Context context, String weatherId, long date ){
         Log.e("String Weather", " " + weatherId);
 
-        mImageAnimator.playAnimation();
+        mImageAnimator.playAnimation(weatherId, date);
     }
 }

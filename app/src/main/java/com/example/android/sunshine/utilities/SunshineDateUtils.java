@@ -337,8 +337,10 @@ public final class SunshineDateUtils {
     public static String getHourlyDetailDate(long utc, int viewType){
         final int VIEW_TYPE_TODAY = 0;
         final int VIEW_TYPE_FUTURE_DAY = 1;
+        final int VIEW_DAYTIME_ANIMATION = 2;
 
         Date time = new Date(utc);
+
         String formatted;
         switch(viewType) {
             case VIEW_TYPE_TODAY:
@@ -347,6 +349,10 @@ public final class SunshineDateUtils {
             case VIEW_TYPE_FUTURE_DAY:
                 formatted = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(time);
                 break;
+            case VIEW_DAYTIME_ANIMATION:
+                formatted = new SimpleDateFormat("HH", Locale.getDefault()).format(time);
+                break;
+
             default:
                 formatted = new SimpleDateFormat("EEE dd  HH:mm", Locale.getDefault()).format(time);
         }

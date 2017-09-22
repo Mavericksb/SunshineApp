@@ -119,7 +119,7 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
 
         view.setFocusable(true);
 
-        return new ForecastAdapterViewHolder(view);
+        return new ForecastAdapterViewHolder(view, viewType);
     }
 
     /**
@@ -150,8 +150,8 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
             default:
                 throw new IllegalArgumentException("Invalid view type, value of " + viewType);
         }
-
     }
+
 
     private void setDataToday(ForecastAdapterViewHolder forecastAdapterViewHolder, int position) {
         mCursor.moveToPosition(position);
@@ -159,7 +159,7 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
         /****************
          * Weather Icon *
          ****************/
-        String weatherId = mCursor.getString(ForecastFragment.INDEX_WEATHER_CONDITION_ID);
+        String weatherId = mCursor.getString(ForecastFragment.INDEX_CURRENT_WEATHER_CONDITION_ID);
         int weatherImageId = SunshineWeatherUtils
                         .getDSLargeArtResourceIdForWeatherCondition(weatherId);
 
@@ -170,7 +170,7 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
          * Weather Date *
          ****************/
          /* Read date from the cursor */
-        long dateInMillis = mCursor.getLong(ForecastFragment.INDEX_WEATHER_DATE);
+        long dateInMillis = mCursor.getLong(ForecastFragment.INDEX_CURRENT_WEATHER_DATE);
          /* Get human readable string using our utility method */
         //String dateString = SunshineDateUtils.getFriendlyDateString(mContext, dateInMillis, false);
         String dateString = SunshineDateUtils.getDailyDetailDate(mContext, dateInMillis, VIEW_TYPE_TODAY);
@@ -189,17 +189,15 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
         forecastAdapterViewHolder.descriptionView.setText(description);
         forecastAdapterViewHolder.descriptionView.setContentDescription(descriptionA11y);
 
-        double temperature = mCursor.getDouble(COLONNA TEMPERATURA)
+        double temperature = mCursor.getDouble(ForecastFragment.INDEX_CURRENT_WEATHER_TEMP);
 
-        String highString = SunshineWeatherUtils.formatTemperature(mContext, highInCelsius);
-        Spannable highSpan = new SpannableString(highString);
-        highSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.high_temp_text)), highSpan.length()-2, highSpan.length()-1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
+        String temperatureString = SunshineWeatherUtils.formatTemperature(mContext, temperature);
          /* Create the accessibility (a11y) String from the weather description */
-        String highA11y = mContext.getString(R.string.a11y_high_temp, highString);
+        String temperatureA11y = mContext.getString(R.string.a11y_temp, temperatureString);
 
          /* Set the text and content description (for accessibility purposes) */
-        forecastAdapterViewHolder.highTempView.setText(highSpan);
-        forecastAdapterViewHolder.highTempView.setContentDescription(highA11y);
+        forecastAdapterViewHolder.currentTemperature.setText(temperatureString);
+        forecastAdapterViewHolder.currentTemperature.setContentDescription(temperatureA11y);
 
         /**************************
          * High (max) temperature *
@@ -241,15 +239,17 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
          /* Set the text and content description (for accessibility purposes) */
         forecastAdapterViewHolder.lowTempView.setText(lowSpan);
         forecastAdapterViewHolder.lowTempView.setContentDescription(lowA11y);
+
+        MainActivity.startBackground(mContext, weatherId, dateInMillis );
     }
 
     private void setDataFutureDay(ForecastAdapterViewHolder forecastAdapterViewHolder, int position) {
 
-        if((position+1) <= mCursor.getCount()) {
-            mCursor.moveToPosition(position + 1);
-        } else{
-            return;
-        }
+//        if((position+1) <= mCursor.getCount()) {
+            mCursor.moveToPosition(position+1);
+//        } else{
+//            return;
+//        }
 
         /****************
          * Weather Icon *
@@ -334,7 +334,7 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
     @Override
     public int getItemCount() {
         if (null == mCursor) return 0;
-        return mCursor.getCount();
+        return mCursor.getCount()-1;
     }
 
     /**
@@ -381,9 +381,15 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
         final TextView descriptionView;
         final TextView highTempView;
         final TextView lowTempView;
+        TextView currentTemperature;
 
-        ForecastAdapterViewHolder(View view) {
+        ForecastAdapterViewHolder(View view, int viewType) {
             super(view);
+
+            if(viewType==VIEW_TYPE_TODAY) {
+                    currentTemperature = (TextView) view.findViewById(R.id.current_temperature);
+                }
+
 
             iconView = (ImageView) view.findViewById(R.id.weather_icon);
             dateView = (TextView) view.findViewById(R.id.date);
@@ -403,7 +409,8 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
          */
         @Override
         public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
+            // we get the Adapter Position, +1 because remember first position is for Current Forecast.
+            int adapterPosition = getAdapterPosition()+1;
             mCursor.moveToPosition(adapterPosition);
             long dateInMillis = mCursor.getLong(ForecastFragment.INDEX_WEATHER_DATE);
             mClickHandler.onClick(dateInMillis);

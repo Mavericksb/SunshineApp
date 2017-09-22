@@ -6,6 +6,7 @@ import android.support.annotation.InterpolatorRes;
 import android.support.annotation.Nullable;
 import android.text.Layout;
 import android.transition.Fade;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -15,6 +16,8 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+
+import com.example.android.sunshine.utilities.SunshineDateUtils;
 
 /**
  * Created by Robert on 18/09/2017.
@@ -26,21 +29,38 @@ public class ImageAnimator {
     private static Layout mLayout;
     private static ImageView mBackground;
     private static ImageView mForeground;
+    private static View includeBackground;
+    private static final int VIEW_DAYTIME_ANIMATION = 2;
+    private static boolean DAYTIME = false;
+
 
     public ImageAnimator(Context context, View includeBackground, ImageView background, ImageView foreground){
         mContext = context;
-        //mLayout = layout;
+        this.includeBackground = includeBackground;
         mBackground = background;
         mForeground = foreground;
-        includeBackground.setVisibility(View.VISIBLE);
-        includeBackground.setBackground(mContext.getDrawable(R.drawable.gradient_background_clear));
+
 
     }
 
-    public void playAnimation(){
+    public void playAnimation(String weatherId, long date){
 
 //        View view = LayoutInflater.from(mContext).inflate(R.layout.background_clouds, null);
 //        view.setBackground(mContext.getDrawable(R.drawable.gradient_background_clear));
+
+        int dayTime = Integer.valueOf(SunshineDateUtils.getHourlyDetailDate(date, VIEW_DAYTIME_ANIMATION));
+        Log.e("DAYTIME", "hours of day " + dayTime);
+        if(dayTime>07 && dayTime<19){
+            if(DAYTIME) { return; }
+                includeBackground.setBackground(mContext.getDrawable(R.drawable.gradient_background_clear));
+                DAYTIME = true;
+        } else {
+            if(!DAYTIME) { return; }
+            includeBackground.setBackground(mContext.getDrawable(R.drawable.gradient_background));
+            DAYTIME = false;
+        }
+
+        includeBackground.setVisibility(View.VISIBLE);
 
 
         TranslateAnimation animation = new TranslateAnimation(1200.0f, -1200.0f,

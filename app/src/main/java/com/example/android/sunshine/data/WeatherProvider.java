@@ -352,9 +352,6 @@ public class WeatherProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
-                if (selectArgs != null) {
-//                    Log.e("QUERYING ", "uri " + uri + " SEL: " + select + " SELSARGS: " + selectArgs[0].toString());
-                }
                 break;
             }
 

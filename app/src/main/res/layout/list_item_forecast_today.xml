@@ -43,6 +43,23 @@
      - This Guideline divides the screen into a left half and a right half and is used to        -
      - anchor the views to the middle of the screen.                                             -
      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <TextView
+        android:id="@+id/current_temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif-light"
+        android:textColor="@color/white"
+        android:textSize="48sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@+id/horizontal_middle"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="19\u00b0" />
+
     <android.support.constraint.Guideline
         android:id="@+id/horizontal_middle"
         android:layout_width="wrap_content"
@@ -116,16 +133,20 @@
         android:id="@+id/high_temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="0dp"
         android:fontFamily="sans-serif-light"
         android:textColor="@color/white"
-        android:textSize="48sp"
-        app:layout_constraintBottom_toBottomOf="@+id/weather_icon"
-        app:layout_constraintHorizontal_bias="0.45"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/weather_description"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="@+id/horizontal_middle"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/weather_icon"
-        tools:text="19\u00b0"
-        />
+        app:layout_constraintRight_toLeftOf="@+id/guideline2"
+        app:layout_constraintTop_toTopOf="@+id/weather_description"
+        app:layout_constraintVertical_bias="1.0"
+        tools:text="19\u00b0" />
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - Low temperature for today                                                                 -
@@ -140,15 +161,27 @@
         android:id="@+id/low_temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="0dp"
         android:fontFamily="sans-serif-light"
         android:textColor="@color/white"
-        android:textSize="36sp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/weather_description"
-        app:layout_constraintLeft_toLeftOf="@+id/high_temperature"
-        app:layout_constraintRight_toRightOf="@+id/high_temperature"
-        tools:text="10\u00b0"/>
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/high_temperature"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline2"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/high_temperature"
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="10\u00b0" />
 
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/guideline2"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.75" />
 
-        
 
 </android.support.constraint.ConstraintLayout>
