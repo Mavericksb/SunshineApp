@@ -17,6 +17,7 @@ package com.example.android.sunshine;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.MergeCursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -56,6 +57,25 @@ public class ForecastFragment extends Fragment implements
      * The columns of data that we are interested in displaying within our ForecastFragment's list of
      * weather data.
      */
+    public static final String[] CURRENT_FORECAST_PROJECTION = {
+            CurrentWeatherContract.CurrentWeatherEntry.COLUMN_DATE,
+            CurrentWeatherContract.CurrentWeatherEntry.COLUMN_TEMPERATURE,
+            CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID,
+    };
+
+    /*
+     * We store the indices of the values in the array of Strings above to more quickly be able to
+     * access the data from our query. If the order of the Strings above changes, these indices
+     * must be adjusted to match the order of the Strings.
+     */
+    public static final int INDEX_CURRENT_WEATHER_DATE = 0;
+    public static final int INDEX_CURRENT_WEATHER_TEMP = 1;
+    public static final int INDEX_CURRENT_WEATHER_CONDITION_ID = 2;
+
+    /*
+     * The columns of data that we are interested in displaying within our ForecastFragment's list of
+     * weather data.
+     */
     public static final String[] MAIN_FORECAST_PROJECTION = {
             WeatherContract.WeatherEntry.COLUMN_DATE,
             WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
@@ -81,7 +101,10 @@ public class ForecastFragment extends Fragment implements
      * Please note that 44 was chosen arbitrarily. You can use whatever number you like, so long as
      * it is unique and consistent.
      */
+    private static final int ID_CURRENT_LOADER = 43;
     private static final int ID_FORECAST_LOADER = 44;
+
+    private static Cursor mCurrentCursor;
 
     private static ForecastAdapter mForecastAdapter;
     private static RecyclerView mRecyclerView;
@@ -152,6 +175,7 @@ public class ForecastFragment extends Fragment implements
          */
         mLoaderCallbacks = this;
         mSupportLoaderManager = getActivity().getSupportLoaderManager();
+        mSupportLoaderManager.initLoader(ID_CURRENT_LOADER, null, this);
         mSupportLoaderManager.initLoader(ID_FORECAST_LOADER, null, this);
 
         SunshineSyncUtils.initialize(getActivity());
@@ -200,29 +224,23 @@ public class ForecastFragment extends Fragment implements
 
         switch (loaderId) {
 
+
+            case ID_CURRENT_LOADER:
+
+                return new CursorLoader(getActivity(),
+                        CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI,
+                        new String[]{CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID},
+                        null,
+                        null,
+                        null);
+
             case ID_FORECAST_LOADER:
                 /* URI for all rows of weather data in our weather table */
                 Uri forecastQueryUri = WeatherContract.WeatherEntry.CONTENT_URI;
                 /* Sort order: Ascending by date */
                 String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
 
-                //String selection = WeatherContract.WeatherEntry.getSqlSelectForTodayOnwards() + " AND " + WeatherContract.WeatherEntry.COLUMN_CITY_ID + "=?";
-                String selection = WeatherContract.WeatherEntry.COLUMN_CITY_ID + "=?";
-                String[] selectionArgs = new String[]{String.valueOf(SunshinePreferences.getCityId(getActivity()))};
-
-                Cursor cursor = getActivity().getContentResolver().query(CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI,
-                        new String[]{CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID},
-                        null,
-                        null,
-                        null);
-
-                //Log.e("Current cursor", "" + cursor.getColumnIndex(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID));
-
-                cursor.moveToFirst();
-                MainActivity.startBackground(getActivity(), cursor.getString(0));
-
-
-                return new CursorLoader(getActivity(),
+               return new CursorLoader(getActivity(),
                         forecastQueryUri,
                         MAIN_FORECAST_PROJECTION,
                         null, //selection,
@@ -249,10 +267,38 @@ public class ForecastFragment extends Fragment implements
 
 
 
-        mForecastAdapter.swapCursor(data);
+        if(loader.getId()==ID_CURRENT_LOADER){
+            mCurrentCursor = data;
+            return;
+        }
+
+        if(mCurrentCursor != null){
+            if(mCurrentCursor.getCount() != 0) {
+                Cursor merged = new MergeCursor(new Cursor[]{mCurrentCursor, data});
+
+//                Log.e("Cursor", "Merged loader is " + count);
+                if  (merged.moveToFirst()) {
+                    do {
+                        int count = merged.getColumnCount();
+                        for (int i = 0; i < count; i++) {
+                            String col = merged.getString(i);
+                            Log.e("Cursor", "Current loader is " + col);
+                        }
+
+                    }
+                    while (merged.moveToNext());
+                }
+
+//                mForecastAdapter.swapCursor(merged);
+//                if (data.getCount() != 0) showWeatherDataView();
+            } else {
+//                mForecastAdapter.swapCursor(data);
+//                if (data.getCount() != 0) showWeatherDataView();
+            }
+        }
 //        if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
 //        mRecyclerView.smoothScrollToPosition(mPosition);
-        if (data.getCount() != 0) showWeatherDataView();
+
     }
 
     /**

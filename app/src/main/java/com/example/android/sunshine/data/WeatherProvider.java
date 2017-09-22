@@ -353,7 +353,7 @@ public class WeatherProvider extends ContentProvider {
                         null,
                         sortOrder);
                 if (selectArgs != null) {
-                    Log.e("QUERYING ", "uri " + uri + " SEL: " + select + " SELSARGS: " + selectArgs[0].toString());
+//                    Log.e("QUERYING ", "uri " + uri + " SEL: " + select + " SELSARGS: " + selectArgs[0].toString());
                 }
                 break;
             }
@@ -395,7 +395,7 @@ public class WeatherProvider extends ContentProvider {
                         WeatherContract.WeatherEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
-                Log.e("DELETING ", "uri " + uri + " SEL: " + selection + " SELSARGS: " +  selectionArgs[0].toString() + " ROWSDEL: " + numRowsDeleted);
+//                Log.e("DELETING ", "uri " + uri + " SEL: " + selection + " SELSARGS: " +  selectionArgs[0].toString() + " ROWSDEL: " + numRowsDeleted);
                 break;
             case CODE_LOCATIONS:
                 numRowsDeleted = mOpenHelper.getWritableDatabase().delete(
@@ -415,14 +415,14 @@ public class WeatherProvider extends ContentProvider {
                         CurrentWeatherContract.CurrentWeatherEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
-                Log.e("DELETING ", "uri " + uri + " SEL: " + selection + " SELSARGS: " +  selectionArgs[0].toString() + " ROWSDEL: " + numRowsDeleted);
+//                Log.e("DELETING ", "uri " + uri + " SEL: " + selection + " SELSARGS: " +  selectionArgs[0].toString() + " ROWSDEL: " + numRowsDeleted);
                 break;
             case CODE_HOURLY_FORECAST:
                 numRowsDeleted = mOpenHelper.getWritableDatabase().delete(
                         HourlyWeatherContract.HourlyWeatherEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
-                Log.e("DELETING ", "uri " + uri + " SEL: " + selection + " SELSARGS: " +  selectionArgs[0].toString() + " ROWSDEL: " + numRowsDeleted);
+//                Log.e("DELETING ", "uri " + uri + " SEL: " + selection + " SELSARGS: " +  selectionArgs[0].toString() + " ROWSDEL: " + numRowsDeleted);
                 break;
 
             default:

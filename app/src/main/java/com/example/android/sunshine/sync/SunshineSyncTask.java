@@ -82,7 +82,7 @@ public class SunshineSyncTask {
                 *   for ease I'm storing location_id in Shared Preference, so I can get it from there.
                 * */
                 String cityId = String.valueOf(SunshinePreferences.getCityId(context));
-                Log.e("Sync Task", "City id " + cityId);
+//                Log.e("Sync Task", "City id " + cityId);
 
                 String[] selectionArgs = new String[]{cityId};
 
@@ -107,7 +107,6 @@ public class SunshineSyncTask {
                             contentUris[i],
                             weatherArray.get(i));
 
-                    //Log.e(LOG_TAG, "" + contentUris[i] + " Deleted # rows: " + delRows +  ". Inserted # rows: " + insRows);
                 }
 
 

@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         mBackground = (ImageView) findViewById(R.id.cloudView);
         mForeground = (ImageView) findViewById(R.id.cloudView2);
+        mImageAnimator = new ImageAnimator(this, mIncludeBackground, mBackground, mForeground);
 //
 
 //        mImageAnimator.playAnimation();
@@ -104,9 +105,9 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static void startBackground(Context context, String weatherId){
+    public static void startBackground(Context context, String weatherId ){
         Log.e("String Weather", " " + weatherId);
-        mImageAnimator = new ImageAnimator(context, mIncludeBackground, mBackground, mForeground);
+
         mImageAnimator.playAnimation();
     }
 }
