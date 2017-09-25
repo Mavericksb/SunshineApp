@@ -44,7 +44,7 @@ import com.example.android.sunshine.utilities.SunshineDateUtils;
 
 public class ImageAnimator {
 
-    private Context mContext;
+//    private Context mContext;
     private ImageView mBackground;
     private ImageView mForeground;
     private View includeBackground;
@@ -64,9 +64,9 @@ public class ImageAnimator {
             GradientDrawable.Orientation.BL_TR,
             new int[]{0xFF5f7286, 0xFF333a4b});
 
-    private GradientDrawable sunset_gradient = new GradientDrawable(
-            GradientDrawable.Orientation.BL_TR,
-            new int[]{0xFFdaca78, 0xFFff9700});
+//    private GradientDrawable sunset_gradient = new GradientDrawable(
+//            GradientDrawable.Orientation.BL_TR,
+//            new int[]{0xFFdaca78, 0xFFff9700});
 
     private GradientDrawable night_gradient = new GradientDrawable(
             GradientDrawable.Orientation.BL_TR,
@@ -78,7 +78,7 @@ public class ImageAnimator {
 
     public ImageAnimator(Context context, View includeBackground) {
         this.includeBackground = includeBackground;
-        mContext = context.getApplicationContext();
+//        mContext = context.getApplicationContext();
         mBackground = (ImageView) includeBackground.findViewById(R.id.cloudView);
         mForeground = (ImageView) includeBackground.findViewById(R.id.cloudView2);
 
@@ -97,8 +97,8 @@ public class ImageAnimator {
         Log.e("DAYTIME", "hours of day " + dayTime);
         if (dayTime >= 06 && dayTime < 17) {
             TIME = DAY_TIME;
-        } else if (dayTime >= 18 && dayTime <= 19) {
-            TIME = SUNSET_TIME;
+//        } else if (dayTime >= 18 && dayTime <= 19) {
+//            TIME = SUNSET_TIME;
         } else {
             TIME = NIGHT_TIME;
         }
@@ -111,9 +111,9 @@ public class ImageAnimator {
             case DAY_TIME:
                 includeBackground.setBackground(clear_day_gradient);
                 break;
-            case SUNSET_TIME:
-                includeBackground.setBackground(sunset_gradient);
-                break;
+//            case SUNSET_TIME:
+//                includeBackground.setBackground(sunset_gradient);
+//                break;
             case NIGHT_TIME:
                 includeBackground.setBackground(night_gradient);
                 break;
@@ -145,15 +145,23 @@ public class ImageAnimator {
         mBackground.startAnimation(animation);  // start animation
 
 
-        TranslateAnimation foregroundanimation = new TranslateAnimation(1800.0f, -1800.0f,
-                0.0f, 0.0f);          //  new TranslateAnimation(xFrom,xTo, yFrom,yTo)
-        foregroundanimation.setDuration(60000);  // animation duration
-        foregroundanimation.setRepeatCount(ValueAnimator.INFINITE);  // animation repeat count
-        foregroundanimation.setRepeatMode(1);   // repeat animation (left to right, right to left )
-        foregroundanimation.setInterpolator(new LinearInterpolator());
+        TranslateAnimation foregroundanimation1 = new TranslateAnimation(900.0f, -1800.0f, 0.0f, 0.0f);//(xFrom,xTo, yFrom,yTo)
+        foregroundanimation1.setDuration(30000);  // animation duration
+        foregroundanimation1.setRepeatCount(ValueAnimator.INFINITE);  // animation repeat count
+        foregroundanimation1.setRepeatMode(1);   // repeat animation (left to right, right to left )
+        foregroundanimation1.setInterpolator(new LinearInterpolator());
 
-        mForeground.startAnimation(foregroundanimation);  // start animation
+        TranslateAnimation foregroundanimation2 = new TranslateAnimation(1800.0f, -1800.0f, 0.0f, 0.0f);//(xFrom,xTo, yFrom,yTo)
+        foregroundanimation2.setStartOffset(30000);
+        foregroundanimation2.setDuration(60000);  // animation duration
+        foregroundanimation2.setRepeatCount(ValueAnimator.INFINITE);  // animation repeat count
+        foregroundanimation2.setRepeatMode(1);   // repeat animation (left to right, right to left )
+        foregroundanimation2.setInterpolator(new LinearInterpolator());
 
+        AnimationSet fgAs = new AnimationSet(true);
+        fgAs.addAnimation(foregroundanimation1);
+        fgAs.addAnimation(foregroundanimation2);
+        mForeground.startAnimation(fgAs);  // start animation
 
 
         if (TIME == NIGHT_TIME) {
@@ -176,12 +184,12 @@ public class ImageAnimator {
             rotateAnimation2.setDuration(300000);
 
 
-            AlphaAnimation alphaAnimation1 = new AlphaAnimation(0.7f, 0.8f);
+            AlphaAnimation alphaAnimation1 = new AlphaAnimation(0.6f, 0.7f);
             alphaAnimation1.setRepeatMode(Animation.REVERSE);
             alphaAnimation1.setRepeatCount(Animation.INFINITE);
             alphaAnimation1.setDuration(25);
 
-            AlphaAnimation alphaAnimation2 = new AlphaAnimation(0.6f, 0.8f);
+            AlphaAnimation alphaAnimation2 = new AlphaAnimation(0.5f, 0.7f);
             alphaAnimation2.setRepeatMode(Animation.REVERSE);
             alphaAnimation2.setRepeatCount(Animation.INFINITE);
             alphaAnimation2.setDuration(75);
@@ -195,6 +203,7 @@ public class ImageAnimator {
             set2.addAnimation(rotateAnimation2);
             set2.addAnimation(alphaAnimation2);
             starView2.startAnimation(set2);
+
         } else {
             starView.clearAnimation();
             starView2.clearAnimation();
