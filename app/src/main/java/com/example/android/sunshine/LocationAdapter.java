@@ -13,6 +13,7 @@ import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.android.sunshine.data.CurrentWeatherContract;
 import com.example.android.sunshine.data.LocationsContract;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
@@ -67,7 +68,6 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener {
         Cursor cursor = getCursor();
         cursor.moveToPosition(position);
         long cityId = cursor.getLong(LocationActivity.INDEX_ID);
-        Log.e("Loc Adapt", "City id " + cityId);
 
         SunshinePreferences.setCityId(mContext, cityId);
         double latitude = Double.valueOf(cursor.getString(LocationActivity.INDEX_CITY_LATITUDE));
@@ -77,8 +77,10 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener {
         SunshinePreferences.setLocationDetails(mContext, latitude, longitude, city, placeId);
         SunshineSyncUtils.startImmediateSync(mContext);
         ForecastFragment.reload();
+
         //HourlyActivity.reload();
         ((Activity) mContext).finish();
+
     }
 
     @Override
@@ -105,6 +107,11 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener {
                 mContext.getContentResolver().delete(
                         WeatherContract.WeatherEntry.CONTENT_URI,
                         WeatherContract.WeatherEntry.COLUMN_CITY_ID + "=?",
+                        selectionArgs);
+
+                mContext.getContentResolver().delete(
+                        CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI,
+                        CurrentWeatherContract.CurrentWeatherEntry.COLUMN_CITY_ID + "=?",
                         selectionArgs);
             }
         });

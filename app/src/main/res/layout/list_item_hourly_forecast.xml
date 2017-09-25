@@ -47,6 +47,7 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintLeft_toRightOf="@+id/hourly_weather_icon"
         android:textSize="@dimen/hourly_text_size"
+        android:textColor="@color/white"
         android:fontFamily="sans-serif-condensed"
         tools:text="Today, April 03"/>
 

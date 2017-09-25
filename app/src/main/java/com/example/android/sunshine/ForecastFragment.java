@@ -15,30 +15,23 @@
  */
 package com.example.android.sunshine;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.MergeCursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentContainer;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.example.android.sunshine.data.CurrentWeatherContract;
@@ -63,11 +56,6 @@ public class ForecastFragment extends Fragment implements
             CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID,
     };
 
-    /*
-     * We store the indices of the values in the array of Strings above to more quickly be able to
-     * access the data from our query. If the order of the Strings above changes, these indices
-     * must be adjusted to match the order of the Strings.
-     */
     public static final int INDEX_CURRENT_WEATHER_DATE = 0;
     public static final int INDEX_CURRENT_WEATHER_TEMP = 1;
     public static final int INDEX_CURRENT_WEATHER_CONDITION_ID = 2;
@@ -83,80 +71,64 @@ public class ForecastFragment extends Fragment implements
             WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
     };
 
-    /*
-     * We store the indices of the values in the array of Strings above to more quickly be able to
-     * access the data from our query. If the order of the Strings above changes, these indices
-     * must be adjusted to match the order of the Strings.
-     */
     public static final int INDEX_WEATHER_DATE = 0;
     public static final int INDEX_WEATHER_MAX_TEMP = 1;
     public static final int INDEX_WEATHER_MIN_TEMP = 2;
     public static final int INDEX_WEATHER_CONDITION_ID = 3;
 
-
-    /*
-     * This ID will be used to identify the Loader responsible for loading our weather forecast. In
-     * some cases, one Activity can deal with many Loaders. However, in our case, there is only one.
-     * We will still use this ID to initialize the loader and create the loader for best practice.
-     * Please note that 44 was chosen arbitrarily. You can use whatever number you like, so long as
-     * it is unique and consistent.
-     */
     private static final int ID_CURRENT_LOADER = 43;
     private static final int ID_FORECAST_LOADER = 44;
 
     private static Cursor mCurrentCursor;
+    private static Cursor mForecastCursor;
+    private static Cursor mMergedCursor;
 
-    private static ForecastAdapter mForecastAdapter;
-    private static RecyclerView mRecyclerView;
+    private ForecastAdapter mForecastAdapter;
+    private RecyclerView mRecyclerView;
     private static int mPosition = RecyclerView.NO_POSITION;
 
-    private static ProgressBar mLoadingIndicator;
+    private ProgressBar mLoadingIndicator;
+
     private static LoaderManager mSupportLoaderManager;
     private static LoaderManager.LoaderCallbacks mLoaderCallbacks;
-
-    private static ImageAnimator mImageAnimator;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-        Log.e("ForecastFragment", "On create ForecastFragment");
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        Log.e("ForecastFragment", "On create View ForecastFragment instance NULL");
         View forecastView = inflater.inflate(R.layout.activity_forecast, container, false);
 
         mRecyclerView = (RecyclerView) forecastView.findViewById(R.id.recyclerview_forecast);
-
         mLoadingIndicator = (ProgressBar) forecastView.findViewById(R.id.pb_loading_indicator);
+        showLoading();
 
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 
         mRecyclerView.setLayoutManager(layoutManager);
-
         mRecyclerView.setHasFixedSize(true);
-
         mForecastAdapter = new ForecastAdapter(getActivity(), this);
-
         mRecyclerView.setAdapter(mForecastAdapter);
 
-        showLoading();
+        return forecastView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         mLoaderCallbacks = this;
         mSupportLoaderManager = getActivity().getSupportLoaderManager();
         mSupportLoaderManager.initLoader(ID_CURRENT_LOADER, null, this);
         mSupportLoaderManager.initLoader(ID_FORECAST_LOADER, null, this);
-
-        SunshineSyncUtils.initialize(getActivity());
-
-        return forecastView;
     }
-
 
 
     /**
@@ -174,21 +146,20 @@ public class ForecastFragment extends Fragment implements
 
         switch (loaderId) {
 
-            case ID_CURRENT_LOADER:
 
+            case ID_CURRENT_LOADER:
                 return new CursorLoader(getActivity(),
                         CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI,
                         CURRENT_FORECAST_PROJECTION,
                         null,
                         null,
                         null);
-
             case ID_FORECAST_LOADER:
+
                 /* URI for all rows of weather data in our weather table */
                 Uri forecastQueryUri = WeatherContract.WeatherEntry.CONTENT_URI;
                 /* Sort order: Ascending by date */
                 String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
-
                 return new CursorLoader(getActivity(),
                         forecastQueryUri,
                         MAIN_FORECAST_PROJECTION,
@@ -214,22 +185,36 @@ public class ForecastFragment extends Fragment implements
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-
-        if (loader.getId() == ID_CURRENT_LOADER) {
-            mCurrentCursor = data;
-
-            return;
+        int loaderId = loader.getId();
+        switch (loaderId) {
+            case ID_CURRENT_LOADER:
+                mCurrentCursor = data;
+                break;
+            case ID_FORECAST_LOADER:
+                mForecastCursor = data;
+                break;
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + loaderId);
         }
 
-        Cursor merged = new MergeCursor(new Cursor[]{mCurrentCursor, data});
+        if (mCurrentCursor != null && mForecastCursor != null) {
+            if (mCurrentCursor.getCount() != 0 && mForecastCursor.getCount() != 0){
+                mCurrentCursor.moveToFirst();
+                mMergedCursor = new MergeCursor(new Cursor[]{mCurrentCursor, mForecastCursor});
+            mForecastAdapter.swapCursor(mMergedCursor);
+            showWeatherDataView();
 
-        mForecastAdapter.swapCursor(merged);
-        if (data.getCount() != 0) showWeatherDataView();
-
+        } else {
+            Log.e("ONLOADFINISHED", "Error current " + mCurrentCursor.getCount() + " or Forecast " + mForecastCursor.getCount());
+        }
+    } else {
+            Log.e("ONLOADFINISHED", "Error current " + mCurrentCursor + " or Forecast " + mForecastCursor);
+        }
 //        if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
 //        mRecyclerView.smoothScrollToPosition(mPosition);
 
-    }
+}
+
 
     /**
      * Called when a previously created loader is being reset, and thus making its data unavailable.
@@ -310,6 +295,8 @@ public class ForecastFragment extends Fragment implements
 
 
     public static void reload() {
+
+        mSupportLoaderManager.restartLoader(ID_CURRENT_LOADER, null, mLoaderCallbacks);
         mSupportLoaderManager.restartLoader(ID_FORECAST_LOADER, null, mLoaderCallbacks);
     }
 

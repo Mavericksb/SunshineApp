@@ -457,7 +457,7 @@ public final class OpenWeatherJsonUtils {
                 if (cloudCover < 0.25) {
                     exactId = "mostly_clear";
                 } else if (cloudCover < 0.50) {
-                    exactId = "scattered_clouds" + id;
+                    exactId = "scattered_clouds";
                 } else if (cloudCover < 0.80) {
                     exactId = "broken_clouds";
                 } else {

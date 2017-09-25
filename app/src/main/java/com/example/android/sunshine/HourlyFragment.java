@@ -107,11 +107,11 @@ public class HourlyFragment extends Fragment implements
      */
     private static final int ID_HOURLY_FORECAST_LOADER = 453;
 
-    private static HourlyForecastAdapter mHourlyForecastAdapter;
-    private static RecyclerView mRecyclerView;
+    private HourlyForecastAdapter mHourlyForecastAdapter;
+    private RecyclerView mRecyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
 
-    private static ProgressBar mLoadingIndicator;
+    private ProgressBar mLoadingIndicator;
     private static LoaderManager mSupportLoaderManager;
     private static LoaderManager.LoaderCallbacks mLoaderCallbacks;
 
@@ -182,16 +182,16 @@ public class HourlyFragment extends Fragment implements
 
         showLoading();
 
-        mSupportLoaderManager = this.getActivity().getSupportLoaderManager();
         mLoaderCallbacks = this;
+        mSupportLoaderManager = getActivity().getSupportLoaderManager();
 
-        hourlyLoader =  mSupportLoaderManager.initLoader(ID_HOURLY_FORECAST_LOADER, null, this);
-        if(hourlyLoader.isStarted() && !mUri.equals(mOldUri)){
-            reload();
-            mOldUri = mUri;
-        }
+        hourlyLoader =  mSupportLoaderManager.initLoader(ID_HOURLY_FORECAST_LOADER, null, mLoaderCallbacks);
+                if(!mUri.equals(mOldUri)){
+                    reload();
+                    mOldUri = mUri;
+                }
 
-        SunshineSyncUtils.initialize(getActivity());
+//        SunshineSyncUtils.initialize(getActivity());
 
         return hourlyForecastView;
 
@@ -251,10 +251,10 @@ public class HourlyFragment extends Fragment implements
         if (data.getCount() != 0){
             showWeatherDataView();
         }
-        else{
-            Toast noData = Toast.makeText(getActivity(), "There is no forecast for this day", Toast.LENGTH_SHORT);
-            noData.show();
-        }
+//        else{
+//            Toast noData = Toast.makeText(getContext(), "There is no forecast for this day", Toast.LENGTH_SHORT);
+//            noData.show();
+//        }
     }
 
     /**
@@ -334,6 +334,9 @@ public class HourlyFragment extends Fragment implements
 //            @Override
 //            public void onAnimationEnd(Animation animation) {
 //                // Do any process intensive work that can wait until after fragment has loaded
+//
+//
+//
 //
 //            }
 //

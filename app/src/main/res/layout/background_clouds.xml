@@ -3,7 +3,28 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/gradient_background">
+    tools:background="@drawable/gradient_background"
+    >
+
+    <ImageView
+        android:id="@+id/starView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/stars1"
+        android:layout_marginTop="-30dp"
+        android:scaleX="3"
+        android:scaleY="3"
+        />
+
+    <ImageView
+    android:id="@+id/starView2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:src="@drawable/stars2"
+    android:scaleX="2"
+    android:scaleY="2"
+    android:layout_marginTop="-50dp"
+    />
 
     <ImageView
         android:id="@+id/cloudView"
@@ -20,11 +41,11 @@
     <ImageView
         android:id="@+id/cloudView2"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="140dp"
         android:src="@drawable/ccloud2"
-        android:layout_marginTop="80dp"
-        android:scaleX="4"
-        android:scaleY="3"
+        android:scaleX="2.8"
+        android:scaleY="2.5"
         android:alpha="0.75"
 
         />

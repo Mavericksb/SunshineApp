@@ -1,12 +1,18 @@
 package com.example.android.sunshine;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -15,49 +21,74 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.example.android.sunshine.data.CurrentWeatherContract;
+import com.example.android.sunshine.data.SunshinePreferences;
+import com.example.android.sunshine.sync.SunshineSyncUtils;
+
+import java.lang.ref.WeakReference;
+
 /**
  * Created by Robert on 19/09/2017.
  */
 
 
 
-public class MainActivity extends AppCompatActivity {
-
-    private static ImageAnimator mImageAnimator;
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
     public static final String FORECAST_TAG = "forecast_fragment";
     public static final String HOURLY_TAG = "hourly_fragment";
 
-    private static ImageView mBackground;
-    private static ImageView mForeground;
-    private static View mIncludeBackground;
+    private static final int ID_LOADER_BACKGROUND = 101;
+
+    private ImageAnimator mImageAnimator;
+
+    private static String mWeatherId;
+    private static long mDateTime;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
-        mIncludeBackground = (View) findViewById(R.id.include_background);
+
+        View mIncludeBackground = (View) findViewById(R.id.include_background);
+
         mIncludeBackground.setVisibility(View.INVISIBLE);
 
-        mBackground = (ImageView) findViewById(R.id.cloudView);
-        mForeground = (ImageView) findViewById(R.id.cloudView2);
-        mImageAnimator = new ImageAnimator(this, mIncludeBackground, mBackground, mForeground);
-//
+        mImageAnimator = new ImageAnimator(this, mIncludeBackground);
 
-//        mImageAnimator.playAnimation();
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment forecastFragment = fm.findFragmentByTag(MainActivity.HOURLY_TAG);
 
+        FragmentTransaction ft = fm.beginTransaction();
 
-        if(savedInstanceState == null) {
-            ForecastFragment forecastFragment = new ForecastFragment();
-
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
+        if(forecastFragment == null) {
+            forecastFragment = new ForecastFragment();
 
             ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                    .add(R.id.fragment_container, forecastFragment, FORECAST_TAG).commit();
+                    .replace(R.id.fragment_container, forecastFragment, FORECAST_TAG).commit();
+        } else {
+            ft.show(forecastFragment);
         }
+
+        Loader loader = getSupportLoaderManager().initLoader(ID_LOADER_BACKGROUND, null, this);
+
+        SunshineSyncUtils.initialize(this);
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getSupportLoaderManager().restartLoader(ID_LOADER_BACKGROUND, null, this);
+    }
+
+    public static void setBackground(String weatherId, long date ){
+        Log.e("String Weather", " " + weatherId);
+        mWeatherId = weatherId;
+        mDateTime = date;
+    }
+
 
     /**
      * This is where we inflate and set up the menu for this Activity.
@@ -80,13 +111,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    /**
-     * Callback invoked when a menu item was selected from this Activity's menu.
-     *
-     * @param item The menu item that was selected by the user
-     *
-     * @return true if you handle the menu click here, false otherwise
-     */
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -98,16 +123,40 @@ public class MainActivity extends AppCompatActivity {
         }
         if (id == R.id.action_location) {
             startActivity(new Intent(this, LocationActivity.class));
-            //openPreferredLocationInMap();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    public static void startBackground(Context context, String weatherId, long date ){
-        Log.e("String Weather", " " + weatherId);
 
-        mImageAnimator.playAnimation(weatherId, date);
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        return new CursorLoader(this,
+                CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI,
+                new String[]{CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID, CurrentWeatherContract.CurrentWeatherEntry.COLUMN_DATE},
+                CurrentWeatherContract.CurrentWeatherEntry.COLUMN_CITY_ID + "=?",
+                new String[]{String.valueOf(SunshinePreferences.getCityId(this))},
+                null
+                );
+    }
+
+    @Override
+    public void onLoadFinished(Loader loader, Cursor data) {
+
+        if(data!=null){
+            data.moveToFirst();
+            mImageAnimator.playAnimation(data.getString(data.getColumnIndex(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID)),
+                    (data.getLong(data.getColumnIndex(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_DATE))));
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+
     }
 }
+
+

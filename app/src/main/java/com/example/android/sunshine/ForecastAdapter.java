@@ -239,8 +239,6 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
          /* Set the text and content description (for accessibility purposes) */
         forecastAdapterViewHolder.lowTempView.setText(lowSpan);
         forecastAdapterViewHolder.lowTempView.setContentDescription(lowA11y);
-
-        MainActivity.startBackground(mContext, weatherId, dateInMillis );
     }
 
     private void setDataFutureDay(ForecastAdapterViewHolder forecastAdapterViewHolder, int position) {

@@ -47,6 +47,7 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintLeft_toRightOf="@+id/weather_icon"
         tools:text="Today, April 03"
+        android:textColor="@color/white"
         android:textSize="@dimen/forecast_primary_text_size"
         android:fontFamily="sans-serif-condensed"
         />

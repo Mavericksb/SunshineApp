@@ -10,9 +10,10 @@
         android:id="@+id/autoCompleteTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
+        android:textColor="@color/white"
         android:ems="10"
         android:hint="Cerca città"
+        android:textColorHint="@color/activated"
         android:paddingEnd="@dimen/forecast_detail_horizontal_padding"
         android:popupBackground="@android:color/transparent"
         android:dropDownListViewStyle="@style/DropDownListViewStyle"
