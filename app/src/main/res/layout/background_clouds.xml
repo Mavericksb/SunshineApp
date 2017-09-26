@@ -30,11 +30,11 @@
         android:id="@+id/cloudView"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:layout_marginTop="-30dp"
-        android:src="@drawable/cloud1"
-        android:scaleX="3"
-        android:scaleY="3.2"
-        android:alpha="0.4"
+        android:layout_marginTop="0dp"
+        android:src="@drawable/cloud6"
+        android:scaleX="2.5"
+        android:scaleY="2"
+        android:alpha="0.6"
 
         />
 

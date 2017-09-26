@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoadFinished(Loader loader, Cursor data) {
 
-        if(data!=null){
+        if(data!=null && data.getCount() != 0){
             data.moveToFirst();
             mImageAnimator.playAnimation(data.getString(data.getColumnIndex(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID)),
                     (data.getLong(data.getColumnIndex(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_DATE))));

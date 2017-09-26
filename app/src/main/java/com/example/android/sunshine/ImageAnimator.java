@@ -95,7 +95,7 @@ public class ImageAnimator {
 
         int dayTime = Integer.valueOf(SunshineDateUtils.getHourlyDetailDate(date, VIEW_DAYTIME_ANIMATION));
         Log.e("DAYTIME", "hours of day " + dayTime);
-        if (dayTime >= 06 && dayTime < 17) {
+        if (dayTime >= 06 && dayTime < 19) {
             TIME = DAY_TIME;
 //        } else if (dayTime >= 18 && dayTime <= 19) {
 //            TIME = SUNSET_TIME;
@@ -134,34 +134,32 @@ public class ImageAnimator {
 
         mForeground.setColorFilter(0);
         mBackground.setColorFilter(0);
-        TranslateAnimation animation = new TranslateAnimation(1200.0f, -1200.0f,
-                0.0f, 0.0f);          //  new TranslateAnimation(xFrom,xTo, yFrom,yTo)
-        animation.setDuration(90000);  // animation duration
-        animation.setRepeatCount(ValueAnimator.INFINITE);  // animation repeat count
-        animation.setRepeatMode(1);   // repeat animation (left to right, right to left )
-        animation.setInterpolator(new LinearInterpolator());
 
 
-        mBackground.startAnimation(animation);  // start animation
+        ObjectAnimator bgAnim1 = ObjectAnimator.ofFloat(mBackground, "translationX", 600f , -1200f);
+        bgAnim1.setDuration(120000);
+        bgAnim1.setRepeatMode(ValueAnimator.RESTART);
+        ObjectAnimator bgAnim2 = ObjectAnimator.ofFloat(mBackground, "translationX", 1200f , -1200f);
+        bgAnim2.setRepeatCount(ValueAnimator.INFINITE);
+        bgAnim2.setDuration(160000);
+
+        AnimatorSet bgAs = new AnimatorSet();
+        bgAs.playSequentially(bgAnim1, bgAnim2);
+        bgAs.setInterpolator(new LinearInterpolator());
+        bgAs.start();  // start animation
 
 
-        TranslateAnimation foregroundanimation1 = new TranslateAnimation(900.0f, -1800.0f, 0.0f, 0.0f);//(xFrom,xTo, yFrom,yTo)
-        foregroundanimation1.setDuration(30000);  // animation duration
-        foregroundanimation1.setRepeatCount(ValueAnimator.INFINITE);  // animation repeat count
-        foregroundanimation1.setRepeatMode(1);   // repeat animation (left to right, right to left )
-        foregroundanimation1.setInterpolator(new LinearInterpolator());
+        ObjectAnimator fgAnim1 = ObjectAnimator.ofFloat(mForeground, "translationX", 0f , -1500f);
+        fgAnim1.setDuration(40000);
+        fgAnim1.setRepeatMode(ValueAnimator.RESTART);
+        ObjectAnimator fgAnim2 = ObjectAnimator.ofFloat(mForeground, "translationX", 1500f , -1500f);
+        fgAnim2.setRepeatCount(ValueAnimator.INFINITE);
+        fgAnim2.setDuration(80000);
 
-        TranslateAnimation foregroundanimation2 = new TranslateAnimation(1800.0f, -1800.0f, 0.0f, 0.0f);//(xFrom,xTo, yFrom,yTo)
-        foregroundanimation2.setStartOffset(30000);
-        foregroundanimation2.setDuration(60000);  // animation duration
-        foregroundanimation2.setRepeatCount(ValueAnimator.INFINITE);  // animation repeat count
-        foregroundanimation2.setRepeatMode(1);   // repeat animation (left to right, right to left )
-        foregroundanimation2.setInterpolator(new LinearInterpolator());
-
-        AnimationSet fgAs = new AnimationSet(true);
-        fgAs.addAnimation(foregroundanimation1);
-        fgAs.addAnimation(foregroundanimation2);
-        mForeground.startAnimation(fgAs);  // start animation
+        AnimatorSet fgAs = new AnimatorSet();
+        fgAs.playSequentially(fgAnim1, fgAnim2);
+        fgAs.setInterpolator(new LinearInterpolator());
+        fgAs.start();  // start animation
 
 
         if (TIME == NIGHT_TIME) {
@@ -175,13 +173,13 @@ public class ImageAnimator {
             rotateAnimation1.setInterpolator(new LinearInterpolator());
             rotateAnimation1.setRepeatMode(Animation.RESTART);
             rotateAnimation1.setRepeatCount(Animation.INFINITE);
-            rotateAnimation1.setDuration(200000);
+            rotateAnimation1.setDuration(400000);
 
             RotateAnimation rotateAnimation2 = new RotateAnimation(0, 360, Animation.RELATIVE_TO_PARENT, 0.5f, Animation.RELATIVE_TO_PARENT, 0.5f);
             rotateAnimation2.setInterpolator(new LinearInterpolator());
             rotateAnimation2.setRepeatMode(Animation.RESTART);
             rotateAnimation2.setRepeatCount(Animation.INFINITE);
-            rotateAnimation2.setDuration(300000);
+            rotateAnimation2.setDuration(350000);
 
 
             AlphaAnimation alphaAnimation1 = new AlphaAnimation(0.6f, 0.7f);
