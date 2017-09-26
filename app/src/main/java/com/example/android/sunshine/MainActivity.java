@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,6 +24,7 @@ import android.widget.ImageView;
 
 import com.example.android.sunshine.data.CurrentWeatherContract;
 import com.example.android.sunshine.data.SunshinePreferences;
+import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.sync.SunshineSyncUtils;
 
 import java.lang.ref.WeakReference;
@@ -42,8 +44,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private ImageAnimator mImageAnimator;
 
-    private static String mWeatherId;
-    private static long mDateTime;
+    private static String mWeatherId = null;
+    private static long mDateTime = -1;
+
+    public static final String[] CURRENT_FORECAST_PROJECTION = {
+            CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID,
+            CurrentWeatherContract.CurrentWeatherEntry.COLUMN_DATE,
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,21 +81,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         Loader loader = getSupportLoaderManager().initLoader(ID_LOADER_BACKGROUND, null, this);
 
+        if(mWeatherId != null && mDateTime != -1) {
+            mImageAnimator.playAnimation(mWeatherId, mDateTime, true);
+            Log.e("ON CREATE", "IM HERE !!");
+        }
+
         SunshineSyncUtils.initialize(this);
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        getSupportLoaderManager().restartLoader(ID_LOADER_BACKGROUND, null, this);
-    }
-
-    public static void setBackground(String weatherId, long date ){
-        Log.e("String Weather", " " + weatherId);
-        mWeatherId = weatherId;
-        mDateTime = date;
-    }
-
 
     /**
      * This is where we inflate and set up the menu for this Activity.
@@ -134,13 +133,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
+        Uri CurrentWeatherUri = CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI;
+        String selection = CurrentWeatherContract.CurrentWeatherEntry.COLUMN_CITY_ID + "=?";
+        String[] selectionArgs = new String[]{String.valueOf(SunshinePreferences.getCityId(this))};
+
         return new CursorLoader(this,
-                CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI,
-                new String[]{CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID, CurrentWeatherContract.CurrentWeatherEntry.COLUMN_DATE},
-                CurrentWeatherContract.CurrentWeatherEntry.COLUMN_CITY_ID + "=?",
-                new String[]{String.valueOf(SunshinePreferences.getCityId(this))},
-                null
-                );
+                CurrentWeatherUri, CURRENT_FORECAST_PROJECTION, selection, selectionArgs, null);
     }
 
     @Override
@@ -148,8 +146,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         if(data!=null && data.getCount() != 0){
             data.moveToFirst();
-            mImageAnimator.playAnimation(data.getString(data.getColumnIndex(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID)),
-                    (data.getLong(data.getColumnIndex(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_DATE))));
+            mWeatherId = data.getString(data.getColumnIndex(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID));
+            mDateTime = data.getLong(data.getColumnIndex(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_DATE));
+            mImageAnimator.playAnimation(mWeatherId, mDateTime, false);
         }
     }
 

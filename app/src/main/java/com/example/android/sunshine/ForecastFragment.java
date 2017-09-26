@@ -69,12 +69,16 @@ public class ForecastFragment extends Fragment implements
             WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
             WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
             WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
+            WeatherContract.WeatherEntry.COLUMN_SUNRISE_TIME,
+            WeatherContract.WeatherEntry.COLUMN_SUNSET_TIME
     };
 
     public static final int INDEX_WEATHER_DATE = 0;
     public static final int INDEX_WEATHER_MAX_TEMP = 1;
     public static final int INDEX_WEATHER_MIN_TEMP = 2;
     public static final int INDEX_WEATHER_CONDITION_ID = 3;
+    public static final int INDEX_SUNRISE_TIME = 4;
+    public static final int INDEX_SUNSET_TIME = 5;
 
     private static final int ID_CURRENT_LOADER = 43;
     private static final int ID_FORECAST_LOADER = 44;
@@ -200,6 +204,10 @@ public class ForecastFragment extends Fragment implements
         if (mCurrentCursor != null && mForecastCursor != null) {
             if (mCurrentCursor.getCount() != 0 && mForecastCursor.getCount() != 0){
                 mCurrentCursor.moveToFirst();
+                mForecastCursor.moveToFirst();
+                long sunriseTime = mForecastCursor.getLong(INDEX_SUNRISE_TIME);
+                long sunsetTime = mForecastCursor.getLong(INDEX_SUNSET_TIME);
+                SunshinePreferences.setRiseSetTime(getActivity(), sunriseTime, sunsetTime);
                 mMergedCursor = new MergeCursor(new Cursor[]{mCurrentCursor, mForecastCursor});
             mForecastAdapter.swapCursor(mMergedCursor);
             showWeatherDataView();

@@ -36,6 +36,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.utilities.SunshineDateUtils;
 
 /**
@@ -44,7 +45,7 @@ import com.example.android.sunshine.utilities.SunshineDateUtils;
 
 public class ImageAnimator {
 
-//    private Context mContext;
+    private Context mContext;
     private ImageView mBackground;
     private ImageView mForeground;
     private View includeBackground;
@@ -78,7 +79,7 @@ public class ImageAnimator {
 
     public ImageAnimator(Context context, View includeBackground) {
         this.includeBackground = includeBackground;
-//        mContext = context.getApplicationContext();
+        mContext = context.getApplicationContext();
         mBackground = (ImageView) includeBackground.findViewById(R.id.cloudView);
         mForeground = (ImageView) includeBackground.findViewById(R.id.cloudView2);
 
@@ -87,15 +88,20 @@ public class ImageAnimator {
 
     }
 
-    public void playAnimation(String weatherId, long date) {
+    public void playAnimation(String weatherId, long date, boolean onStart) {
 
 //        View view = LayoutInflater.from(mContext).inflate(R.layout.background_clouds, null);
 //        view.setBackground(mContext.getDrawable(R.drawable.gradient_background_clear));
         int TIME = 0;
 
         int dayTime = Integer.valueOf(SunshineDateUtils.getHourlyDetailDate(date, VIEW_DAYTIME_ANIMATION));
-        Log.e("DAYTIME", "hours of day " + dayTime);
-        if (dayTime >= 06 && dayTime < 19) {
+        long sunrise = SunshinePreferences.getSunriseTime(mContext);
+        long sunset = SunshinePreferences.getSunsetTime(mContext);
+
+        Log.e("IMAGEANIMATOR", "Time " + dayTime + " date "  + date + " sunrise " + sunrise + " sunset " + sunset + " weather Id " + weatherId);
+
+
+        if (date > sunrise && date < sunset) {
             TIME = DAY_TIME;
 //        } else if (dayTime >= 18 && dayTime <= 19) {
 //            TIME = SUNSET_TIME;
@@ -103,7 +109,7 @@ public class ImageAnimator {
             TIME = NIGHT_TIME;
         }
 
-        if (PREVIOUS_STATE == TIME) {
+        if (PREVIOUS_STATE == TIME && !onStart) {
             return;
         }
 
@@ -111,9 +117,6 @@ public class ImageAnimator {
             case DAY_TIME:
                 includeBackground.setBackground(clear_day_gradient);
                 break;
-//            case SUNSET_TIME:
-//                includeBackground.setBackground(sunset_gradient);
-//                break;
             case NIGHT_TIME:
                 includeBackground.setBackground(night_gradient);
                 break;
@@ -135,31 +138,46 @@ public class ImageAnimator {
         mForeground.setColorFilter(0);
         mBackground.setColorFilter(0);
 
+        int cloudsType;
+        switch(weatherId) {
+            case "mostly_clear":
+                cloudsType = 1;
+            case "scattered_clouds":
+                cloudsType = 2;
+            case "broken_clouds":
+                cloudsType = 3;
+            case "overcast_clouds":
+                cloudsType = 4;
+            default:
+                cloudsType = 0;
+        }
 
-        ObjectAnimator bgAnim1 = ObjectAnimator.ofFloat(mBackground, "translationX", 600f , -1200f);
-        bgAnim1.setDuration(120000);
-        bgAnim1.setRepeatMode(ValueAnimator.RESTART);
-        ObjectAnimator bgAnim2 = ObjectAnimator.ofFloat(mBackground, "translationX", 1200f , -1200f);
-        bgAnim2.setRepeatCount(ValueAnimator.INFINITE);
-        bgAnim2.setDuration(160000);
+        if(cloudsType>0) {
+            ObjectAnimator bgAnim1 = ObjectAnimator.ofFloat(mBackground, "translationX", 600f, -1200f);
+            bgAnim1.setDuration(120000);
+            bgAnim1.setRepeatMode(ValueAnimator.RESTART);
+            ObjectAnimator bgAnim2 = ObjectAnimator.ofFloat(mBackground, "translationX", 1200f, -1200f);
+            bgAnim2.setRepeatCount(ValueAnimator.INFINITE);
+            bgAnim2.setDuration(160000);
 
-        AnimatorSet bgAs = new AnimatorSet();
-        bgAs.playSequentially(bgAnim1, bgAnim2);
-        bgAs.setInterpolator(new LinearInterpolator());
-        bgAs.start();  // start animation
+            AnimatorSet bgAs = new AnimatorSet();
+            bgAs.setInterpolator(new LinearInterpolator());
+            bgAs.playSequentially(bgAnim1, bgAnim2);
+            bgAs.start();  // start animation
+        }
+        if(cloudsType>1) {
+            ObjectAnimator fgAnim1 = ObjectAnimator.ofFloat(mForeground, "translationX", 0f, -1500f);
+            fgAnim1.setDuration(55000);
+            fgAnim1.setRepeatMode(ValueAnimator.RESTART);
+            ObjectAnimator fgAnim2 = ObjectAnimator.ofFloat(mForeground, "translationX", 1500f, -1500f);
+            fgAnim2.setRepeatCount(ValueAnimator.INFINITE);
+            fgAnim2.setDuration(110000);
 
-
-        ObjectAnimator fgAnim1 = ObjectAnimator.ofFloat(mForeground, "translationX", 0f , -1500f);
-        fgAnim1.setDuration(40000);
-        fgAnim1.setRepeatMode(ValueAnimator.RESTART);
-        ObjectAnimator fgAnim2 = ObjectAnimator.ofFloat(mForeground, "translationX", 1500f , -1500f);
-        fgAnim2.setRepeatCount(ValueAnimator.INFINITE);
-        fgAnim2.setDuration(80000);
-
-        AnimatorSet fgAs = new AnimatorSet();
-        fgAs.playSequentially(fgAnim1, fgAnim2);
-        fgAs.setInterpolator(new LinearInterpolator());
-        fgAs.start();  // start animation
+            AnimatorSet fgAs = new AnimatorSet();
+            fgAs.setInterpolator(new LinearInterpolator());
+            fgAs.playSequentially(fgAnim1, fgAnim2);
+            fgAs.start();  // start animation
+        }
 
 
         if (TIME == NIGHT_TIME) {

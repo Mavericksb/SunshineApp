@@ -37,6 +37,9 @@ public final class SunshinePreferences {
     // place Id of actual city
     public static final String PREF_PLACE_ID = "place_id";
 
+    public static final String SUNRISE_TIME = "sunrise_time";
+    public static final String SUNSET_TIME = "sunset_time";
+
 
 
     /**
@@ -74,6 +77,27 @@ public final class SunshinePreferences {
 
         editor.putString(PREF_CITY, city);
         editor.apply();
+    }
+
+    public static void setRiseSetTime(Context context, long sunrise, long sunset ) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sp.edit();
+
+        editor.putLong(SUNRISE_TIME, sunrise);
+        editor.putLong(SUNSET_TIME, sunset);
+        editor.apply();
+    }
+
+    public static long getSunriseTime(Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return sp.getLong(SUNRISE_TIME, 0);
+    }
+
+    public static long getSunsetTime(Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return sp.getLong(SUNSET_TIME, 0);
     }
 
     /**

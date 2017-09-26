@@ -500,10 +500,10 @@ public final class SunshineWeatherUtils {
             return R.drawable.ic_light_clouds;
         } else if (weatherId.equals("partly-cloudy-night")) {
             return R.drawable.ic_light_clouds;
-        } else if (weatherId.equals("partly-cloudy-night")) {
+        } else if (weatherId.equals("mostly_clear")) {
             return R.drawable.ic_light_clouds;
         } else if (weatherId.equals("scattered_clouds")) {
-            return R.drawable.ic_cloudy;
+            return R.drawable.ic_light_clouds;
         } else if (weatherId.equals("broken_clouds")) {
             return R.drawable.ic_cloudy;
         } else if (weatherId.equals("overcast_clouds")) {
@@ -618,7 +618,7 @@ public final class SunshineWeatherUtils {
             return R.drawable.art_light_clouds;
         } else if (weatherId.equals("partly-cloudy-night")) {
             return R.drawable.art_light_clouds;
-        } else if (weatherId.equals("partly-cloudy-night")) {
+        } else if (weatherId.equals("mostly_clear")) {
             return R.drawable.art_light_clouds;
         } else if (weatherId.equals("scattered_clouds")) {
             return R.drawable.art_clouds;

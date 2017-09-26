@@ -201,7 +201,9 @@ public final class OpenWeatherJsonUtils {
         cloudCover = dayForecast.getDouble(DS_CLOUD_COVER);
 
         weatherId = dayForecast.getString(DS_WEATHER_ID);
-        if (weatherId.equals("rain") || weatherId.equals("wind") || weatherId.equals("cloudy")) {
+        if (weatherId.equals("rain") || weatherId.equals("wind") ||
+                weatherId.equals("cloudy") || weatherId.equals("partly-cloudy-day") || weatherId.equals("partly-cloudy-night"))
+        {
             weatherId = extractWeatherId(weatherId, precipIntensity, cloudCover, windSpeed);
         }
 
@@ -277,7 +279,9 @@ public final class OpenWeatherJsonUtils {
              */
 
             weatherId = dayForecast.getString(DS_WEATHER_ID);
-            if (weatherId.equals("rain") || weatherId.equals("wind") || weatherId.equals("cloudy")) {
+            if (weatherId.equals("rain") || weatherId.equals("wind") ||
+                    weatherId.equals("cloudy") || weatherId.equals("partly-cloudy-day") || weatherId.equals("partly-cloudy-night"))
+            {
                 weatherId = extractWeatherId(weatherId, precipIntensity, cloudCover, windSpeed);
             }
 
@@ -356,8 +360,8 @@ public final class OpenWeatherJsonUtils {
             }
             cloudCover = dayForecast.getDouble(DS_CLOUD_COVER);
 
-            sunrise = dayForecast.getLong(DS_SUNRISE_TIME);
-            sunset = dayForecast.getLong(DS_SUNRISE_TIME);
+            sunrise = SunshineDateUtils.getNormalizedUtcDateForToday((dayForecast.getLong(DS_SUNRISE_TIME)*1000), mTimeZone);
+            sunset = SunshineDateUtils.getNormalizedUtcDateForToday((dayForecast.getLong(DS_SUNSET_TIME)*1000), mTimeZone);
             moonphase = dayForecast.getDouble(DS_MOONPHASE);
             /*
              * Description is in a child array called "weather", which is 1 element long.
@@ -367,7 +371,9 @@ public final class OpenWeatherJsonUtils {
 //                    dayForecast.getJSONArray(OWM_WEATHER).getJSONObject(0);
 
             weatherId = dayForecast.getString(DS_WEATHER_ID);
-            if (weatherId.equals("rain") || weatherId.equals("wind") || weatherId.equals("cloudy")) {
+            if (weatherId.equals("rain") || weatherId.equals("wind") ||
+                    weatherId.equals("cloudy") || weatherId.equals("partly-cloudy-day") || weatherId.equals("partly-cloudy-night"))
+            {
                 weatherId = extractWeatherId(weatherId, precipIntensity, cloudCover, windSpeed);
             }
 
@@ -454,6 +460,8 @@ public final class OpenWeatherJsonUtils {
                 }
                 return exactId;
             case "cloudy":
+            case "partly-cloudy-day":
+            case "partly-cloudy-night":
                 if (cloudCover < 0.25) {
                     exactId = "mostly_clear";
                 } else if (cloudCover < 0.50) {
