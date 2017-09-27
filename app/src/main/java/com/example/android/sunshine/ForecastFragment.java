@@ -101,7 +101,6 @@ public class ForecastFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-
     }
 
     @Override
@@ -202,24 +201,19 @@ public class ForecastFragment extends Fragment implements
         }
 
         if (mCurrentCursor != null && mForecastCursor != null) {
-            if (mCurrentCursor.getCount() != 0 && mForecastCursor.getCount() != 0){
+            if (mCurrentCursor.getCount() != 0 && mForecastCursor.getCount() != 0) {
                 mCurrentCursor.moveToFirst();
                 mForecastCursor.moveToFirst();
                 long sunriseTime = mForecastCursor.getLong(INDEX_SUNRISE_TIME);
                 long sunsetTime = mForecastCursor.getLong(INDEX_SUNSET_TIME);
                 SunshinePreferences.setRiseSetTime(getActivity(), sunriseTime, sunsetTime);
-                mMergedCursor = new MergeCursor(new Cursor[]{mCurrentCursor, mForecastCursor});
-            mForecastAdapter.swapCursor(mMergedCursor);
-            showWeatherDataView();
 
-        } else {
-            Log.e("ONLOADFINISHED", "Error current " + mCurrentCursor.getCount() + " or Forecast " + mForecastCursor.getCount());
+                mMergedCursor = new MergeCursor(new Cursor[]{mCurrentCursor, mForecastCursor});
+                mForecastAdapter.swapCursor(mMergedCursor);
+                showWeatherDataView();
+
+            }
         }
-    } else {
-            Log.e("ONLOADFINISHED", "Error current " + mCurrentCursor + " or Forecast " + mForecastCursor);
-        }
-//        if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
-//        mRecyclerView.smoothScrollToPosition(mPosition);
 
 }
 

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.database.MergeCursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -40,17 +41,35 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public static final String FORECAST_TAG = "forecast_fragment";
     public static final String HOURLY_TAG = "hourly_fragment";
 
-    private static final int ID_LOADER_BACKGROUND = 101;
+    private static final int ID_CURRENT_LOADER_BACKGROUND = 101;
+    private static final int ID_WEATHER_LOADER_BACKGROUND = 102;
+
+    private static Cursor mCurrentBackgroundCursor;
+    private static Cursor mForecastBackgroundCursor;
 
     private ImageAnimator mImageAnimator;
 
     private static String mWeatherId = null;
     private static long mDateTime = -1;
+    private static long mSunrise = -1;
+    private static long mSunset = -1;
+
 
     public static final String[] CURRENT_FORECAST_PROJECTION = {
             CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID,
             CurrentWeatherContract.CurrentWeatherEntry.COLUMN_DATE,
     };
+
+    public static final int INDEX_WEATHER_ID = 0;
+    public static final int INDEX_DATE = 1;
+
+    public static final String[] MAIN_FORECAST_PROJECTION = {
+            WeatherContract.WeatherEntry.COLUMN_SUNRISE_TIME,
+            WeatherContract.WeatherEntry.COLUMN_SUNSET_TIME
+    };
+
+    public static final int INDEX_SUNRISE_TIME = 0;
+    public static final int INDEX_SUNSET_TIME = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,11 +98,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             ft.show(forecastFragment);
         }
 
-        Loader loader = getSupportLoaderManager().initLoader(ID_LOADER_BACKGROUND, null, this);
+        getSupportLoaderManager().initLoader(ID_CURRENT_LOADER_BACKGROUND, null, this);
+        getSupportLoaderManager().initLoader(ID_WEATHER_LOADER_BACKGROUND, null, this);
+
 
         if(mWeatherId != null && mDateTime != -1) {
-            mImageAnimator.playAnimation(mWeatherId, mDateTime, true);
-            Log.e("ON CREATE", "IM HERE !!");
+            mImageAnimator.playAnimation(mWeatherId, mDateTime, mSunrise, mSunset, true);
         }
 
         SunshineSyncUtils.initialize(this);
@@ -131,24 +151,60 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+    public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
 
-        Uri CurrentWeatherUri = CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI;
-        String selection = CurrentWeatherContract.CurrentWeatherEntry.COLUMN_CITY_ID + "=?";
-        String[] selectionArgs = new String[]{String.valueOf(SunshinePreferences.getCityId(this))};
+        switch (loaderId) {
 
-        return new CursorLoader(this,
-                CurrentWeatherUri, CURRENT_FORECAST_PROJECTION, selection, selectionArgs, null);
+
+            case ID_CURRENT_LOADER_BACKGROUND:
+                return new CursorLoader(this,
+                        CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI,
+                        CURRENT_FORECAST_PROJECTION,
+                        null,
+                        null,
+                        null);
+            case ID_WEATHER_LOADER_BACKGROUND:
+
+                /* URI for all rows of weather data in our weather table */
+                Uri forecastQueryUri = WeatherContract.WeatherEntry.CONTENT_URI;
+                /* Sort order: Ascending by date */
+                String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
+                return new CursorLoader(this,
+                        forecastQueryUri,
+                        MAIN_FORECAST_PROJECTION,
+                        null, //selection,
+                        null, //selectionArgs,
+                        sortOrder);
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + loaderId);
+        }
     }
 
     @Override
     public void onLoadFinished(Loader loader, Cursor data) {
 
-        if(data!=null && data.getCount() != 0){
-            data.moveToFirst();
-            mWeatherId = data.getString(data.getColumnIndex(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID));
-            mDateTime = data.getLong(data.getColumnIndex(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_DATE));
-            mImageAnimator.playAnimation(mWeatherId, mDateTime, false);
+        int loaderId = loader.getId();
+        switch (loaderId) {
+            case ID_CURRENT_LOADER_BACKGROUND:
+                mCurrentBackgroundCursor = data;
+                break;
+            case ID_WEATHER_LOADER_BACKGROUND:
+                mForecastBackgroundCursor = data;
+                break;
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + loaderId);
+        }
+
+        if (mCurrentBackgroundCursor != null && mForecastBackgroundCursor != null) {
+            if (mCurrentBackgroundCursor.getCount() != 0 && mForecastBackgroundCursor.getCount() != 0) {
+                mCurrentBackgroundCursor.moveToFirst();
+                mForecastBackgroundCursor.moveToFirst();
+                mWeatherId = mCurrentBackgroundCursor.getString(INDEX_WEATHER_ID);
+                mDateTime = mCurrentBackgroundCursor.getLong(INDEX_DATE);
+                mSunrise = mForecastBackgroundCursor.getLong(INDEX_SUNRISE_TIME);
+                mSunset = mForecastBackgroundCursor.getLong(INDEX_SUNSET_TIME);
+                mImageAnimator.playAnimation(mWeatherId, mDateTime, mSunrise, mSunset, false);
+            }
         }
     }
 
