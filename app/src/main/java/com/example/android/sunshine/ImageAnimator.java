@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.XmlResourceParser;
 import android.graphics.Canvas;
@@ -16,16 +17,20 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.DrawableContainer;
 import android.graphics.drawable.GradientDrawable;
 import android.media.Image;
+import android.os.Build;
 import android.support.annotation.IntRange;
 import android.support.annotation.InterpolatorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Layout;
 import android.transition.Fade;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
@@ -57,7 +62,6 @@ public class ImageAnimator {
     private ImageView mCenter;
 
     private ImageView mSun;
-    private ImageView mSun2;
 
     private View includeBackground;
 
@@ -78,10 +82,6 @@ public class ImageAnimator {
             GradientDrawable.Orientation.BL_TR,
             new int[]{0xFF5f7286, 0xFF333a4b});
 
-//    private GradientDrawable sunset_gradient = new GradientDrawable(
-//            GradientDrawable.Orientation.BL_TR,
-//            new int[]{0xFFdaca78, 0xFFff9700});
-
     private GradientDrawable night_gradient = new GradientDrawable(
             GradientDrawable.Orientation.BL_TR,
             new int[]{0xFF000000, 0xFF0E2351});
@@ -100,8 +100,7 @@ public class ImageAnimator {
         starView = (ImageView) includeBackground.findViewById(R.id.starView);
         starView2 = (ImageView) includeBackground.findViewById(R.id.starView2);
 
-//        mSun = (ImageView) includeBackground.findViewById(R.id.sunView);
-        mSun2 = (ImageView) includeBackground.findViewById(R.id.sunView2);
+        mSun = (ImageView) includeBackground.findViewById(R.id.sunView2);
 
     }
 
@@ -122,7 +121,7 @@ public class ImageAnimator {
             time = NIGHT_TIME;
         }
 
-        if (PREVIOUS_STATE == time && PREVIOUS_WEATHER_ID == weatherId && !onStart) {
+        if (PREVIOUS_STATE == time && PREVIOUS_WEATHER_ID.equals(weatherId) && !onStart) {
             return;
         } else {
             PREVIOUS_STATE = time;
@@ -130,8 +129,6 @@ public class ImageAnimator {
         }
 
         setBackground(time);
-
-
 
         resetViews();
 
@@ -172,72 +169,91 @@ public class ImageAnimator {
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        float width = size.x;
-        float height = size.y;
-
-//        mSun.setVisibility(View.VISIBLE);
-        mSun2.setVisibility(View.VISIBLE);
+        int width = size.x;
+        int height = size.y;
 
 
-//        mSun.setX(width/ 2);
-//        mSun.setY((-height/2)+40.0f);
-        mSun2.setX(width/ 2);
-        mSun2.setY((-height/2)+40.0f);
+        mSun.setVisibility(View.VISIBLE);
 
+        Log.e("Set Sun", " sun x is " + mSun.getX() + " sun y is " + mSun.getY());
+//        mSun.clearAnimation();
+        DisplayMetrics dm = mSun.getResources().getDisplayMetrics();
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(convertDpToPx(width-480, dm), convertDpToPx(-height/10, dm), 0, convertDpToPx(-height/10, dm));
 
-//        RotateAnimation rotateSun = new RotateAnimation(0, 360, Animation.ABSOLUTE, mSun.getX()+245.0f, Animation.ABSOLUTE, mSun.getY()+240.0f);
-//        rotateSun.setInterpolator(new LinearInterpolator());
-//        rotateSun.setRepeatMode(Animation.RESTART);
-//        rotateSun.setRepeatCount(Animation.INFINITE);
-//        rotateSun.setDuration(200000);
+        mSun.setLayoutParams(lp);
 
-        RotateAnimation rotateSun2 = new RotateAnimation(180, 270, Animation.ABSOLUTE, mSun2.getX()+245.0f, Animation.ABSOLUTE, mSun2.getY()+240.0f);
-        rotateSun2.setRepeatMode(Animation.REVERSE);
-        rotateSun2.setRepeatCount(Animation.INFINITE);
-        rotateSun2.setDuration(50000);
+//        mSun.setY(-(height/2));
+//        Log.e("Set Sun", " sun x is " + mSun.getX() + " sun y is " + mSun.getY());
 
-        ScaleAnimation scaleSun = new ScaleAnimation(0.93f, 1f, 0.93f, 1f, Animation.ABSOLUTE, mSun2.getX()+245.0f, Animation.ABSOLUTE, mSun2.getY()+240.0f);
+        RotateAnimation rotateSun = new RotateAnimation(180, 270, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotateSun.setRepeatMode(Animation.REVERSE);
+        rotateSun.setRepeatCount(Animation.INFINITE);
+        rotateSun.setDuration(50000);
+
+        ScaleAnimation scaleSun = new ScaleAnimation(0.93f, 1f, 0.93f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         scaleSun.setRepeatMode(Animation.REVERSE);
         scaleSun.setRepeatCount(Animation.INFINITE);
         scaleSun.setDuration(2500);
 
-//        AnimationSet set = new AnimationSet(false);
-//        set.addAnimation(rotateSun);
-//        set.addAnimation(scaleSun);
-//        mSun.startAnimation(set);
-        AnimationSet set2 = new AnimationSet(false);
-        set2.setInterpolator(new AccelerateDecelerateInterpolator());
-        set2.addAnimation(rotateSun2);
-        set2.addAnimation(scaleSun);
-        mSun2.startAnimation(set2);
+        AnimationSet set = new AnimationSet(false);
+        set.setInterpolator(new AccelerateDecelerateInterpolator());
+        set.addAnimation(rotateSun);
+        set.addAnimation(scaleSun);
+        mSun.startAnimation(set);
 
     }
 
+    private int convertDpToPx(int dp, DisplayMetrics displayMetrics) {
+        float pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, displayMetrics);
+        return Math.round(pixels);
+    }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @SuppressWarnings("deprecation")
     private void setBackground(int time) {
-        switch (time) {
-            case DAY_TIME:
-                includeBackground.setBackground(clear_day_gradient);
-                break;
-            case NIGHT_TIME:
-                includeBackground.setBackground(night_gradient);
-                break;
-            case OVERCAST_TIME:
-                includeBackground.setBackground(overcast_day_gradient);
-                break;
-            default:
-                includeBackground.setBackground(clear_day_gradient);
+
+        int sdk = android.os.Build.VERSION.SDK_INT;
+        if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            switch (time) {
+                case DAY_TIME:
+                    includeBackground.setBackgroundDrawable(clear_day_gradient);
+                    break;
+                case NIGHT_TIME:
+                    includeBackground.setBackgroundDrawable(night_gradient);
+                    break;
+                case OVERCAST_TIME:
+                    includeBackground.setBackgroundDrawable(overcast_day_gradient);
+                    break;
+                default:
+                    includeBackground.setBackgroundDrawable(clear_day_gradient);
+            }
+        } else {
+
+            switch (time) {
+
+                case DAY_TIME:
+                    includeBackground.setBackground(clear_day_gradient);
+                    break;
+                case NIGHT_TIME:
+                    includeBackground.setBackground(night_gradient);
+                    break;
+                case OVERCAST_TIME:
+                    includeBackground.setBackground(overcast_day_gradient);
+                    break;
+                default:
+                    includeBackground.setBackground(clear_day_gradient);
+            }
         }
+
     }
 
 
     private void resetViews() {
         includeBackground.setVisibility(View.VISIBLE);
 
-//        mSun.clearAnimation();
-//        mSun.setVisibility(View.GONE);
-        mSun2.clearAnimation();
-        mSun2.setVisibility(View.GONE);
+        mSun.clearAnimation();
+        mSun.setVisibility(View.INVISIBLE);
 
         starView.clearAnimation();
         starView2.clearAnimation();
@@ -301,7 +317,6 @@ public class ImageAnimator {
             mBackground.setVisibility(View.VISIBLE);
             ObjectAnimator bgAnim1 = ObjectAnimator.ofFloat(mBackground, "translationX", 600f, -1200f);
             bgAnim1.setDuration(195000);
-            //bgAnim1.setRepeatMode(ValueAnimator.RESTART);
             ObjectAnimator bgAnim2 = ObjectAnimator.ofFloat(mBackground, "translationX", 1200f, -1200f);
             bgAnim2.setRepeatCount(ValueAnimator.INFINITE);
             bgAnim2.setDuration(295000);
@@ -315,7 +330,6 @@ public class ImageAnimator {
             mForeground.setVisibility(View.VISIBLE);
             ObjectAnimator fgAnim1 = ObjectAnimator.ofFloat(mForeground, "translationX", 0f, -1500f);
             fgAnim1.setDuration(55000);
-            //fgAnim1.setRepeatMode(ValueAnimator.RESTART);
             ObjectAnimator fgAnim2 = ObjectAnimator.ofFloat(mForeground, "translationX", 1500f, -1500f);
             fgAnim2.setRepeatCount(ValueAnimator.INFINITE);
             fgAnim2.setDuration(110000);
@@ -329,7 +343,6 @@ public class ImageAnimator {
             mCenter.setVisibility(View.VISIBLE);
             ObjectAnimator centerAnim1 = ObjectAnimator.ofFloat(mCenter, "translationX", 0f, -1500f);
             centerAnim1.setDuration(83000);
-            //centerAnim1.setRepeatMode(ValueAnimator.RESTART);
             ObjectAnimator centerAnim2 = ObjectAnimator.ofFloat(mCenter, "translationX", 1500f, -1500f);
             centerAnim2.setRepeatCount(ValueAnimator.INFINITE);
             centerAnim2.setDuration(165000);

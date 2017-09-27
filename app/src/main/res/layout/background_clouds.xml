@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     tools:background="@drawable/gradient_background"
-    android:clipChildren="false"
-    android:clipToPadding="false"
+
+
     >
 
     <!--<ImageView-->
@@ -20,15 +21,14 @@
 
     <ImageView
         android:id="@+id/sunView2"
-        android:layout_gravity="center"
+
         android:layout_width="240dp"
         android:layout_height="240dp"
         android:scaleY="3"
         android:scaleX="3"
         android:src="@drawable/sun2"
+        android:scaleType="centerInside"
         />
-
-
 
     <ImageView
         android:id="@+id/starView"
