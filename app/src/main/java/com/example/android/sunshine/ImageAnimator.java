@@ -27,6 +27,7 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -35,6 +36,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
+import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -55,6 +57,7 @@ public class ImageAnimator {
     private ImageView mCenter;
 
     private ImageView mSun;
+    private ImageView mSun2;
 
     private View includeBackground;
 
@@ -97,7 +100,8 @@ public class ImageAnimator {
         starView = (ImageView) includeBackground.findViewById(R.id.starView);
         starView2 = (ImageView) includeBackground.findViewById(R.id.starView2);
 
-        mSun = (ImageView) includeBackground.findViewById(R.id.sunView);
+//        mSun = (ImageView) includeBackground.findViewById(R.id.sunView);
+        mSun2 = (ImageView) includeBackground.findViewById(R.id.sunView2);
 
     }
 
@@ -171,27 +175,41 @@ public class ImageAnimator {
         float width = size.x;
         float height = size.y;
 
-        mSun.setVisibility(View.VISIBLE);
+//        mSun.setVisibility(View.VISIBLE);
+        mSun2.setVisibility(View.VISIBLE);
 
-        mSun.setX(width/2);
-        mSun.setY(-250.0f);
-        Log.e("SetSun", " x is " + mSun.getX() + " Height is " + mSun.getY());
 
-        RotateAnimation rotateSun = new RotateAnimation(0, 360, Animation.ABSOLUTE, mSun.getMeasuredWidth()/2, Animation.ABSOLUTE, mSun.getMeasuredHeight()/2);
-        rotateSun.setInterpolator(new LinearInterpolator());
-        rotateSun.setRepeatMode(Animation.RESTART);
-        rotateSun.setRepeatCount(Animation.INFINITE);
-        rotateSun.setDuration(200000);
+//        mSun.setX(width/ 2);
+//        mSun.setY((-height/2)+40.0f);
+        mSun2.setX(width/ 2);
+        mSun2.setY((-height/2)+40.0f);
 
-        AlphaAnimation alphaSun = new AlphaAnimation(0.96f, 1f);
-        alphaSun.setRepeatMode(Animation.REVERSE);
-        alphaSun.setRepeatCount(Animation.INFINITE);
-        alphaSun.setDuration(50);
 
-        AnimationSet set = new AnimationSet(false);
-        set.addAnimation(rotateSun);
-        set.addAnimation(alphaSun);
-        mSun.startAnimation(set);
+//        RotateAnimation rotateSun = new RotateAnimation(0, 360, Animation.ABSOLUTE, mSun.getX()+245.0f, Animation.ABSOLUTE, mSun.getY()+240.0f);
+//        rotateSun.setInterpolator(new LinearInterpolator());
+//        rotateSun.setRepeatMode(Animation.RESTART);
+//        rotateSun.setRepeatCount(Animation.INFINITE);
+//        rotateSun.setDuration(200000);
+
+        RotateAnimation rotateSun2 = new RotateAnimation(180, 270, Animation.ABSOLUTE, mSun2.getX()+245.0f, Animation.ABSOLUTE, mSun2.getY()+240.0f);
+        rotateSun2.setRepeatMode(Animation.REVERSE);
+        rotateSun2.setRepeatCount(Animation.INFINITE);
+        rotateSun2.setDuration(50000);
+
+        ScaleAnimation scaleSun = new ScaleAnimation(0.93f, 1f, 0.93f, 1f, Animation.ABSOLUTE, mSun2.getX()+245.0f, Animation.ABSOLUTE, mSun2.getY()+240.0f);
+        scaleSun.setRepeatMode(Animation.REVERSE);
+        scaleSun.setRepeatCount(Animation.INFINITE);
+        scaleSun.setDuration(2500);
+
+//        AnimationSet set = new AnimationSet(false);
+//        set.addAnimation(rotateSun);
+//        set.addAnimation(scaleSun);
+//        mSun.startAnimation(set);
+        AnimationSet set2 = new AnimationSet(false);
+        set2.setInterpolator(new AccelerateDecelerateInterpolator());
+        set2.addAnimation(rotateSun2);
+        set2.addAnimation(scaleSun);
+        mSun2.startAnimation(set2);
 
     }
 
@@ -216,8 +234,10 @@ public class ImageAnimator {
     private void resetViews() {
         includeBackground.setVisibility(View.VISIBLE);
 
-        mSun.clearAnimation();
-        mSun.setVisibility(View.GONE);
+//        mSun.clearAnimation();
+//        mSun.setVisibility(View.GONE);
+        mSun2.clearAnimation();
+        mSun2.setVisibility(View.GONE);
 
         starView.clearAnimation();
         starView2.clearAnimation();

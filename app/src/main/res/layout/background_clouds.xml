@@ -8,16 +8,28 @@
     android:clipToPadding="false"
     >
 
+    <!--<ImageView-->
+        <!--android:id="@+id/sunView"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_width="240dp"-->
+        <!--android:layout_height="240dp"-->
+        <!--android:scaleY="2.5"-->
+        <!--android:scaleX="2.5"-->
+        <!--android:src="@drawable/starlight"-->
+        <!--/>-->
+
     <ImageView
-        android:id="@+id/sunView"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:scaleX="1.5"
-        android:scaleY="1.5"
+        android:id="@+id/sunView2"
+        android:layout_gravity="center"
+        android:layout_width="240dp"
+        android:layout_height="240dp"
+        android:scaleY="3"
+        android:scaleX="3"
         android:src="@drawable/sun2"
-
-
         />
+
+
+
     <ImageView
         android:id="@+id/starView"
         android:layout_width="match_parent"
