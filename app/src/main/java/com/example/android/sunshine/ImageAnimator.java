@@ -57,13 +57,36 @@ public class ImageAnimator {
 
     private Context mContext;
 
+
+
+    private View includeBackground;
+
     private ImageView mBackground;
     private ImageView mForeground;
     private ImageView mCenter;
 
     private ImageView mSun;
 
-    private View includeBackground;
+    private ImageView starView;
+    private ImageView starView2;
+
+    private ImageView mFogTop;
+    private ImageView mFogTop2;
+    private ImageView mFogBottom;
+    private ImageView mFogBottom2;
+
+    private ImageView mRainBlur;
+    private ImageView mRainBlur2;
+    private ImageView mRainFirst;
+    private ImageView mRainFirst2;
+    private ImageView mRainSecond;
+    private ImageView mRainSecond2;
+    private ImageView mRainThird;
+    private ImageView mRainThird2;
+    private ImageView mRainForth;
+    private ImageView mRainForth2;
+    private ImageView mRainFifth;
+    private ImageView mRainFifth2;
 
     private static final int VIEW_DAYTIME_ANIMATION = 2;
 
@@ -79,15 +102,14 @@ public class ImageAnimator {
             new int[]{0xFF8deefc, 0xFF1b4297});
 
     private GradientDrawable overcast_day_gradient = new GradientDrawable(
-            GradientDrawable.Orientation.BL_TR,
+            GradientDrawable.Orientation.TR_BL,
             new int[]{0xFF5f7286, 0xFF333a4b});
 
     private GradientDrawable night_gradient = new GradientDrawable(
             GradientDrawable.Orientation.BL_TR,
             new int[]{0xFF000000, 0xFF0E2351});
 
-    private ImageView starView;
-    private ImageView starView2;
+
 
 
     public ImageAnimator(Context context, View includeBackground) {
@@ -102,6 +124,25 @@ public class ImageAnimator {
 
         mSun = (ImageView) includeBackground.findViewById(R.id.sunView2);
 
+        mFogTop = (ImageView) includeBackground.findViewById(R.id.fog_view_top);
+        mFogTop2 = (ImageView) includeBackground.findViewById(R.id.fog_view_top_2);
+        mFogBottom = (ImageView) includeBackground.findViewById(R.id.fog_view_bottom);
+        mFogBottom2 = (ImageView) includeBackground.findViewById(R.id.fog_view_bottom_2);
+
+        mRainBlur = (ImageView) includeBackground.findViewById(R.id.rain_blur_view);
+        mRainBlur2 = (ImageView) includeBackground.findViewById(R.id.rain_blur_view_2);
+        mRainFirst = (ImageView) includeBackground.findViewById(R.id.rain_first_view);
+        mRainFirst2 = (ImageView) includeBackground.findViewById(R.id.rain_first_view_2);
+        mRainSecond = (ImageView) includeBackground.findViewById(R.id.rain_second_view);
+        mRainSecond2 = (ImageView) includeBackground.findViewById(R.id.rain_second_view_2);
+        mRainThird = (ImageView) includeBackground.findViewById(R.id.rain_third_view);
+        mRainThird2 = (ImageView) includeBackground.findViewById(R.id.rain_third_view_2);
+        mRainForth = (ImageView) includeBackground.findViewById(R.id.rain_forth_view);
+        mRainForth2 = (ImageView) includeBackground.findViewById(R.id.rain_forth_view_2);
+        mRainFifth = (ImageView) includeBackground.findViewById(R.id.rain_fifth_view);
+        mRainFifth2 = (ImageView) includeBackground.findViewById(R.id.rain_fifth_view_2);
+
+
     }
 
     public void playAnimation(String weatherId, long date, long sunrise, long sunset, boolean onStart) {
@@ -112,11 +153,10 @@ public class ImageAnimator {
 
         Log.e("IMAGEANIMATOR", "Time " + dayTime + " date " + date + " sunrise " + sunrise + " sunset " + sunset + " weather Id " + weatherId);
 
-
-        if (date > sunrise && date < sunset) {
-            time = DAY_TIME;
-        } else if (weatherId.equals("overcast_clouds")) {
+        if (weatherId.contains("rain")) {
             time = OVERCAST_TIME;
+        } else if (date > sunrise && date < sunset) {
+            time = DAY_TIME;
         } else {
             time = NIGHT_TIME;
         }
@@ -132,7 +172,9 @@ public class ImageAnimator {
 
         resetViews();
 
+
         int cloudsType;
+        int rainType = 0;
         switch (weatherId) {
             case "mostly_clear":
                 cloudsType = 1;
@@ -146,14 +188,22 @@ public class ImageAnimator {
             case "overcast_clouds":
                 cloudsType = 4;
                 break;
+            case "moderate_rain":
+                cloudsType = 4;
+                rainType = 1;
+                break;
             default:
                 cloudsType = 0;
         }
 
         if (cloudsType > 0) {
             setClouds(cloudsType);
-        } else if (time == DAY_TIME){
+        } else if ((cloudsType== 0 || cloudsType == 1) && time == DAY_TIME){
             setSun();
+        }
+
+        if(rainType > 0){
+            setRain();
         }
 
 
@@ -164,37 +214,143 @@ public class ImageAnimator {
 
     }
 
-    private void setSun() {
+    private void setRain() {
+
         WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
         int height = size.y;
+//        if (cloudsType > 0) {
+            mRainBlur.setVisibility(View.VISIBLE);
+            ObjectAnimator blurAnim1 = ObjectAnimator.ofFloat(mRainBlur, "translationY", -(height), height*6);
+            blurAnim1.setDuration(3000);
+        blurAnim1.setRepeatCount(ValueAnimator.INFINITE);
+        mRainBlur2.setVisibility(View.VISIBLE);
+        ObjectAnimator blurAnim2 = ObjectAnimator.ofFloat(mRainBlur2, "translationY", -(height), height*6);
+        blurAnim2.setDuration(2000);
 
+        blurAnim2.setRepeatCount(ValueAnimator.INFINITE);
+
+        mRainFirst.setVisibility(View.VISIBLE);
+        ObjectAnimator rainFirstAnim = ObjectAnimator.ofFloat(mRainFirst, "translationY", -(height), height);
+        rainFirstAnim.setDuration(500);
+        rainFirstAnim.setRepeatCount(ValueAnimator.INFINITE);
+        mRainFirst2.setVisibility(View.VISIBLE);
+        ObjectAnimator rainFirstAnim2 = ObjectAnimator.ofFloat(mRainFirst2, "translationY", -(height), height);
+        rainFirstAnim2.setDuration(500);
+        rainFirstAnim2.setCurrentPlayTime(250);
+        rainFirstAnim2.setRepeatCount(ValueAnimator.INFINITE);
+
+        mRainSecond.setVisibility(View.VISIBLE);
+        ObjectAnimator rainSecondAnim = ObjectAnimator.ofFloat(mRainSecond, "translationY", -(height), height);
+        rainSecondAnim.setDuration(1000);
+        rainSecondAnim.setRepeatCount(ValueAnimator.INFINITE);
+        mRainSecond2.setVisibility(View.VISIBLE);
+        ObjectAnimator rainSecondAnim2 = ObjectAnimator.ofFloat(mRainSecond2, "translationY", -(height), height);
+        rainSecondAnim2.setDuration(1000);
+        rainSecondAnim2.setCurrentPlayTime(500);
+        rainSecondAnim2.setRepeatCount(ValueAnimator.INFINITE);
+
+        mRainThird.setVisibility(View.VISIBLE);
+        ObjectAnimator rainThirdAnim = ObjectAnimator.ofFloat(mRainThird, "translationY", -(height), height);
+        rainThirdAnim.setDuration(1500);
+        rainThirdAnim.setRepeatCount(ValueAnimator.INFINITE);
+        mRainThird2.setVisibility(View.VISIBLE);
+        ObjectAnimator rainThirdAnim2 = ObjectAnimator.ofFloat(mRainThird2, "translationY", -(height), height);
+        rainThirdAnim2.setDuration(1500);
+        rainThirdAnim2.setCurrentPlayTime(750);
+        rainThirdAnim2.setRepeatCount(ValueAnimator.INFINITE);
+
+        mRainForth.setVisibility(View.VISIBLE);
+        ObjectAnimator rainForthAnim = ObjectAnimator.ofFloat(mRainForth, "translationY", -(height), height);
+        rainForthAnim.setDuration(2000);
+        rainForthAnim.setRepeatCount(ValueAnimator.INFINITE);
+        mRainForth2.setVisibility(View.VISIBLE);
+        ObjectAnimator rainForthAnim2 = ObjectAnimator.ofFloat(mRainForth2, "translationY", -(height), height);
+        rainForthAnim2.setDuration(2000);
+        rainForthAnim2.setCurrentPlayTime(1000);
+        rainForthAnim2.setRepeatCount(ValueAnimator.INFINITE);
+
+        mRainFifth.setVisibility(View.VISIBLE);
+        ObjectAnimator rainFifthAnim = ObjectAnimator.ofFloat(mRainFifth, "translationY", -(height), height);
+        rainFifthAnim.setDuration(3000);
+        rainFifthAnim.setRepeatCount(ValueAnimator.INFINITE);
+        mRainFifth2.setVisibility(View.VISIBLE);
+        ObjectAnimator rainFifthAnim2 = ObjectAnimator.ofFloat(mRainFifth2, "translationY", -(height), height);
+        rainFifthAnim2.setDuration(3000);
+        rainFifthAnim2.setCurrentPlayTime(1500);
+        rainFifthAnim2.setRepeatCount(ValueAnimator.INFINITE);
+
+//            ObjectAnimator bgAnim2 = ObjectAnimator.ofFloat(mBackground, "translationX", 1200f, -1200f);
+//            bgAnim2.setRepeatCount(ValueAnimator.INFINITE);
+//            bgAnim2.setDuration(295000);
+//
+            AnimatorSet blurAs = new AnimatorSet();
+            blurAs.setInterpolator(new LinearInterpolator());
+            blurAs.playTogether(blurAnim1,blurAnim2,
+                    rainFirstAnim, rainFirstAnim2,
+                    rainSecondAnim, rainSecondAnim2,
+                    rainThirdAnim, rainThirdAnim2,
+                    rainForthAnim, rainForthAnim2,
+                    rainFifthAnim, rainFifthAnim2);
+            blurAs.start();  // start animation
+////        }
+////        if (cloudsType > 1) {
+//            mForeground.setVisibility(View.VISIBLE);
+//            ObjectAnimator fgAnim1 = ObjectAnimator.ofFloat(mForeground, "translationX", 0f, -1500f);
+//            fgAnim1.setDuration(55000);
+//            ObjectAnimator fgAnim2 = ObjectAnimator.ofFloat(mForeground, "translationX", 1500f, -1500f);
+//            fgAnim2.setRepeatCount(ValueAnimator.INFINITE);
+//            fgAnim2.setDuration(110000);
+//
+//            AnimatorSet fgAs = new AnimatorSet();
+//            fgAs.setInterpolator(new LinearInterpolator());
+//            fgAs.playSequentially(fgAnim1, fgAnim2);
+//            fgAs.start();  // start animation
+////        }
+////        if (cloudsType > 2) {
+//            mCenter.setVisibility(View.VISIBLE);
+//            ObjectAnimator centerAnim1 = ObjectAnimator.ofFloat(mCenter, "translationX", 0f, -1500f);
+//            centerAnim1.setDuration(83000);
+//            ObjectAnimator centerAnim2 = ObjectAnimator.ofFloat(mCenter, "translationX", 1500f, -1500f);
+//            centerAnim2.setRepeatCount(ValueAnimator.INFINITE);
+//            centerAnim2.setDuration(165000);
+//
+//            AnimatorSet fgAs = new AnimatorSet();
+//            fgAs.setInterpolator(new LinearInterpolator());
+//            fgAs.playSequentially(centerAnim2);
+//            fgAs.start();  // start animation
+////        }
+////        if (cloudsType > 3) {
+//            mForeground.setColorFilter(0xFF626474);
+//            mCenter.setColorFilter(0xFF626474);
+//            mBackground.setColorFilter(0xFF626474);
+//        }
+
+
+    }
+
+    private void setSun() {
+//        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+//        Display display = wm.getDefaultDisplay();
+//        Point size = new Point();
+//        display.getSize(size);
+//        int width = size.x;
+//        int height = size.y;
 
         mSun.setVisibility(View.VISIBLE);
-
-        Log.e("Set Sun", " sun x is " + mSun.getX() + " sun y is " + mSun.getY());
-//        mSun.clearAnimation();
-        DisplayMetrics dm = mSun.getResources().getDisplayMetrics();
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.setMargins(convertDpToPx(width-480, dm), convertDpToPx(-height/10, dm), 0, convertDpToPx(-height/10, dm));
-
-        mSun.setLayoutParams(lp);
-
-//        mSun.setY(-(height/2));
-//        Log.e("Set Sun", " sun x is " + mSun.getX() + " sun y is " + mSun.getY());
 
         RotateAnimation rotateSun = new RotateAnimation(180, 270, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rotateSun.setRepeatMode(Animation.REVERSE);
         rotateSun.setRepeatCount(Animation.INFINITE);
-        rotateSun.setDuration(50000);
+        rotateSun.setDuration(35000);
 
-        ScaleAnimation scaleSun = new ScaleAnimation(0.93f, 1f, 0.93f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        ScaleAnimation scaleSun = new ScaleAnimation(0.94f, 1f, 0.94f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         scaleSun.setRepeatMode(Animation.REVERSE);
         scaleSun.setRepeatCount(Animation.INFINITE);
-        scaleSun.setDuration(2500);
+        scaleSun.setDuration(1500);
 
         AnimationSet set = new AnimationSet(false);
         set.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -202,11 +358,6 @@ public class ImageAnimator {
         set.addAnimation(scaleSun);
         mSun.startAnimation(set);
 
-    }
-
-    private int convertDpToPx(int dp, DisplayMetrics displayMetrics) {
-        float pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, displayMetrics);
-        return Math.round(pixels);
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -259,6 +410,38 @@ public class ImageAnimator {
         starView2.clearAnimation();
         starView.setVisibility(View.GONE);
         starView2.setVisibility(View.GONE);
+
+        mFogTop.clearAnimation();
+        mFogTop2.clearAnimation();
+        mFogTop.setVisibility(View.GONE);
+        mFogTop2.setVisibility(View.GONE);
+        mFogBottom.setVisibility(View.GONE);
+        mFogBottom2.setVisibility(View.GONE);
+
+        mRainFirst.setVisibility(View.GONE);
+        mRainFirst2.setVisibility(View.GONE);
+        mRainSecond.setVisibility(View.GONE);
+        mRainSecond2.setVisibility(View.GONE);
+        mRainThird.setVisibility(View.GONE);
+        mRainThird2.setVisibility(View.GONE);
+        mRainForth.setVisibility(View.GONE);
+        mRainForth2.setVisibility(View.GONE);
+        mRainFifth.setVisibility(View.GONE);
+        mRainFifth2.setVisibility(View.GONE);
+        mRainBlur.setVisibility(View.GONE);
+        mRainBlur2.setVisibility(View.GONE);
+        mRainFirst.clearAnimation();
+        mRainFirst2.clearAnimation();
+        mRainSecond.clearAnimation();
+        mRainSecond2.clearAnimation();
+        mRainThird.clearAnimation();
+        mRainThird2.clearAnimation();
+        mRainForth.clearAnimation();
+        mRainForth2.clearAnimation();
+        mRainFifth.clearAnimation();
+        mRainFifth2.clearAnimation();
+        mRainBlur.clearAnimation();
+        mRainBlur2.clearAnimation();
 
         mForeground.clearAnimation();
         mForeground.setColorFilter(0);
@@ -353,9 +536,9 @@ public class ImageAnimator {
             fgAs.start();  // start animation
         }
         if (cloudsType > 3) {
-            mForeground.setColorFilter(0xFF646E84);
-            mCenter.setColorFilter(0xFF646E84);
-            mBackground.setColorFilter(0xFF646E84);
+            mForeground.setColorFilter(0xFF626474);
+            mCenter.setColorFilter(0xFF626474);
+            mBackground.setColorFilter(0xFF626474);
         }
     }
 

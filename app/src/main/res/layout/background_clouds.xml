@@ -21,13 +21,16 @@
 
     <ImageView
         android:id="@+id/sunView2"
-
         android:layout_width="240dp"
         android:layout_height="240dp"
         android:scaleY="3"
         android:scaleX="3"
+        android:layout_marginRight="-120dp"
+        android:layout_marginTop="-120dp"
+        android:layout_gravity="right"
         android:src="@drawable/sun2"
         android:scaleType="centerInside"
+        tools:visibility="gone"
         />
 
     <ImageView
@@ -87,6 +90,206 @@
         android:scaleY="2.5"
         android:alpha="0.65"
         tools:visibility="gone"
+        />
+
+
+    <ImageView
+    android:id="@+id/fog_view_top"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="bottom"
+    android:src="@drawable/fog4opt"
+    android:scaleX="1"
+    android:scaleY="1"
+    android:scaleType="centerCrop"
+    android:alpha="0.7"
+        tools:visibility="gone"
+
+    />
+
+    <ImageView
+        android:id="@+id/fog_view_top_2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:src="@drawable/fog4opt"
+        android:scaleX="1"
+        android:scaleY="1"
+        android:scaleType="centerCrop"
+        android:alpha="0.7"
+        tools:visibility="gone"
+        />
+
+    <ImageView
+        android:id="@+id/fog_view_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:src="@drawable/fog7opt"
+        android:scaleX="1"
+        android:scaleY="1"
+        android:scaleType="centerCrop"
+        android:alpha="0.3"
+        tools:visibility="gone"
+        />
+
+    <ImageView
+        android:id="@+id/fog_view_bottom_2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:src="@drawable/fog7opt"
+        android:scaleX="1"
+        android:scaleY="1"
+        android:scaleType="centerCrop"
+        android:alpha="0.3"
+        tools:visibility="gone"
+        />
+
+    <ImageView
+        android:id="@+id/rain_blur_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:src="@drawable/rain_blur"
+        android:scaleX="1.2"
+        android:scaleY="1.2"
+        android:scaleType="centerCrop"
+        />
+
+    <ImageView
+        android:id="@+id/rain_blur_view_2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:src="@drawable/rain_blur"
+        android:scaleX="1.8"
+        android:scaleY="1.2"
+        android:scaleType="centerCrop"
+        />
+
+    <ImageView
+        android:id="@+id/rain_first_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:src="@drawable/rain_first"
+        android:scaleX="1.2"
+        android:scaleY="1.2"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        android:alpha="0.6"
+        />
+
+    <ImageView
+        android:id="@+id/rain_first_view_2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:src="@drawable/rain_first"
+        android:scaleX="1.8"
+        android:scaleY="1.2"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        android:alpha="0.5"
+        />
+
+    <ImageView
+        android:id="@+id/rain_second_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:src="@drawable/rain_second"
+        android:scaleX="1.2"
+        android:scaleY="1.2"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        android:alpha="0.5"
+        />
+
+    <ImageView
+        android:id="@+id/rain_second_view_2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:src="@drawable/rain_second"
+        android:scaleX="1.8"
+        android:scaleY="1.2"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        android:alpha="0.6"
+        />
+
+    <ImageView
+        android:id="@+id/rain_third_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:src="@drawable/rain_third"
+        android:scaleX="1.2"
+        android:scaleY="1.2"
+        android:scaleType="centerCrop"
+        android:alpha="0.7"
+        />
+
+    <ImageView
+        android:id="@+id/rain_third_view_2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:src="@drawable/rain_third"
+        android:scaleX="1.8"
+        android:scaleY="1.2"
+        android:scaleType="centerCrop"
+        android:alpha="0.6"
+        />
+
+    <ImageView
+        android:id="@+id/rain_forth_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:src="@drawable/rain_fourth"
+        android:scaleX="1.2"
+        android:scaleY="1.2"
+        android:scaleType="centerCrop"
+        android:alpha="0.7"
+        />
+
+    <ImageView
+        android:id="@+id/rain_forth_view_2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:src="@drawable/rain_fourth"
+        android:scaleX="1.8"
+        android:scaleY="1.2"
+        android:scaleType="centerCrop"
+        android:alpha="0.8"
+        />
+
+    <ImageView
+        android:id="@+id/rain_fifth_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:src="@drawable/rain_fifth_2"
+        android:scaleX="1"
+        android:scaleY="1.2"
+        android:scaleType="centerCrop"
+        android:alpha="0.8"
+        />
+
+    <ImageView
+        android:id="@+id/rain_fifth_view_2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:src="@drawable/rain_fifth_2"
+        android:scaleX="1.2"
+        android:scaleY="1.2"
+        android:scaleType="centerCrop"
+        android:alpha="0.7"
         />
 
 </FrameLayout>
