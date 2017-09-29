@@ -588,6 +588,12 @@ public final class SunshineWeatherUtils {
             return R.drawable.art_light_rain;
         } else if (weatherId.equals("moderate_rain")) {
             return R.drawable.art_light_rain;
+        } else if (weatherId.equals("heavy_rain")) {
+            return R.drawable.art_storm;
+        } else if (weatherId.equals("intense_rain")) {
+            return R.drawable.art_storm;
+        } else if (weatherId.equals("clear-night")) {
+            return R.drawable.art_clear;
         } else if (weatherId.equals("snow")) {
             return R.drawable.art_snow;
         } else if (weatherId.equals("sleet")) {
@@ -626,12 +632,6 @@ public final class SunshineWeatherUtils {
             return R.drawable.art_clouds;
         } else if (weatherId.equals("overcast_clouds")) {
             return R.drawable.art_clouds;
-        } else if (weatherId.equals("heavy_rain")) {
-            return R.drawable.art_storm;
-        } else if (weatherId.equals("intense_rain")) {
-            return R.drawable.art_storm;
-        } else if (weatherId.equals("clear-night")) {
-            return R.drawable.art_clear;
         }
 
         Log.e(LOG_TAG, "Unknown Weather: " + weatherId);

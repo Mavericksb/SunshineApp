@@ -129,16 +129,10 @@ public class ImageAnimator {
         mFogBottom = (ImageView) includeBackground.findViewById(R.id.fog_view_bottom);
         mFogBottom2 = (ImageView) includeBackground.findViewById(R.id.fog_view_bottom_2);
 
-        mRainBlur = (ImageView) includeBackground.findViewById(R.id.rain_blur_view);
-        mRainBlur2 = (ImageView) includeBackground.findViewById(R.id.rain_blur_view_2);
         mRainFirst = (ImageView) includeBackground.findViewById(R.id.rain_first_view);
         mRainFirst2 = (ImageView) includeBackground.findViewById(R.id.rain_first_view_2);
         mRainSecond = (ImageView) includeBackground.findViewById(R.id.rain_second_view);
         mRainSecond2 = (ImageView) includeBackground.findViewById(R.id.rain_second_view_2);
-        mRainThird = (ImageView) includeBackground.findViewById(R.id.rain_third_view);
-        mRainThird2 = (ImageView) includeBackground.findViewById(R.id.rain_third_view_2);
-        mRainForth = (ImageView) includeBackground.findViewById(R.id.rain_forth_view);
-        mRainForth2 = (ImageView) includeBackground.findViewById(R.id.rain_forth_view_2);
         mRainFifth = (ImageView) includeBackground.findViewById(R.id.rain_fifth_view);
         mRainFifth2 = (ImageView) includeBackground.findViewById(R.id.rain_fifth_view_2);
 
@@ -188,9 +182,29 @@ public class ImageAnimator {
             case "overcast_clouds":
                 cloudsType = 4;
                 break;
+            case "light_rain":
+                cloudsType = 4;
+                rainType = 1;
+                break;
             case "moderate_rain":
                 cloudsType = 4;
                 rainType = 1;
+                break;
+            case "heavy_rain":
+                cloudsType = 4;
+                rainType = 2;
+                break;
+            case "intense_rain":
+                cloudsType = 4;
+                rainType = 2;
+                break;
+            case "storm":
+                cloudsType = 4;
+                rainType = 3;
+                break;
+            case "violent_storm":
+                cloudsType = 4;
+                rainType = 3;
                 break;
             default:
                 cloudsType = 0;
@@ -223,64 +237,36 @@ public class ImageAnimator {
         int width = size.x;
         int height = size.y;
 //        if (cloudsType > 0) {
-            mRainBlur.setVisibility(View.VISIBLE);
-            ObjectAnimator blurAnim1 = ObjectAnimator.ofFloat(mRainBlur, "translationY", -(height), height*6);
-            blurAnim1.setDuration(3000);
-        blurAnim1.setRepeatCount(ValueAnimator.INFINITE);
-        mRainBlur2.setVisibility(View.VISIBLE);
-        ObjectAnimator blurAnim2 = ObjectAnimator.ofFloat(mRainBlur2, "translationY", -(height), height*6);
-        blurAnim2.setDuration(2000);
-
-        blurAnim2.setRepeatCount(ValueAnimator.INFINITE);
 
         mRainFirst.setVisibility(View.VISIBLE);
         ObjectAnimator rainFirstAnim = ObjectAnimator.ofFloat(mRainFirst, "translationY", -(height), height);
-        rainFirstAnim.setDuration(500);
+        rainFirstAnim.setDuration(800);
         rainFirstAnim.setRepeatCount(ValueAnimator.INFINITE);
         mRainFirst2.setVisibility(View.VISIBLE);
         ObjectAnimator rainFirstAnim2 = ObjectAnimator.ofFloat(mRainFirst2, "translationY", -(height), height);
-        rainFirstAnim2.setDuration(500);
-        rainFirstAnim2.setCurrentPlayTime(250);
+        rainFirstAnim2.setDuration(1000);
+        rainFirstAnim2.setCurrentPlayTime(500);
         rainFirstAnim2.setRepeatCount(ValueAnimator.INFINITE);
 
         mRainSecond.setVisibility(View.VISIBLE);
         ObjectAnimator rainSecondAnim = ObjectAnimator.ofFloat(mRainSecond, "translationY", -(height), height);
-        rainSecondAnim.setDuration(1000);
+        rainSecondAnim.setDuration(1200);
         rainSecondAnim.setRepeatCount(ValueAnimator.INFINITE);
         mRainSecond2.setVisibility(View.VISIBLE);
         ObjectAnimator rainSecondAnim2 = ObjectAnimator.ofFloat(mRainSecond2, "translationY", -(height), height);
-        rainSecondAnim2.setDuration(1000);
-        rainSecondAnim2.setCurrentPlayTime(500);
+        rainSecondAnim2.setDuration(1200);
+        rainSecondAnim2.setCurrentPlayTime(600);
         rainSecondAnim2.setRepeatCount(ValueAnimator.INFINITE);
 
-        mRainThird.setVisibility(View.VISIBLE);
-        ObjectAnimator rainThirdAnim = ObjectAnimator.ofFloat(mRainThird, "translationY", -(height), height);
-        rainThirdAnim.setDuration(1500);
-        rainThirdAnim.setRepeatCount(ValueAnimator.INFINITE);
-        mRainThird2.setVisibility(View.VISIBLE);
-        ObjectAnimator rainThirdAnim2 = ObjectAnimator.ofFloat(mRainThird2, "translationY", -(height), height);
-        rainThirdAnim2.setDuration(1500);
-        rainThirdAnim2.setCurrentPlayTime(750);
-        rainThirdAnim2.setRepeatCount(ValueAnimator.INFINITE);
 
-        mRainForth.setVisibility(View.VISIBLE);
-        ObjectAnimator rainForthAnim = ObjectAnimator.ofFloat(mRainForth, "translationY", -(height), height);
-        rainForthAnim.setDuration(2000);
-        rainForthAnim.setRepeatCount(ValueAnimator.INFINITE);
-        mRainForth2.setVisibility(View.VISIBLE);
-        ObjectAnimator rainForthAnim2 = ObjectAnimator.ofFloat(mRainForth2, "translationY", -(height), height);
-        rainForthAnim2.setDuration(2000);
-        rainForthAnim2.setCurrentPlayTime(1000);
-        rainForthAnim2.setRepeatCount(ValueAnimator.INFINITE);
-
-        mRainFifth.setVisibility(View.VISIBLE);
+        mRainFifth.setVisibility(View.GONE);
         ObjectAnimator rainFifthAnim = ObjectAnimator.ofFloat(mRainFifth, "translationY", -(height), height);
-        rainFifthAnim.setDuration(3000);
+        rainFifthAnim.setDuration(1600);
         rainFifthAnim.setRepeatCount(ValueAnimator.INFINITE);
-        mRainFifth2.setVisibility(View.VISIBLE);
+        mRainFifth2.setVisibility(View.GONE);
         ObjectAnimator rainFifthAnim2 = ObjectAnimator.ofFloat(mRainFifth2, "translationY", -(height), height);
-        rainFifthAnim2.setDuration(3000);
-        rainFifthAnim2.setCurrentPlayTime(1500);
+        rainFifthAnim2.setDuration(1600);
+        rainFifthAnim2.setCurrentPlayTime(800);
         rainFifthAnim2.setRepeatCount(ValueAnimator.INFINITE);
 
 //            ObjectAnimator bgAnim2 = ObjectAnimator.ofFloat(mBackground, "translationX", 1200f, -1200f);
@@ -289,45 +275,12 @@ public class ImageAnimator {
 //
             AnimatorSet blurAs = new AnimatorSet();
             blurAs.setInterpolator(new LinearInterpolator());
-            blurAs.playTogether(blurAnim1,blurAnim2,
+            blurAs.playTogether(
                     rainFirstAnim, rainFirstAnim2,
                     rainSecondAnim, rainSecondAnim2,
-                    rainThirdAnim, rainThirdAnim2,
-                    rainForthAnim, rainForthAnim2,
                     rainFifthAnim, rainFifthAnim2);
             blurAs.start();  // start animation
-////        }
-////        if (cloudsType > 1) {
-//            mForeground.setVisibility(View.VISIBLE);
-//            ObjectAnimator fgAnim1 = ObjectAnimator.ofFloat(mForeground, "translationX", 0f, -1500f);
-//            fgAnim1.setDuration(55000);
-//            ObjectAnimator fgAnim2 = ObjectAnimator.ofFloat(mForeground, "translationX", 1500f, -1500f);
-//            fgAnim2.setRepeatCount(ValueAnimator.INFINITE);
-//            fgAnim2.setDuration(110000);
-//
-//            AnimatorSet fgAs = new AnimatorSet();
-//            fgAs.setInterpolator(new LinearInterpolator());
-//            fgAs.playSequentially(fgAnim1, fgAnim2);
-//            fgAs.start();  // start animation
-////        }
-////        if (cloudsType > 2) {
-//            mCenter.setVisibility(View.VISIBLE);
-//            ObjectAnimator centerAnim1 = ObjectAnimator.ofFloat(mCenter, "translationX", 0f, -1500f);
-//            centerAnim1.setDuration(83000);
-//            ObjectAnimator centerAnim2 = ObjectAnimator.ofFloat(mCenter, "translationX", 1500f, -1500f);
-//            centerAnim2.setRepeatCount(ValueAnimator.INFINITE);
-//            centerAnim2.setDuration(165000);
-//
-//            AnimatorSet fgAs = new AnimatorSet();
-//            fgAs.setInterpolator(new LinearInterpolator());
-//            fgAs.playSequentially(centerAnim2);
-//            fgAs.start();  // start animation
-////        }
-////        if (cloudsType > 3) {
-//            mForeground.setColorFilter(0xFF626474);
-//            mCenter.setColorFilter(0xFF626474);
-//            mBackground.setColorFilter(0xFF626474);
-//        }
+
 
 
     }
@@ -422,26 +375,15 @@ public class ImageAnimator {
         mRainFirst2.setVisibility(View.GONE);
         mRainSecond.setVisibility(View.GONE);
         mRainSecond2.setVisibility(View.GONE);
-        mRainThird.setVisibility(View.GONE);
-        mRainThird2.setVisibility(View.GONE);
-        mRainForth.setVisibility(View.GONE);
-        mRainForth2.setVisibility(View.GONE);
         mRainFifth.setVisibility(View.GONE);
         mRainFifth2.setVisibility(View.GONE);
-        mRainBlur.setVisibility(View.GONE);
-        mRainBlur2.setVisibility(View.GONE);
+
         mRainFirst.clearAnimation();
         mRainFirst2.clearAnimation();
         mRainSecond.clearAnimation();
         mRainSecond2.clearAnimation();
-        mRainThird.clearAnimation();
-        mRainThird2.clearAnimation();
-        mRainForth.clearAnimation();
-        mRainForth2.clearAnimation();
         mRainFifth.clearAnimation();
         mRainFifth2.clearAnimation();
-        mRainBlur.clearAnimation();
-        mRainBlur2.clearAnimation();
 
         mForeground.clearAnimation();
         mForeground.setColorFilter(0);
