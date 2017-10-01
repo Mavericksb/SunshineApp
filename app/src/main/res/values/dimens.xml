@@ -38,7 +38,7 @@
 
     <!-- We will eventually use this to allow us to add additional padding for different screen
          sizes-->
-    <dimen name="today_forecast_list_item_vertical_padding">16dp</dimen>
+    <dimen name="today_forecast_list_item_vertical_padding">8dp</dimen>
     <dimen name="list_item_icon_margin_right">24dp</dimen>
     <dimen name="list_item_icon_margin_end">@dimen/list_item_icon_margin_right</dimen>
     <dimen name="list_item_padding_horizontal">16dp</dimen>

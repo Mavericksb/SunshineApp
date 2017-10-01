@@ -17,10 +17,12 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowActionBar">false</item>
+
         <!-- Used for settings preference theme -->
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
         <item name="dropDownListViewStyle">@style/DropDownListViewStyle</item>
@@ -31,14 +33,8 @@
         <item name="android:dividerHeight">14dp</item>
     </style>
 
-    <!-- forecast activity action bar styles -->
-    <style name="ActionBar.Solid.Sunshine.NoTitle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="displayOptions">useLogo|showHome</item>
-        <item name="logo">@drawable/ic_logo</item>
-    </style>
-
     <style name="AppTheme.Forecast" parent="@style/AppTheme">
-        <item name="actionBarStyle">@style/ActionBar.Solid.Sunshine.NoTitle</item>
+        <!--<item name="actionBarStyle">@style/ActionBar.Solid.Sunshine.NoTitle</item>-->
     </style>
 
     <!-- Style used in the DetailActivity for the labels of the extra weather information -->
@@ -47,6 +43,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/detail_accent_label</item>
         <item name="android:fontFamily">sans-serif</item>
+
     </style>
 
     <!-- Style used in the DetailActivity for the values of the extra weather information -->
@@ -55,5 +52,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
+
+
 
 </resources>

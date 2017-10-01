@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.MergeCursor;
+import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,13 +17,21 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.WindowInsetsCompat;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowInsets;
+import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.android.sunshine.data.CurrentWeatherContract;
 import com.example.android.sunshine.data.SunshinePreferences;
@@ -71,12 +81,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public static final int INDEX_SUNRISE_TIME = 0;
     public static final int INDEX_SUNSET_TIME = 1;
 
+    TextView mToolbarCityName;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        mToolbarCityName = (TextView) findViewById(R.id.toolbar_city_name);
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            Window w = getWindow(); // in Activity's onCreate() for instance
+//            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//        }
 
         View mIncludeBackground = (View) findViewById(R.id.include_background);
 
@@ -98,8 +119,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             ft.show(forecastFragment);
         }
 
-        getSupportLoaderManager().initLoader(ID_CURRENT_LOADER_BACKGROUND, null, this);
         getSupportLoaderManager().initLoader(ID_WEATHER_LOADER_BACKGROUND, null, this);
+        getSupportLoaderManager().initLoader(ID_CURRENT_LOADER_BACKGROUND, null, this);
 
 
         if(mWeatherId != null && mDateTime != -1) {
@@ -204,6 +225,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 mSunrise = mForecastBackgroundCursor.getLong(INDEX_SUNRISE_TIME);
                 mSunset = mForecastBackgroundCursor.getLong(INDEX_SUNSET_TIME);
                 mImageAnimator.playAnimation(mWeatherId, mDateTime, mSunrise, mSunset, false);
+                mForecastBackgroundCursor=null;
+                mToolbarCityName.setText(SunshinePreferences.getCityName(this));
             }
         }
     }
