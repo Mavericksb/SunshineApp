@@ -253,6 +253,9 @@
         High:<xliff:g id="high">%2$s</xliff:g>
         Low:<xliff:g id="low">%3$s</xliff:g>
     </string>
+    <string name="permission_rationale">What is this rationale ?</string>
+    <string name="permission_denied_explanation">What\'s this permission denied explanation ?</string>
+    <string name="settings">Settings string ?</string>
 
 
 </resources>
