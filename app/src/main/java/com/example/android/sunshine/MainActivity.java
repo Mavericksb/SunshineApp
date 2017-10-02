@@ -1,16 +1,25 @@
 package com.example.android.sunshine;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.MergeCursor;
 import android.graphics.Rect;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -32,11 +41,28 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.sunshine.data.CurrentWeatherContract;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.sync.SunshineSyncUtils;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.Api;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApi;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+
 
 import java.lang.ref.WeakReference;
 
@@ -46,7 +72,11 @@ import java.lang.ref.WeakReference;
 
 
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+public class MainActivity extends AppCompatActivity implements
+
+        LoaderManager.LoaderCallbacks<Cursor> {
+
+    private FusedLocationProviderClient mFusedLocationClient;
 
     public static final String FORECAST_TAG = "forecast_fragment";
     public static final String HOURLY_TAG = "hourly_fragment";
@@ -94,12 +124,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         mToolbarCityName = (TextView) findViewById(R.id.toolbar_city_name);
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//            Window w = getWindow(); // in Activity's onCreate() for instance
-//            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-//        }
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        View mIncludeBackground = (View) findViewById(R.id.include_background);
+        if (checkLocationPermission()) {
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                // Logic to handle location object
+                                Log.e("Last Location", "Lat is " + location.getLatitude() + " Lon is " + location.getLongitude());
+                            }
+                        }
+                    });
+        }
+
+        View mIncludeBackground = findViewById(R.id.include_background);
 
         mIncludeBackground.setVisibility(View.INVISIBLE);
 
@@ -110,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         FragmentTransaction ft = fm.beginTransaction();
 
-        if(forecastFragment == null) {
+        if (forecastFragment == null) {
             forecastFragment = new ForecastFragment();
 
             ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
@@ -123,21 +164,25 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         getSupportLoaderManager().initLoader(ID_CURRENT_LOADER_BACKGROUND, null, this);
 
 
-        if(mWeatherId != null && mDateTime != -1) {
+        if (mWeatherId != null && mDateTime != -1) {
             mImageAnimator.playAnimation(mWeatherId, mDateTime, mSunrise, mSunset, true);
         }
 
         SunshineSyncUtils.initialize(this);
     }
 
+    public boolean checkLocationPermission() {
+        String permission = "android.permission.ACCESS_FINE_LOCATION";
+        int res = this.checkCallingOrSelfPermission(permission);
+        return (res == PackageManager.PERMISSION_GRANTED);
+    }
+
     /**
      * This is where we inflate and set up the menu for this Activity.
      *
      * @param menu The options menu in which you place your items.
-     *
      * @return You must return true for the menu to be displayed;
-     *         if you return false it will not be shown.
-     *
+     * if you return false it will not be shown.
      * @see #onPrepareOptionsMenu
      * @see #onOptionsItemSelected
      */
@@ -168,7 +213,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         return super.onOptionsItemSelected(item);
     }
-
 
 
     @Override
@@ -225,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 mSunrise = mForecastBackgroundCursor.getLong(INDEX_SUNRISE_TIME);
                 mSunset = mForecastBackgroundCursor.getLong(INDEX_SUNSET_TIME);
                 mImageAnimator.playAnimation(mWeatherId, mDateTime, mSunrise, mSunset, false);
-                mForecastBackgroundCursor=null;
+                mForecastBackgroundCursor = null;
                 mToolbarCityName.setText(SunshinePreferences.getCityName(this));
             }
         }
@@ -237,4 +281,56 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 }
 
+class SettingsClient extends GoogleApi<Api.ApiOptions.NoOptions>{
 
+    protected SettingsClient(@NonNull Context context, Api<Api.ApiOptions.NoOptions> api, Looper looper) {
+        super(context, api, looper);
+
+        LocationRequest mLocationBalancedRequest = LocationRequest.create()
+        .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+        .setFastestInterval(1000 * 60 * 5)
+                .setInterval(1000 * 60 * 60);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(mLocationBalancedRequest);
+
+        Task<LocationSettingsResponse> result =
+                LocationServices.getSettingsClient(context).checkLocationSettings(builder.build());
+
+    }
+
+    public void onComplete(Task<LocationSettingsResponse> task) {
+        try {
+            LocationSettingsResponse response = task.getResult(ApiException.class);
+            // All location settings are satisfied. The client can initialize location
+            // requests here.
+             
+        } catch (ApiException exception) {
+            switch (exception.getStatusCode()) {
+                case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                    // Location settings are not satisfied. But could be fixed by showing the
+                    // user a dialog.
+                    try {
+                        // Cast to a resolvable exception.
+                        ResolvableApiException resolvable = (ResolvableApiException) exception;
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+                        resolvable.startResolutionForResult(
+                                OuterClass.this,
+                                REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException e) {
+                        // Ignore the error.
+                    } catch (ClassCastException e) {
+                        // Ignore, should be an impossible error.
+                    }
+                    break;
+                case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                    // Location settings are not satisfied. However, we have no way to fix the
+                    // settings so we won't show the dialog.
+                     ...
+                    break;
+            }
+        }
+    }
+});
+}

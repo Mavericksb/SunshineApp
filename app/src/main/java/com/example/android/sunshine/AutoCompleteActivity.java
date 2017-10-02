@@ -50,6 +50,7 @@ public class AutoCompleteActivity extends AppCompatActivity implements AdapterVi
     private String mCity;
     private String mPlaceId;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

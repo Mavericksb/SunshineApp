@@ -289,12 +289,12 @@ public class ImageAnimator {
         RotateAnimation rotateSun = new RotateAnimation(180, 270, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rotateSun.setRepeatMode(Animation.REVERSE);
         rotateSun.setRepeatCount(Animation.INFINITE);
-        rotateSun.setDuration(35000);
+        rotateSun.setDuration(30000);
 
         ScaleAnimation scaleSun = new ScaleAnimation(0.94f, 1f, 0.94f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         scaleSun.setRepeatMode(Animation.REVERSE);
         scaleSun.setRepeatCount(Animation.INFINITE);
-        scaleSun.setDuration(1500);
+        scaleSun.setDuration(1200);
 
         AnimationSet set = new AnimationSet(false);
         set.setInterpolator(new AccelerateDecelerateInterpolator());
