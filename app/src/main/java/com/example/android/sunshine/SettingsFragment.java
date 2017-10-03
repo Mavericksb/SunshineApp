@@ -17,6 +17,7 @@ package com.example.android.sunshine;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.ListPreference;
@@ -103,7 +104,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             // units have changed. update lists of weather entries accordingly
             activity.getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
         } else if (key.equals(R.string.pref_enable_geolocation_key)){
-            MainActivity.
+
         }
         Preference preference = findPreference(key);
         if (null != preference) {
