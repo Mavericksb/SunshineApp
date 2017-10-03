@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background">
 
+    <include layout="@layout/toolbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextView"
         android:layout_width="match_parent"

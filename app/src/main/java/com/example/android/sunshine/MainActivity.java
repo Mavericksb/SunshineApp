@@ -83,7 +83,7 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private final String TAG = getLocalClassName();
+    private final String TAG = this.getClass().getSimpleName();
 
     public static final String FORECAST_TAG = "forecast_fragment";
     public static final String HOURLY_TAG = "hourly_fragment";
@@ -158,7 +158,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        mRequestingLocationUpdates = false;
 
         mToolbarCityName = (TextView) findViewById(R.id.toolbar_city_name);
 

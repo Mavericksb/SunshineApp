@@ -6,7 +6,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,7 +60,11 @@ public class AutoCompleteActivity extends AppCompatActivity implements AdapterVi
 
         mGeoDataClient = Places.getGeoDataClient(this, null);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         mAutoComplete = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
         mAutoCompleteAdapter = new AutoCompleteAdapter(this, R.layout.list_item_location_autocomplete, R.id.textViewListLocation);

@@ -82,8 +82,6 @@
             android:value=".MainActivity" />
         </activity>
 
-
-
         <!-- Our ContentProvider -->
         <provider
             android:name=".data.WeatherProvider"
@@ -103,7 +101,6 @@
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>
         </service>
-
     </application>
 
 </manifest>

@@ -37,6 +37,11 @@
         <!--<item name="actionBarStyle">@style/ActionBar.Solid.Sunshine.NoTitle</item>-->
     </style>
 
+    <style name="ToolbarWhiteText" parent="AppTheme">
+        <item name="android:textColorPrimary">#FFFFFFFF</item>
+        <item name="android:textColorSecondary">#FFFFFFFF</item>
+    </style>
+
     <!-- Style used in the DetailActivity for the labels of the extra weather information -->
     <style name="DetailLabel" parent="@style/TextAppearance.AppCompat.Title">
         <item name="android:layout_width">wrap_content</item>
