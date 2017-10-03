@@ -110,6 +110,13 @@
 
     <string name="pref_last_notification">last_notification</string>
 
+    <!-- Strings related to Geo Location Enabled preference -->
+    <string name="pref_enable_geolocation_key" translatable="false">enable_geolocation</string>
+    <string name="pref_enable_geolocation_label">Auto location</string>
+    <string name="pref_enable_geolocation_true">Enabled</string>
+    <string name="pref_enable_geolocation_false">Not Enabled</string>
+
+    <string name="pref_last_geolocation_time">last_geolocation_time</string>
 
 
 
@@ -253,6 +260,7 @@
         High:<xliff:g id="high">%2$s</xliff:g>
         Low:<xliff:g id="low">%3$s</xliff:g>
     </string>
+
     <string name="permission_rationale">What is this rationale ?</string>
     <string name="permission_denied_explanation">What\'s this permission denied explanation ?</string>
     <string name="settings">Settings string ?</string>

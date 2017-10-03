@@ -21,7 +21,7 @@
     >
 
     <include layout="@layout/toolbar_layout"
-        android:id="@+id/toolbar"></include>
+        android:id="@+id/toolbar"/>
 
     <FrameLayout
         android:id="@+id/fragment_container"

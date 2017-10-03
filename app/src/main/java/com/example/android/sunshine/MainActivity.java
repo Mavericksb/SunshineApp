@@ -150,6 +150,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      */
     private Boolean mRequestingLocationUpdates;
 
+    /**
+     * Stores the types of location services the client is interested in using. Used for checking
+     * settings to determine if the device has optimal location settings.
+     */
+    private LocationSettingsRequest mLocationSettingsRequest;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -163,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
-        mRequestingLocationUpdates = false;
+        mRequestingLocationUpdates = true;
 
         mToolbarCityName = (TextView) findViewById(R.id.toolbar_city_name);
 
@@ -171,12 +177,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         mSettingsClient = LocationServices.getSettingsClient(this);
 
+        mLastUpdateTime = "";
+        mRequestingLocationUpdates = false;
+
         createLocationCallback();
         createLocationRequest();
 
-//        getLastKnownLocation();
+        buildLocationSettingsRequest();
 
-        startLocationUpdates();
 
 
         View mIncludeBackground = findViewById(R.id.include_background);
@@ -337,33 +345,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     }
 
-//    /**
-//     * Return the current state of the permissions needed.
-//     */
-//    private void getLastKnownLocation() {
-//            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                // TODO: Consider calling
-//                //    ActivityCompat#requestPermissions
-//                // here to request the missing permissions, and then overriding
-//                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//                //                                          int[] grantResults)
-//                // to handle the case where the user grants the permission. See the documentation
-//                // for ActivityCompat#requestPermissions for more details.
-//                return;
-//            }
-//            mFusedLocationClient.getLastLocation()
-//                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-//                        @Override
-//                        public void onSuccess(Location location) {
-//                            // Got last known location. In some rare situations this can be null.
-//                            if (location != null) {
-//                                // Logic to handle location object
-//                                Log.e("Last Location", "Lat is " + location.getLatitude() + " Lon is " + location.getLongitude());
-//                            }
-//                        }
-//                    });
-//
-//    }
+
 
     private boolean checkPermissions() {
         int permissionState = ActivityCompat.checkSelfPermission(this,
@@ -378,16 +360,22 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mLocationBalancedRequest.setInterval(1000 * 60 * 60);
     }
 
+    /**
+     * Uses a {@link com.google.android.gms.location.LocationSettingsRequest.Builder} to build
+     * a {@link com.google.android.gms.location.LocationSettingsRequest} that is used for checking
+     * if a device has the needed location settings.
+     */
+    private void buildLocationSettingsRequest() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationBalancedRequest);
+        mLocationSettingsRequest = builder.build();
+    }
+
     private void startLocationUpdates() {
 
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(mLocationBalancedRequest);
-
-//        mSettingsClient = LocationServices.getSettingsClient(this);
-
-        Task<LocationSettingsResponse> task = mSettingsClient.checkLocationSettings(builder.build());
-
-        task.addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
+// Begin by checking if the device has the necessary location settings.
+        mSettingsClient.checkLocationSettings(mLocationSettingsRequest).
+                addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                 Log.i(TAG, "All location settings are satisfied.");
@@ -396,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 mFusedLocationClient.requestLocationUpdates(mLocationBalancedRequest,
                         mLocationCallback, Looper.myLooper());
 
-                //updateUI();
+                updateUI();
             }
         })
                 .addOnFailureListener(this, new OnFailureListener() {
@@ -421,10 +409,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                                         "fixed here. Fix in Settings.";
                                 Log.e(TAG, errorMessage);
                                 Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
-                                //mRequestingLocationUpdates = false;
+                                mRequestingLocationUpdates = false;
                         }
 
-//                        updateUI();
+                        updateUI();
                     }
                 });
 
@@ -438,7 +426,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
                 mCurrentLocation = locationResult.getLastLocation();
                 mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-//                    updateLocationUI();
+                    updateLocationUI();
             }
         };
     }
@@ -455,8 +443,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.i(TAG, "User chose not to make required location settings changes.");
-                        //mRequestingLocationUpdates = false;
-//                        updateUI();
+                        mRequestingLocationUpdates = false;
+                        updateUI();
                         break;
                 }
                 break;
@@ -578,6 +566,44 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 //                        setButtonsEnabledState();
                     }
                 });
+    }
+
+    /**
+     * Updates all UI fields.
+     */
+    private void updateUI() {
+//        setButtonsEnabledState();
+        updateLocationUI();
+    }
+
+//    /**
+//     * Disables both buttons when functionality is disabled due to insuffucient location settings.
+//     * Otherwise ensures that only one button is enabled at any time. The Start Updates button is
+//     * enabled if the user is not requesting location updates. The Stop Updates button is enabled
+//     * if the user is requesting location updates.
+//     */
+//    private void setButtonsEnabledState() {
+//        if (mRequestingLocationUpdates) {
+//            mStartUpdatesButton.setEnabled(false);
+//            mStopUpdatesButton.setEnabled(true);
+//        } else {
+//            mStartUpdatesButton.setEnabled(true);
+//            mStopUpdatesButton.setEnabled(false);
+//        }
+//    }
+
+    /**
+     * Sets the value of the UI fields for the location latitude, longitude and last update time.
+     */
+    private void updateLocationUI() {
+        if (mCurrentLocation != null) {
+//            mLatitudeTextView.setText(String.format(Locale.ENGLISH, "%s: %f", mLatitudeLabel,
+                    Log.e("UPDATE GEO" , "LAT " + mCurrentLocation.getLatitude() + " LON " +
+//            mLongitudeTextView.setText(String.format(Locale.ENGLISH, "%s: %f", mLongitudeLabel,
+                    mCurrentLocation.getLongitude() + " LAST UPDATE " + mLastUpdateTime);
+//            mLastUpdateTimeTextView.setText(String.format(Locale.ENGLISH, "%s: %s",
+//                    mLastUpdateTimeLabel, mLastUpdateTime));
+        }
     }
 
 }
