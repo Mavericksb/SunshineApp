@@ -33,8 +33,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/today_forecast_list_item_vertical_padding"
-    android:paddingTop="@dimen/today_forecast_list_item_vertical_padding"
     tools:background="@android:color/black"
 >
 
@@ -92,10 +90,10 @@
         android:id="@+id/hourly_weather_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="0dp"
         android:textColor="@color/white"
         android:textSize="20sp"
-        app:layout_constraintHorizontal_bias="0.52"
+        app:layout_constraintHorizontal_bias="0.528"
         app:layout_constraintLeft_toLeftOf="@+id/hourly_weather_icon"
         app:layout_constraintRight_toRightOf="@+id/hourly_weather_icon"
         app:layout_constraintTop_toBottomOf="@+id/hourly_weather_icon"
@@ -126,7 +124,14 @@
         android:layout_marginRight="8dp"
         android:layout_marginLeft="8dp" />
 
-
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0.5dp"
+        android:background="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        />
         
 
 </android.support.constraint.ConstraintLayout>

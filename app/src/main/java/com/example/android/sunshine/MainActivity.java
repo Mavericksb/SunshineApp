@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     TextView mToolbarCityName;
 
-    private LocationRequest mLocationBalancedRequest;
+    public static LocationRequest mLocationBalancedRequest;
 
     private FusedLocationProviderClient mFusedLocationClient;
 
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     /**
      * Callback for Location events.
      */
-    private LocationCallback mLocationCallback;
+    public static LocationCallback mLocationCallback;
 
     /**
      * Represents a geographical location.
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
-        mRequestingLocationUpdates = true;
+        mRequestingLocationUpdates = SunshinePreferences.getRequestUpdates(this);
 
         mToolbarCityName = (TextView) findViewById(R.id.toolbar_city_name);
 
@@ -178,7 +178,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mSettingsClient = LocationServices.getSettingsClient(this);
 
         mLastUpdateTime = "";
-        mRequestingLocationUpdates = false;
 
         createLocationCallback();
         createLocationRequest();
@@ -222,12 +221,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onResume() {
         super.onResume();
-        Log.e(TAG, "I'm ON RESUME");
+        Log.e(TAG, "I'm ON RESUME. Req loc upd ? " + SunshinePreferences.getRequestUpdates(this) + " checkedPerms ? " + checkPermissions());
         // Within {@code onPause()}, we remove location updates. Here, we resume receiving
         // location updates if the user has requested them.
-        if (mRequestingLocationUpdates && checkPermissions()) {
+
+        if (SunshinePreferences.getRequestUpdates(this) && checkPermissions()) {
+            Log.e(TAG, "Start Updating");
             startLocationUpdates();
-        } else if (!checkPermissions()) {
+        } else if (SunshinePreferences.getRequestUpdates(this) && !checkPermissions()) {
+            Log.e(TAG, "Request Permissions");
             requestPermissions();
         }
 
@@ -379,7 +381,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                Log.i(TAG, "All location settings are satisfied.");
+                Log.e(TAG, "All location settings are satisfied.");
 
                 //noinspection MissingPermission
                 mFusedLocationClient.requestLocationUpdates(mLocationBalancedRequest,
@@ -394,7 +396,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         int statusCode = ((ApiException) e).getStatusCode();
                         switch (statusCode) {
                             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                                Log.i(TAG, "Location settings are not satisfied. Attempting to upgrade " +
+                                Log.e(TAG, "Location settings are not satisfied. Attempting to upgrade " +
                                         "location settings ");
                                 try {
                                     // Show the dialog by calling startResolutionForResult(), and check the
@@ -402,7 +404,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                                     ResolvableApiException rae = (ResolvableApiException) e;
                                     rae.startResolutionForResult(MainActivity.this, REQUEST_CHECK_SETTINGS);
                                 } catch (IntentSender.SendIntentException sie) {
-                                    Log.i(TAG, "PendingIntent unable to execute request.");
+                                    Log.e(TAG, "PendingIntent unable to execute request.");
                                 }
                                 break;
                             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
@@ -439,11 +441,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
-                        Log.i(TAG, "User agreed to make required location settings changes.");
+                        Log.e(TAG, "User agreed to make required location settings changes.");
                         // Nothing to do. startLocationupdates() gets called in onResume again.
                         break;
                     case Activity.RESULT_CANCELED:
-                        Log.i(TAG, "User chose not to make required location settings changes.");
+                        Log.e(TAG, "User chose not to make required location settings changes.");
+                        SunshinePreferences.setRequestUpdates(this, false);
                         mRequestingLocationUpdates = false;
                         updateUI();
                         break;
@@ -460,7 +463,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // Provide an additional rationale to the user. This would happen if the user denied the
         // request previously, but didn't check the "Don't ask again" checkbox.
         if (shouldProvideRationale) {
-            Log.i(TAG, "Displaying permission rationale to provide additional context.");
+            Log.e(TAG, "Displaying permission rationale to provide additional context.");
             showSnackbar(R.string.permission_rationale,
                     android.R.string.ok, new View.OnClickListener() {
                         @Override
@@ -472,7 +475,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         }
                     });
         } else {
-            Log.i(TAG, "Requesting permission");
+            Log.e(TAG, "Requesting permission");
             // Request permission. It's possible this can be auto answered if device policy
             // sets the permission in a given state or the user denied the permission
             // previously and checked "Never ask again".
@@ -488,15 +491,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        Log.i(TAG, "onRequestPermissionResult");
+        Log.e(TAG, "onRequestPermissionResult");
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.length <= 0) {
                 // If user interaction was interrupted, the permission request is cancelled and you
                 // receive empty arrays.
-                Log.i(TAG, "User interaction was cancelled.");
+                Log.e(TAG, "User interaction was cancelled.");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (mRequestingLocationUpdates) {
-                    Log.i(TAG, "Permission granted, updates requested, starting location updates");
+                    Log.e(TAG, "Permission granted, updates requested, starting location updates");
                     startLocationUpdates();
                 }
             } else {
@@ -511,21 +514,43 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 // again" prompts). Therefore, a user interface affordance is typically implemented
                 // when permissions are denied. Otherwise, your app could appear unresponsive to
                 // touches or interactions which have required permissions.
-                showSnackbar(R.string.permission_denied_explanation,
-                        R.string.settings, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                // Build intent that displays the App settings screen.
-                                Intent intent = new Intent();
-                                intent.setAction(
-                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package",
-                                        BuildConfig.APPLICATION_ID, null);
-                                intent.setData(uri);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
-                            }
-                        });
+//                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+//                    showSnackbar(R.string.permission_denied_explanation,
+//                            R.string.settings, new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View view) {
+//                                    // Build intent that displays the App settings screen.
+//                                    Intent intent = new Intent();
+//                                    intent.setAction(
+//                                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+//                                    Uri uri = Uri.fromParts("package",
+//                                            BuildConfig.APPLICATION_ID, null);
+//                                    intent.setData(uri);
+//                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                                    startActivity(intent);
+//                                }
+//                            });
+//                }
+//                //permission is denied (and never ask again is  checked)
+//                //shouldShowRequestPermissionRationale will return false
+//                else {
+                    showSnackbar(R.string.permission_denied_explanation,
+                            R.string.settings, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    // Build intent that displays the App settings screen.
+                                    Intent intent = new Intent();
+                                    intent.setAction(
+                                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                    Uri uri = Uri.fromParts("package",
+                                            BuildConfig.APPLICATION_ID, null);
+                                    intent.setData(uri);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                }
+                            });
+                    SunshinePreferences.setRequestUpdates(this, false);
+
             }
         }
     }
@@ -543,7 +568,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Snackbar.make(
                 findViewById(android.R.id.content),
                 getString(mainTextStringId),
-                Snackbar.LENGTH_INDEFINITE)
+                Snackbar.LENGTH_LONG)
                 .setAction(getString(actionStringId), listener).show();
     }
 
@@ -552,7 +577,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      */
     private void stopLocationUpdates() {
         if (!mRequestingLocationUpdates) {
-            Log.d(TAG, "stopLocationUpdates: updates never requested, no-op.");
+            Log.e(TAG, "stopLocationUpdates: updates never requested, no-op.");
             return;
         }
 
