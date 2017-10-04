@@ -28,6 +28,8 @@ import android.support.v7.preference.PreferenceScreen;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.sync.SunshineSyncUtils;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 
 /**
  * The SettingsFragment serves as the display for all of the user's settings. In Sunshine, the
@@ -104,7 +106,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             // units have changed. update lists of weather entries accordingly
             activity.getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
         } else if (key.equals(R.string.pref_enable_geolocation_key)){
-
+            FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+            fusedLocationProviderClient.req
         }
         Preference preference = findPreference(key);
         if (null != preference) {

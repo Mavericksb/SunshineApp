@@ -222,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onResume() {
         super.onResume();
+        Log.e(TAG, "I'm ON RESUME");
         // Within {@code onPause()}, we remove location updates. Here, we resume receiving
         // location updates if the user has requested them.
         if (mRequestingLocationUpdates && checkPermissions()) {
