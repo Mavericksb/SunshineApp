@@ -126,11 +126,12 @@ public class NotificationUtils {
              */
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                     .setColor(ContextCompat.getColor(context,R.color.colorPrimary))
-                    .setSmallIcon(R.drawable.ic_light_rain)
+                    //.setSmallIcon(R.drawable.ic_light_clouds)
                     .setLargeIcon(largeIcon)
                     .setContentTitle(notificationTitle)
                     .setContentText(notificationText)
                     .setAutoCancel(true);
+
 
             /*
              * This Intent will be triggered when the user clicks the notification. In our case,
