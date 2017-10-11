@@ -12,11 +12,15 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import com.example.android.sunshine.DetailActivity;
+import com.example.android.sunshine.MainActivity;
 import com.example.android.sunshine.R;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
+
+import static com.example.android.sunshine.data.WeatherContract.WeatherEntry.CONTENT_URI;
 
 public class NotificationUtils {
 
@@ -28,6 +32,7 @@ public class NotificationUtils {
             WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
             WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
             WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
+            WeatherContract.WeatherEntry.COLUMN_DATE
     };
 
     /*
@@ -38,6 +43,7 @@ public class NotificationUtils {
     public static final int INDEX_WEATHER_ID = 0;
     public static final int INDEX_MAX_TEMP = 1;
     public static final int INDEX_MIN_TEMP = 2;
+    public static final int INDEX_DATE = 3;
 
     /*
      * This notification ID can be used to access our notification after we've displayed it. This
@@ -54,17 +60,19 @@ public class NotificationUtils {
     public static void notifyUserOfNewWeather(Context context) {
 
         /* Build the URI for today's weather in order to show up to date data in notification */
-        Uri todaysWeatherUri = WeatherContract.WeatherEntry
-                .buildWeatherUriWithDate(SunshineDateUtils.normalizeDate(System.currentTimeMillis()));
+
+        String todaysWeatherUriSelection = WeatherContract.WeatherEntry
+                .getSqlSelectForTodayOnwards();
+        Log.e("Notification Utils", "URI is " + todaysWeatherUriSelection );
 
         /*
          * The MAIN_FORECAST_PROJECTION array passed in as the second parameter is defined in our WeatherContract
          * class and is used to limit the columns returned in our cursor.
          */
         Cursor todayWeatherCursor = context.getContentResolver().query(
-                todaysWeatherUri,
+                CONTENT_URI,
                 WEATHER_NOTIFICATION_PROJECTION,
-                null,
+                todaysWeatherUriSelection,
                 null,
                 null);
 
@@ -74,10 +82,19 @@ public class NotificationUtils {
          */
         if (todayWeatherCursor.moveToFirst()) {
 
+
+
             /* Weather ID as returned by API, used to identify the icon to be used */
             int weatherId = todayWeatherCursor.getInt(INDEX_WEATHER_ID);
             double high = todayWeatherCursor.getDouble(INDEX_MAX_TEMP);
             double low = todayWeatherCursor.getDouble(INDEX_MIN_TEMP);
+            long date = todayWeatherCursor.getLong(INDEX_DATE);
+
+            Uri todayUri = CONTENT_URI.buildUpon()
+                    .appendPath(Long.toString(date))
+                    .build();
+
+            Log.e("Notification Utils", "weather id is " + todayWeatherCursor.getInt(INDEX_WEATHER_ID) );
 
             Resources resources = context.getResources();
             int largeArtResourceId = SunshineWeatherUtils
@@ -114,8 +131,8 @@ public class NotificationUtils {
              * This Intent will be triggered when the user clicks the notification. In our case,
              * we want to open Sunshine to the DetailActivity to display the newly updated weather.
              */
-            Intent detailIntentForToday = new Intent(context, DetailActivity.class);
-            detailIntentForToday.setData(todaysWeatherUri);
+            Intent detailIntentForToday = new Intent(context, MainActivity.class);
+            detailIntentForToday.setData(todayUri);
 
             TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(context);
             taskStackBuilder.addNextIntentWithParentStack(detailIntentForToday);

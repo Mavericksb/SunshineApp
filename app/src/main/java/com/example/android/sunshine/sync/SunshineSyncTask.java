@@ -126,17 +126,20 @@ public class SunshineSyncTask {
 
                 boolean oneDayPassedSinceLastNotification = false;
 
-                if (timeSinceLastNotification >= DateUtils.DAY_IN_MILLIS) {
+                //if (timeSinceLastNotification >= DateUtils.DAY_IN_MILLIS) {
                     oneDayPassedSinceLastNotification = true;
-                }
+                //}
 
                 /*
                  * We only want to show the notification if the user wants them shown and we
                  * haven't shown a notification in the past day.
                  */
                 if (notificationsEnabled && oneDayPassedSinceLastNotification) {
+                    Log.e(LOG_TAG, "Notify user");
                     NotificationUtils.notifyUserOfNewWeather(context);
                 }
+
+                Log.e(LOG_TAG, "Last not is " + timeSinceLastNotification );
 
             /* If the code reaches this point, we have successfully performed our sync */
 
