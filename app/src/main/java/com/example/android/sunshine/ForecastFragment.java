@@ -89,7 +89,7 @@ public class ForecastFragment extends Fragment implements
 
     private ForecastAdapter mForecastAdapter;
     private RecyclerView mRecyclerView;
-    private static int mPosition = RecyclerView.NO_POSITION;
+    private View mEmptyView;
 
     private ProgressBar mLoadingIndicator;
 
@@ -108,9 +108,11 @@ public class ForecastFragment extends Fragment implements
 
         View forecastView = inflater.inflate(R.layout.activity_forecast, container, false);
 
+        mEmptyView = forecastView.findViewById(R.id.empty_view);
+        mEmptyView.setVisibility(View.INVISIBLE);
+
         mRecyclerView = (RecyclerView) forecastView.findViewById(R.id.recyclerview_forecast);
         mLoadingIndicator = (ProgressBar) forecastView.findViewById(R.id.pb_loading_indicator);
-        showLoading();
 
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
@@ -146,10 +148,9 @@ public class ForecastFragment extends Fragment implements
     @Override
     public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
 
+        showLoading();
 
         switch (loaderId) {
-
-
             case ID_CURRENT_LOADER:
                 return new CursorLoader(getActivity(),
                         CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI,
@@ -166,8 +167,8 @@ public class ForecastFragment extends Fragment implements
                 return new CursorLoader(getActivity(),
                         forecastQueryUri,
                         MAIN_FORECAST_PROJECTION,
-                        null, //selection,
-                        null, //selectionArgs,
+                        null,
+                        null,
                         sortOrder);
             default:
                 throw new RuntimeException("Loader Not Implemented: " + loaderId);
@@ -187,6 +188,8 @@ public class ForecastFragment extends Fragment implements
      */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+
 
         int loaderId = loader.getId();
         switch (loaderId) {
@@ -211,12 +214,12 @@ public class ForecastFragment extends Fragment implements
                 mMergedCursor = new MergeCursor(new Cursor[]{mCurrentCursor, mForecastCursor});
                 mForecastAdapter.swapCursor(mMergedCursor);
                 showWeatherDataView();
-
+            } else {
+                showEmptyView();
             }
         }
 
 }
-
 
     /**
      * Called when a previously created loader is being reset, and thus making its data unavailable.
@@ -267,6 +270,15 @@ public class ForecastFragment extends Fragment implements
 
     }
 
+    private void showEmptyView() {
+        /* First, hide the loading indicator */
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+        /* make sure the weather data is invisible too */
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        /* finally, make empty view visible */
+        mEmptyView.setVisibility(View.VISIBLE);
+    }
+
     /**
      * This method will make the View for the weather data visible and hide the error message and
      * loading indicator.
@@ -277,6 +289,7 @@ public class ForecastFragment extends Fragment implements
     private void showWeatherDataView() {
         /* First, hide the loading indicator */
         mLoadingIndicator.setVisibility(View.INVISIBLE);
+        mEmptyView.setVisibility(View.INVISIBLE);
         /* Finally, make sure the weather data is visible */
         mRecyclerView.setVisibility(View.VISIBLE);
     }
@@ -291,6 +304,7 @@ public class ForecastFragment extends Fragment implements
     private void showLoading() {
         /* Then, hide the weather data */
         mRecyclerView.setVisibility(View.INVISIBLE);
+        mEmptyView.setVisibility(View.INVISIBLE);
         /* Finally, show the loading indicator */
         mLoadingIndicator.setVisibility(View.VISIBLE);
     }

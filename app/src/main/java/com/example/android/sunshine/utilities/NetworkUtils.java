@@ -119,6 +119,7 @@ public final class NetworkUtils {
     public static URL getUrl(Context context) {
 
         if (SunshinePreferences.isLocationLatLonAvailable(context)) {
+            Log.e(TAG, "Lat Lon is present!");
             double[] preferredCoordinates = SunshinePreferences.getLocationCoordinates(context);
             double latitude = preferredCoordinates[0];
             double longitude = preferredCoordinates[1];

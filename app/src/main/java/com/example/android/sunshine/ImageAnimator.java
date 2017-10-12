@@ -144,6 +144,11 @@ public class ImageAnimator {
 
     }
 
+    public void stopAnimation(){
+        int DAYTIME = DAY_TIME;
+        resetViews();
+        setBackground(DAYTIME);
+    }
     public void playAnimation(String weatherId, long date, long sunrise, long sunset, boolean onStart) {
 
         int DAYTIME = 0;

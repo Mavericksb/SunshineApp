@@ -126,9 +126,9 @@ public class SunshineSyncTask {
 
                 boolean oneDayPassedSinceLastNotification = false;
 
-                //if (timeSinceLastNotification >= DateUtils.DAY_IN_MILLIS) {
+                if (timeSinceLastNotification >= DateUtils.DAY_IN_MILLIS) {
                     oneDayPassedSinceLastNotification = true;
-                //}
+                }
 
                 /*
                  * We only want to show the notification if the user wants them shown and we

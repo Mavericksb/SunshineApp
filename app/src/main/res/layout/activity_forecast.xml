@@ -21,7 +21,8 @@
     android:layout_height="match_parent"
     >
 
-    <!--<include layout="@layout/background_clouds"/>-->
+    <include layout="@layout/empty_view"
+        android:id="@+id/empty_view"/>
 
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -8,11 +8,13 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import com.example.android.sunshine.DetailActivity;
 import com.example.android.sunshine.MainActivity;
@@ -21,6 +23,7 @@ import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
 
 import static com.example.android.sunshine.data.WeatherContract.WeatherEntry.CONTENT_URI;
+import static java.security.AccessController.getContext;
 
 public class NotificationUtils {
 
@@ -102,7 +105,7 @@ public class NotificationUtils {
 
             Resources resources = context.getResources();
             int largeArtResourceId = SunshineWeatherUtils
-                    .getDSLargeArtResourceIdForWeatherCondition(weatherId);
+                    .getDSSmallArtResourceIdForWeatherCondition(weatherId);
 
             Bitmap largeIcon = BitmapFactory.decodeResource(
                     resources,
@@ -115,7 +118,6 @@ public class NotificationUtils {
             /* getSmallArtResourceIdForWeatherCondition returns the proper art to show given an ID */
             int smallArtResourceId = SunshineWeatherUtils
                     .getDSSmallArtResourceIdForWeatherCondition(weatherId);
-            Log.e("Notification Utils", "weather icon id is " + weatherId );
 
             /*
              * NotificationCompat Builder is a very convenient way to build backward-compatible
@@ -124,10 +126,13 @@ public class NotificationUtils {
              * finally the text of the notification, which in our case in a summary of today's
              * forecast.
              */
+
+
+
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                     .setColor(ContextCompat.getColor(context,R.color.colorPrimary))
-                    //.setSmallIcon(R.drawable.ic_light_clouds)
                     .setLargeIcon(largeIcon)
+                    .setSmallIcon(smallArtResourceId)
                     .setContentTitle(notificationTitle)
                     .setContentText(notificationText)
                     .setAutoCancel(true);
@@ -163,6 +168,7 @@ public class NotificationUtils {
         /* Always close your cursor when you're done with it to avoid wasting resources. */
         todayWeatherCursor.close();
     }
+
 
     /**
      * Constructs and returns the summary of a particular day's forecast using various utility

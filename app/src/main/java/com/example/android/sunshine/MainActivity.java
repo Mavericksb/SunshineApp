@@ -339,6 +339,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 mImageAnimator.playAnimation(mWeatherId, mDateTime, mSunrise, mSunset, false);
                 mForecastBackgroundCursor = null;
                 mToolbarCityName.setText(SunshinePreferences.getCityName(this));
+            } else {
+                mImageAnimator.stopAnimation();
+                mToolbarCityName.setText("Add a location");
             }
         }
     }
@@ -514,26 +517,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 // again" prompts). Therefore, a user interface affordance is typically implemented
                 // when permissions are denied. Otherwise, your app could appear unresponsive to
                 // touches or interactions which have required permissions.
-//                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-//                    showSnackbar(R.string.permission_denied_explanation,
-//                            R.string.settings, new View.OnClickListener() {
-//                                @Override
-//                                public void onClick(View view) {
-//                                    // Build intent that displays the App settings screen.
-//                                    Intent intent = new Intent();
-//                                    intent.setAction(
-//                                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-//                                    Uri uri = Uri.fromParts("package",
-//                                            BuildConfig.APPLICATION_ID, null);
-//                                    intent.setData(uri);
-//                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                    startActivity(intent);
-//                                }
-//                            });
-//                }
-//                //permission is denied (and never ask again is  checked)
-//                //shouldShowRequestPermissionRationale will return false
-//                else {
+
                     showSnackbar(R.string.permission_denied_explanation,
                             R.string.settings, new View.OnClickListener() {
                                 @Override
@@ -601,22 +585,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 //        setButtonsEnabledState();
         updateLocationUI();
     }
-
-//    /**
-//     * Disables both buttons when functionality is disabled due to insuffucient location settings.
-//     * Otherwise ensures that only one button is enabled at any time. The Start Updates button is
-//     * enabled if the user is not requesting location updates. The Stop Updates button is enabled
-//     * if the user is requesting location updates.
-//     */
-//    private void setButtonsEnabledState() {
-//        if (mRequestingLocationUpdates) {
-//            mStartUpdatesButton.setEnabled(false);
-//            mStopUpdatesButton.setEnabled(true);
-//        } else {
-//            mStartUpdatesButton.setEnabled(true);
-//            mStopUpdatesButton.setEnabled(false);
-//        }
-//    }
 
     /**
      * Sets the value of the UI fields for the location latitude, longitude and last update time.

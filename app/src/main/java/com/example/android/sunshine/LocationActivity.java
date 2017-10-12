@@ -56,7 +56,6 @@ public class LocationActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null) {
-//            toolbar.setTitleTextColor(0xFFFFFFFF);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
@@ -105,7 +104,7 @@ public class LocationActivity extends AppCompatActivity implements
                         LOCATION_PROJECTION,
                         null,
                         null,
-                        null);
+                        sortOrder);
 
             default:
                 throw new RuntimeException("Loader Not Implemented: " + id);

@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.android.sunshine.data.CurrentWeatherContract;
+import com.example.android.sunshine.data.HourlyWeatherContract;
 import com.example.android.sunshine.data.LocationsContract;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
@@ -89,6 +90,7 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener {
         ImageButton deleteCity = (ImageButton) view.findViewById(R.id.button_delete_city);
 
         final int position = cursor.getInt(cursor.getColumnIndex(LocationsContract.LocationsEntry._ID));
+        final String[] stringPosition = new String[]{String.valueOf(position)};
 
 
         deleteCity.setOnClickListener(new View.OnClickListener() {
@@ -99,24 +101,30 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener {
                 mContext.getContentResolver().delete(uri, null, null);
 
                 // Delete this city's weather forecast from weather table
-                String cityId = String.valueOf(SunshinePreferences.getCityId(mContext));
-                Log.e("Sync Task", "City id " + cityId);
 
-                String[] selectionArgs = new String[]{cityId};
 
                 mContext.getContentResolver().delete(
                         WeatherContract.WeatherEntry.CONTENT_URI,
                         WeatherContract.WeatherEntry.COLUMN_CITY_ID + "=?",
-                        selectionArgs);
+                        stringPosition);
 
                 mContext.getContentResolver().delete(
                         CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI,
                         CurrentWeatherContract.CurrentWeatherEntry.COLUMN_CITY_ID + "=?",
-                        selectionArgs);
+                        stringPosition);
+
+                mContext.getContentResolver().delete(
+                        HourlyWeatherContract.HourlyWeatherEntry.CONTENT_URI,
+                        HourlyWeatherContract.HourlyWeatherEntry.COLUMN_CITY_ID + "=?",
+                        stringPosition);
+
+                
+
             }
         });
 
         String cityName = cursor.getString(LocationActivity.INDEX_CITY_NAME);
+        Log.e("Loc Adapt onClick", "cur pos " + cursor.getCount() + " cur len " + cursor.getPosition());
         textViewPrefLocation.setText(cityName);
 
         //pass cursor position via tag to be used in onClick;
