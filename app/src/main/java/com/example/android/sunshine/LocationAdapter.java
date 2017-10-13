@@ -85,12 +85,20 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener {
     }
 
     @Override
-    public void bindView(View view, Context context, final Cursor cursor) {
+    public void bindView(View view, final Context context, final Cursor cursor) {
         TextView textViewPrefLocation = (TextView) view.findViewById(R.id.textViewPrefLocation);
         ImageButton deleteCity = (ImageButton) view.findViewById(R.id.button_delete_city);
 
+        final int cursorPosition = cursor.getPosition();
         final int position = cursor.getInt(cursor.getColumnIndex(LocationsContract.LocationsEntry._ID));
         final String[] stringPosition = new String[]{String.valueOf(position)};
+
+        final String cityName = cursor.getString(cursor.getColumnIndex(LocationsContract.LocationsEntry.COLUMN_NAME));
+        textViewPrefLocation.setText(cityName);
+
+        //pass cursor position via tag to be used in onClick;
+        view.setTag(cursor.getPosition());
+        view.setOnClickListener(this);
 
 
         deleteCity.setOnClickListener(new View.OnClickListener() {
@@ -118,19 +126,21 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener {
                         HourlyWeatherContract.HourlyWeatherEntry.COLUMN_CITY_ID + "=?",
                         stringPosition);
 
-                
+                Log.e("ACTUAL onClick", "Cur pos " + cursorPosition + " cur ext position is " + position + " cur internal ID is " + cursor.getInt(cursor.getColumnIndex(LocationsContract.LocationsEntry._ID)) + " city is " + cityName);
+                if (cursor.moveToPosition(cursorPosition)) {
+                    if (cursor.moveToPrevious()) {
+                        Log.e("PREV onClick", "First cur pos " + cursor.getPosition() + "  id is " + cursor.getInt(cursor.getColumnIndex(LocationsContract.LocationsEntry._ID)) + " city is " + cursor.getString(cursor.getColumnIndex(LocationsContract.LocationsEntry.COLUMN_NAME)));
+                    } else if (cursor.moveToNext()) {
+                        Log.e("NEXT onClick", "First cur pos " + cursor.getPosition() + "  id is " + cursor.getInt(cursor.getColumnIndex(LocationsContract.LocationsEntry._ID)) + " city is " + cursor.getString(cursor.getColumnIndex(LocationsContract.LocationsEntry.COLUMN_NAME)));
+                    } else {
+                        Log.e("NO onClick", "Reset");
+                    }
+                }
 
             }
         });
-
-        String cityName = cursor.getString(LocationActivity.INDEX_CITY_NAME);
-        Log.e("Loc Adapt onClick", "cur pos " + cursor.getCount() + " cur len " + cursor.getPosition());
-        textViewPrefLocation.setText(cityName);
-
-        //pass cursor position via tag to be used in onClick;
-        view.setTag(cursor.getPosition());
-        view.setOnClickListener(this);
     }
+
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
