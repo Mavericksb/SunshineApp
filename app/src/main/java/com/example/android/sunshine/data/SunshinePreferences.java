@@ -63,6 +63,17 @@ public final class SunshinePreferences {
         editor.apply();
     }
 
+    public static void resetLocationDetails(Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sp.edit();
+
+        editor.remove(PREF_PLACE_ID);
+        editor.remove(PREF_CITY);
+        editor.remove(PREF_COORD_LAT);
+        editor.remove(PREF_COORD_LONG);
+        editor.apply();
+    }
+
     /**
      * Helper method to handle setting location details in Preferences (city name)
      * <p>
@@ -118,6 +129,14 @@ public final class SunshinePreferences {
         SharedPreferences.Editor editor = sp.edit();
 
         editor.putLong(PREF_CITY_ID, locationId);
+        editor.apply();
+    }
+
+    public static void resetCityId(Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sp.edit();
+
+        editor.remove(PREF_CITY_ID);
         editor.apply();
     }
 

@@ -68,16 +68,18 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener {
         int position = (int) view.getTag();
         Cursor cursor = getCursor();
         cursor.moveToPosition(position);
-        long cityId = cursor.getLong(LocationActivity.INDEX_ID);
 
+        long cityId = cursor.getLong(LocationActivity.INDEX_ID);
         SunshinePreferences.setCityId(mContext, cityId);
+
         double latitude = Double.valueOf(cursor.getString(LocationActivity.INDEX_CITY_LATITUDE));
         double longitude = Double.valueOf(cursor.getString(LocationActivity.INDEX_CITY_LONGITUDE));
         String city = cursor.getString(LocationActivity.INDEX_CITY_NAME);
         String placeId = cursor.getString(LocationActivity.INDEX_PLACE_ID);
         SunshinePreferences.setLocationDetails(mContext, latitude, longitude, city, placeId);
+
         SunshineSyncUtils.startImmediateSync(mContext);
-        ForecastFragment.reload();
+        //ForecastFragment.reload();
 
         //HourlyActivity.reload();
         ((Activity) mContext).finish();
@@ -103,7 +105,44 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener {
 
         deleteCity.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View buttonView) {
+
+                Log.e("ACTUAL onClick", "Cur pos " + cursorPosition + " cur ext position is " + position + " city is " + cityName);
+                if (cursor.moveToPosition(cursorPosition)) {
+                    if (cursor.moveToPrevious()) {
+                        Log.e("PREV onClick", "First cur pos " + cursor.getPosition() + "  id is " + cursor.getInt(cursor.getColumnIndex(LocationsContract.LocationsEntry._ID)) + " city is " + cursor.getString(cursor.getColumnIndex(LocationsContract.LocationsEntry.COLUMN_NAME)));
+                        long cityId = cursor.getLong(LocationActivity.INDEX_ID);
+                        SunshinePreferences.setCityId(mContext, cityId);
+
+                        double latitude = Double.valueOf(cursor.getString(LocationActivity.INDEX_CITY_LATITUDE));
+                        double longitude = Double.valueOf(cursor.getString(LocationActivity.INDEX_CITY_LONGITUDE));
+                        String city = cursor.getString(LocationActivity.INDEX_CITY_NAME);
+                        String placeId = cursor.getString(LocationActivity.INDEX_PLACE_ID);
+                        SunshinePreferences.setLocationDetails(mContext, latitude, longitude, city, placeId);
+
+                        SunshineSyncUtils.startImmediateSync(mContext);
+                    } else if (cursor.moveToPosition(cursorPosition)) {
+                        if (cursor.moveToNext()) {
+                            Log.e("NEXT onClick", "First cur pos " + cursor.getPosition() + "  id is " + cursor.getInt(cursor.getColumnIndex(LocationsContract.LocationsEntry._ID)) + " city is " + cursor.getString(cursor.getColumnIndex(LocationsContract.LocationsEntry.COLUMN_NAME)));
+                            long cityId = cursor.getLong(LocationActivity.INDEX_ID);
+                            SunshinePreferences.setCityId(mContext, cityId);
+
+                            double latitude = Double.valueOf(cursor.getString(LocationActivity.INDEX_CITY_LATITUDE));
+                            double longitude = Double.valueOf(cursor.getString(LocationActivity.INDEX_CITY_LONGITUDE));
+                            String city = cursor.getString(LocationActivity.INDEX_CITY_NAME);
+                            String placeId = cursor.getString(LocationActivity.INDEX_PLACE_ID);
+                            SunshinePreferences.setLocationDetails(mContext, latitude, longitude, city, placeId);
+
+                            SunshineSyncUtils.startImmediateSync(mContext);
+                        } else {
+                            Log.e("NO onClick", "Reset");
+                            SunshinePreferences.resetLocationCoordinates(mContext);
+                            SunshinePreferences.resetCityId(mContext);
+                            //SunshineSyncUtils.startImmediateSync(mContext);
+                        }
+                    }
+                }
+
                 //Delete this city from location table
                 Uri uri = ContentUris.withAppendedId(LocationsContract.LocationsEntry.CONTENT_URI, Long.valueOf(position));
                 mContext.getContentResolver().delete(uri, null, null);
@@ -126,16 +165,7 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener {
                         HourlyWeatherContract.HourlyWeatherEntry.COLUMN_CITY_ID + "=?",
                         stringPosition);
 
-                Log.e("ACTUAL onClick", "Cur pos " + cursorPosition + " cur ext position is " + position + " cur internal ID is " + cursor.getInt(cursor.getColumnIndex(LocationsContract.LocationsEntry._ID)) + " city is " + cityName);
-                if (cursor.moveToPosition(cursorPosition)) {
-                    if (cursor.moveToPrevious()) {
-                        Log.e("PREV onClick", "First cur pos " + cursor.getPosition() + "  id is " + cursor.getInt(cursor.getColumnIndex(LocationsContract.LocationsEntry._ID)) + " city is " + cursor.getString(cursor.getColumnIndex(LocationsContract.LocationsEntry.COLUMN_NAME)));
-                    } else if (cursor.moveToNext()) {
-                        Log.e("NEXT onClick", "First cur pos " + cursor.getPosition() + "  id is " + cursor.getInt(cursor.getColumnIndex(LocationsContract.LocationsEntry._ID)) + " city is " + cursor.getString(cursor.getColumnIndex(LocationsContract.LocationsEntry.COLUMN_NAME)));
-                    } else {
-                        Log.e("NO onClick", "Reset");
-                    }
-                }
+
 
             }
         });
