@@ -50,13 +50,17 @@ public class FetchAddressIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
 
+
         String errorMessage = "";
+
+
 
         // Get the location passed to this service through an extra.
         Location location = intent.getParcelableExtra(
                 Constants.LOCATION_DATA_EXTRA);
 
-        // ...
+        //
+        mReceiver = intent.getParcelableExtra(Constants.RECEIVER);
 
         List<Address> addresses = null;
 
@@ -88,17 +92,23 @@ public class FetchAddressIntentService extends IntentService {
             deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
         } else {
             Address address = addresses.get(0);
-            ArrayList<String> addressFragments = new ArrayList<String>();
 
-            // Fetch the address lines using getAddressLine,
-            // join them, and send them to the thread.
-            for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
-                addressFragments.add(address.getAddressLine(i));
-            }
-            Log.e(TAG, getString(R.string.address_found));
+//            ArrayList<String> addressFragments = new ArrayList<String>();
+//
+//            // Fetch the address lines using getAddressLine,
+//            // join them, and send them to the thread.
+//            for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+//                Log.e(TAG, getString(R.string.address_found) + " + " + address.getLocality());
+//
+//                addressFragments.add(address.getAddressLine(i));
+//            }
+
+            String locality = address.getLocality();
+
+            Log.i(TAG, getString(R.string.address_found));
             deliverResultToReceiver(Constants.SUCCESS_RESULT,
-                    TextUtils.join(System.getProperty("line.separator"),
-                            addressFragments));
+                    //TextUtils.join(System.getProperty("line.separator"),
+                            locality);
         }
     }
 

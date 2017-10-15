@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.android.sunshine.data.LocationsContract;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.sync.SunshineSyncUtils;
+import com.example.android.sunshine.utilities.SunshineLocationUtils;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBufferResponse;
@@ -144,32 +145,8 @@ public class AutoCompleteActivity extends AppCompatActivity implements AdapterVi
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            //Create a Content value table pairing
-            ContentValues values = new ContentValues();
-
-            values.put(LocationsContract.LocationsEntry.COLUMN_NAME, mCity);
-            values.put(LocationsContract.LocationsEntry.COLUMN_LATITUDE, mLatitude);
-            values.put(LocationsContract.LocationsEntry.COLUMN_LONGITUDE, mLongitude);
-            values.put(LocationsContract.LocationsEntry.COLUMN_PLACEID, mPlaceId);
-
-            Uri newUri = getContentResolver().insert(LocationsContract.LocationsEntry.CONTENT_URI, values);
-
-                if(newUri==null){
-                    Toast notSucceded = Toast.makeText(getApplicationContext(), "Failed to add city", Toast.LENGTH_SHORT);
-                    notSucceded.show();
-                } else {
-                    // Get the Location Table ID for this city and store it in Shared preference in order to be
-                    // used whenever Weather table creates the data for a given city to store its city reference under
-                    // CITY_ID
-                    long cityId = ContentUris.parseId(newUri);
-                    SunshinePreferences.setCityId(AutoCompleteActivity.this, cityId);
-
-                    SunshinePreferences.setLocationDetails(AutoCompleteActivity.this, mLatitude, mLongitude, mCity, mPlaceId);
-                    // Coordinates changed so I need to fetch data from server
-                    SunshineSyncUtils.startImmediateSync(AutoCompleteActivity.this);
-                    finish();
-                }
-
+            SunshineLocationUtils.insertLocation(AutoCompleteActivity.this, mCity, mLatitude, mLongitude, mPlaceId);
+            finish();
             }
         }
 

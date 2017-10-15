@@ -57,7 +57,8 @@ public final class NetworkUtils {
 
 
     private static final String DYNAMIC_WEATHER_URL =
-            "https://api.darksky.net/forecast/86e612f54bf44d5992b101d39f9640f4/";
+            //"https://api.darksky.net/forecast/86e612f54bf44d5992b101d39f9640f4/";
+    "https://api.darksky.net/forecast/075a0ffefb1cc49b3de3903fb8dd1b25/";
 
     private static final String STATIC_WEATHER_URL =
             "https://andfun-weather.udacity.com/staticweather";
@@ -137,6 +138,7 @@ public final class NetworkUtils {
             values.put(LocationsContract.LocationsEntry.COLUMN_LATITUDE, latitude);
             values.put(LocationsContract.LocationsEntry.COLUMN_LONGITUDE, longitude);
             values.put(LocationsContract.LocationsEntry.COLUMN_PLACEID, placeId);
+            values.put(LocationsContract.LocationsEntry.COLUMN_LAST_UPDATE, LocationsContract.LocationsEntry.WEATHER_UPDATE_NEEDED);
 
             Uri newUri = context.getContentResolver().insert(LocationsContract.LocationsEntry.CONTENT_URI, values);
 

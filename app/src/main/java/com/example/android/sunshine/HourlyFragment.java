@@ -130,10 +130,6 @@ public class HourlyFragment extends Fragment implements
 
         View hourlyForecastView = inflater.inflate(R.layout.activity_hourly, container, false);
 
-
-        //mUri = getIntent().getData();
-        //mUri = getActivity().getFr;
-
         Uri uri = getArguments().getParcelable(URI_WITH_DATE);
 
         if (uri == null) throw new NullPointerException("URI for DetailActivity cannot be null");
@@ -191,8 +187,6 @@ public class HourlyFragment extends Fragment implements
                     mOldUri = mUri;
                 }
 
-//        SunshineSyncUtils.initialize(getActivity());
-
         return hourlyForecastView;
 
     }
@@ -217,7 +211,7 @@ public class HourlyFragment extends Fragment implements
                 /* Sort order: Ascending by date */
                 String sortOrder = HourlyWeatherContract.HourlyWeatherEntry.COLUMN_DATE + " ASC";
 
-                return new CursorLoader(getContext(),
+                return new CursorLoader(getActivity(),
                         mUri,
                         HOURLY_WEATHER_DETAIL_PROJECTION,
                         null, //HourlyWeatherContract.HourlyWeatherEntry.COLUMN_CITY_ID + "=?",
@@ -242,8 +236,6 @@ public class HourlyFragment extends Fragment implements
      */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-
 
         mHourlyForecastAdapter.swapCursor(data);
         if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;

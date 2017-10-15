@@ -2,6 +2,7 @@ package com.example.android.sunshine;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -10,6 +11,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.MergeCursor;
 import android.graphics.Rect;
+import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
@@ -49,11 +51,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.sunshine.data.CurrentWeatherContract;
+import com.example.android.sunshine.data.LocationsContract;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.sync.Constants;
 import com.example.android.sunshine.sync.FetchAddressIntentService;
 import com.example.android.sunshine.sync.SunshineSyncUtils;
+import com.example.android.sunshine.utilities.SunshineLocationUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.Api;
@@ -81,6 +85,8 @@ import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.util.Date;
 
+import static com.example.android.sunshine.data.LocationsContract.LocationsEntry.UNIQUE_GEOLOCATION_ID;
+
 /**
  * Created by Robert on 19/09/2017.
  */
@@ -95,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private static final int ID_CURRENT_LOADER_BACKGROUND = 101;
     private static final int ID_WEATHER_LOADER_BACKGROUND = 102;
+    private static LoaderManager mSupportLoaderManager;
+    private static LoaderManager.LoaderCallbacks mLoaderCallbacks;
 
     private static Cursor mCurrentBackgroundCursor;
     private static Cursor mForecastBackgroundCursor;
@@ -105,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static long mDateTime = -1;
     private static long mSunrise = -1;
     private static long mSunset = -1;
-
 
     public static final String[] CURRENT_FORECAST_PROJECTION = {
             CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID,
@@ -126,38 +133,28 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     TextView mToolbarCityName;
 
     public static LocationRequest mLocationBalancedRequest;
-
     private FusedLocationProviderClient mFusedLocationClient;
-
     private SettingsClient mSettingsClient;
-
     /**
      * Callback for Location events.
      */
     public static LocationCallback mLocationCallback;
-
     /**
      * Represents a geographical location.
      */
     protected Location mCurrentLocation;
-
     private AddressResultReceiver mResultReceiver;
-
     private String mLastUpdateTime;
-
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
-
     /**
      * Code used in requesting runtime permissions.
      */
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
-
     /**
      * Tracks the status of the location updates request. Value changes when the user presses the
      * Start Updates and Stop Updates buttons.
      */
     private Boolean mRequestingLocationUpdates;
-
     /**
      * Stores the types of location services the client is interested in using. Used for checking
      * settings to determine if the device has optimal location settings.
@@ -178,33 +175,29 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
 
         mRequestingLocationUpdates = SunshinePreferences.getRequestUpdates(this);
-
         mToolbarCityName = (TextView) findViewById(R.id.toolbar_city_name);
-
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
         mSettingsClient = LocationServices.getSettingsClient(this);
-
         mLastUpdateTime = "";
+        mResultReceiver = new AddressResultReceiver(new Handler());
 
         createLocationCallback();
         createLocationRequest();
-
         buildLocationSettingsRequest();
 
 
         View mIncludeBackground = findViewById(R.id.include_background);
-
         mIncludeBackground.setVisibility(View.INVISIBLE);
 
         mImageAnimator = new ImageAnimator(this, mIncludeBackground);
 
         FragmentManager fm = getSupportFragmentManager();
-        Fragment forecastFragment = fm.findFragmentByTag(MainActivity.HOURLY_TAG);
-
+        Fragment forecastFragment = fm.findFragmentByTag(MainActivity.FORECAST_TAG);
+        Fragment hourlyFragment = fm.findFragmentByTag(MainActivity.HOURLY_TAG);
         FragmentTransaction ft = fm.beginTransaction();
 
         if (forecastFragment == null) {
+            Log.e("On create", "I'm here");
             forecastFragment = new ForecastFragment();
 
             ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
@@ -213,14 +206,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             ft.show(forecastFragment);
         }
 
+        mSupportLoaderManager = getSupportLoaderManager();
+        mLoaderCallbacks = this;
         getSupportLoaderManager().initLoader(ID_WEATHER_LOADER_BACKGROUND, null, this);
         getSupportLoaderManager().initLoader(ID_CURRENT_LOADER_BACKGROUND, null, this);
-
 
         if (mWeatherId != null && mDateTime != -1) {
             mImageAnimator.playAnimation(mWeatherId, mDateTime, mSunrise, mSunset, true);
         }
-
         SunshineSyncUtils.initialize(this);
     }
 
@@ -231,7 +224,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Log.e(TAG, "I'm ON RESUME. Req loc upd ? " + SunshinePreferences.getRequestUpdates(this) + " checkedPerms ? " + checkPermissions());
         // Within {@code onPause()}, we remove location updates. Here, we resume receiving
         // location updates if the user has requested them.
-
         if (SunshinePreferences.getRequestUpdates(this) && checkPermissions()) {
             Log.e(TAG, "Start Updating");
             startLocationUpdates();
@@ -240,13 +232,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             requestPermissions();
         }
 
-//        updateUI();
+        updateLocationUI();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
         // Remove location updates to save battery.
         stopLocationUpdates();
     }
@@ -254,7 +245,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     /**
      * This is where we inflate and set up the menu for this Activity.
-     *
      * @param menu The options menu in which you place your items.
      * @return You must return true for the menu to be displayed;
      * if you return false it will not be shown.
@@ -274,7 +264,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
@@ -285,7 +274,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             startActivity(new Intent(this, LocationActivity.class));
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -354,24 +342,51 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
+    public static void reload() {
+        mSupportLoaderManager.restartLoader(ID_CURRENT_LOADER_BACKGROUND, null, mLoaderCallbacks);
+        mSupportLoaderManager.restartLoader(ID_WEATHER_LOADER_BACKGROUND, null, mLoaderCallbacks);
+    }
+
     @Override
     public void onLoaderReset(Loader loader) {
 
     }
 
+    private void createLocationCallback() {
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
 
-    private boolean checkPermissions() {
-        int permissionState = ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
-        return permissionState == PackageManager.PERMISSION_GRANTED;
+                mCurrentLocation = locationResult.getLastLocation();
+                // In some rare cases the location returned can be null
+                if (mCurrentLocation == null) {
+                    return;
+                }
+
+                if (!Geocoder.isPresent()) {
+                    Toast.makeText(MainActivity.this,
+                            R.string.no_geocoder_available,
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                // Start service and update UI to reflect new location
+                startIntentService();
+                mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+                updateLocationUI();
+            }
+        };
     }
+
 
     private void createLocationRequest() {
         mLocationBalancedRequest = new LocationRequest();
         mLocationBalancedRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        mLocationBalancedRequest.setFastestInterval(1000 * 60 * 5);
+        mLocationBalancedRequest.setFastestInterval(1000 * 60 * 15);
         mLocationBalancedRequest.setInterval(1000 * 60 * 60);
     }
+
 
     /**
      * Uses a {@link com.google.android.gms.location.LocationSettingsRequest.Builder} to build
@@ -383,6 +398,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         builder.addLocationRequest(mLocationBalancedRequest);
         mLocationSettingsRequest = builder.build();
     }
+
 
     private void startLocationUpdates() {
 
@@ -397,7 +413,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         mFusedLocationClient.requestLocationUpdates(mLocationBalancedRequest,
                                 mLocationCallback, Looper.myLooper());
 
-                        updateUI();
+                        updateLocationUI();
                     }
                 })
                 .addOnFailureListener(this, new OnFailureListener() {
@@ -424,40 +440,34 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                                 Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                                 mRequestingLocationUpdates = false;
                         }
-
-                        updateUI();
+                        updateLocationUI();
                     }
                 });
 
     }
 
-    private void createLocationCallback() {
-        mLocationCallback = new LocationCallback() {
+
+    /**
+     * Removes location updates from the FusedLocationApi.
+     */
+    private void stopLocationUpdates() {
+        if (!mRequestingLocationUpdates) {
+            Log.e(TAG, "stopLocationUpdates: updates never requested, no-op.");
+            return;
+        }
+
+        // It is a good practice to remove location requests when the activity is in a paused or
+        // stopped state. Doing so helps battery performance and is especially
+        // recommended in applications that request frequent location updates.
+        mFusedLocationClient.removeLocationUpdates(mLocationCallback).addOnCompleteListener(this, new OnCompleteListener<Void>() {
             @Override
-            public void onLocationResult(LocationResult locationResult) {
-                super.onLocationResult(locationResult);
-
-                mCurrentLocation = locationResult.getLastLocation();
-
-                // In some rare cases the location returned can be null
-                if (mCurrentLocation == null) {
-                    return;
-                }
-
-                if (!Geocoder.isPresent()) {
-                    Toast.makeText(MainActivity.this,
-                            R.string.no_geocoder_available,
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                // Start service and update UI to reflect new location
-                startIntentService();
-                mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-                updateLocationUI();
+            public void onComplete(@NonNull Task<Void> task) {
+                SunshinePreferences.setRequestUpdates(MainActivity.this, false);
+                mRequestingLocationUpdates = false;
             }
-        };
+        });
     }
+
 
     private void startIntentService() {
         Intent intent = new Intent(this, FetchAddressIntentService.class);
@@ -480,12 +490,19 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                         Log.e(TAG, "User chose not to make required location settings changes.");
                         SunshinePreferences.setRequestUpdates(this, false);
                         mRequestingLocationUpdates = false;
-                        updateUI();
+                        updateLocationUI();
                         break;
                 }
                 break;
         }
     }
+
+
+    private boolean checkPermissions() {
+        int permissionState = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        return permissionState == PackageManager.PERMISSION_GRANTED;
+    }
+
 
     private void requestPermissions() {
         boolean shouldProvideRationale =
@@ -521,8 +538,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      * Callback received when a permissions request has been completed.
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.e(TAG, "onRequestPermissionResult");
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.length <= 0) {
@@ -538,14 +554,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 // Permission denied.
 
                 // Notify the user via a SnackBar that they have rejected a core permission for the
-                // app, which makes the Activity useless. In a real app, core permissions would
-                // typically be best requested during a welcome-screen flow.
-
-                // Additionally, it is important to remember that a permission might have been
-                // rejected without asking the user for permission (device policy or "Never ask
-                // again" prompts). Therefore, a user interface affordance is typically implemented
-                // when permissions are denied. Otherwise, your app could appear unresponsive to
-                // touches or interactions which have required permissions.
+                // app, which makes the Activity useless.
 
                 showSnackbar(R.string.permission_denied_explanation,
                         R.string.settings, new View.OnClickListener() {
@@ -563,21 +572,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                             }
                         });
                 SunshinePreferences.setRequestUpdates(this, false);
-
             }
         }
     }
 
     /**
      * Shows a {@link Snackbar}.
-     *
      * @param mainTextStringId The id for the string resource for the Snackbar text.
      * @param actionStringId   The text of the action item.
      * @param listener         The listener associated with the Snackbar action.
      */
-    private void showSnackbar(final int mainTextStringId, final int actionStringId,
-                              View.OnClickListener listener) {
-
+    private void showSnackbar(final int mainTextStringId, final int actionStringId, View.OnClickListener listener) {
         Snackbar.make(
                 findViewById(android.R.id.content),
                 getString(mainTextStringId),
@@ -585,73 +590,56 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 .setAction(getString(actionStringId), listener).show();
     }
 
-    /**
-     * Removes location updates from the FusedLocationApi.
-     */
-    private void stopLocationUpdates() {
-        if (!mRequestingLocationUpdates) {
-            Log.e(TAG, "stopLocationUpdates: updates never requested, no-op.");
-            return;
-        }
-
-        // It is a good practice to remove location requests when the activity is in a paused or
-        // stopped state. Doing so helps battery performance and is especially
-        // recommended in applications that request frequent location updates.
-        mFusedLocationClient.removeLocationUpdates(mLocationCallback)
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        mRequestingLocationUpdates = false;
-//                        setButtonsEnabledState();
-                    }
-                });
-    }
-
-    /**
-     * Updates all UI fields.
-     */
-    private void updateUI() {
-//        setButtonsEnabledState();
-        updateLocationUI();
-    }
-
-    /**
-     * Sets the value of the UI fields for the location latitude, longitude and last update time.
-     */
+     /* Sets the value of the UI fields for the location latitude, longitude and last update time*/
     private void updateLocationUI() {
         if (mCurrentLocation != null) {
-//            mLatitudeTextView.setText(String.format(Locale.ENGLISH, "%s: %f", mLatitudeLabel,
             Log.e("UPDATE GEO", "LAT " + mCurrentLocation.getLatitude() + " LON " +
-//            mLongitudeTextView.setText(String.format(Locale.ENGLISH, "%s: %f", mLongitudeLabel,
                     mCurrentLocation.getLongitude() + " LAST UPDATE " + mLastUpdateTime);
-//            mLastUpdateTimeTextView.setText(String.format(Locale.ENGLISH, "%s: %s",
-//                    mLastUpdateTimeLabel, mLastUpdateTime));
-            mCurrentLocation.getExtras();
         }
     }
 
 
-    class AddressResultReceiver extends ResultReceiver {
+    private class AddressResultReceiver extends ResultReceiver {
         public AddressResultReceiver(Handler handler) {
             super(handler);
         }
-
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
-
-            // Display the address string
-            // or an error message sent from the intent service.
-            String mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-            //displayAddressOutput();
+            // Display the address string or an error message sent from the intent service.
+            String mLocality = resultData.getString(Constants.RESULT_DATA_KEY);
 
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {
-                Toast showAddress = Toast.makeText(MainActivity.this, "" + getString(R.string.address_found) + " " + mAddressOutput, Toast.LENGTH_LONG);;
-                showAddress.show();
-            }
 
+                Uri queryUri = LocationsContract.LocationsEntry.CONTENT_URI;
+                String[] projection = new String[]{LocationsContract.LocationsEntry.COLUMN_PLACEID};
+                String selection = LocationsContract.LocationsEntry.COLUMN_PLACEID + "=?";
+                String[] selectionArgs = new String[]{UNIQUE_GEOLOCATION_ID};
+
+                Cursor locationCursor = getContentResolver().query(queryUri, projection, selection, selectionArgs, null);
+
+                if(locationCursor!=null) {
+                    int isGeolocalityPresent = locationCursor.getCount();
+                    if (isGeolocalityPresent == 0) {
+                        SunshineLocationUtils.insertLocation(MainActivity.this, mLocality, mCurrentLocation.getLatitude(),
+                                mCurrentLocation.getLongitude(), UNIQUE_GEOLOCATION_ID);
+                    } else {
+                        SunshineLocationUtils.updateLocation(MainActivity.this, mLocality, mCurrentLocation.getLatitude(),
+                                mCurrentLocation.getLongitude());
+                    }
+
+                    Toast showAddress = Toast.makeText(MainActivity.this, "" + getString(R.string.address_found) +
+                            " " + mLocality, Toast.LENGTH_LONG);
+                    showAddress.show();
+                    locationCursor.close();
+                }
+            }
         }
     }
+
+
+
+
 }
 
 

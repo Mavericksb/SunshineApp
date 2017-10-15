@@ -96,6 +96,8 @@ public class ForecastFragment extends Fragment implements
     private static LoaderManager mSupportLoaderManager;
     private static LoaderManager.LoaderCallbacks mLoaderCallbacks;
 
+    private static FragmentManager fm;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,6 +123,8 @@ public class ForecastFragment extends Fragment implements
         mRecyclerView.setHasFixedSize(true);
         mForecastAdapter = new ForecastAdapter(getActivity(), this);
         mRecyclerView.setAdapter(mForecastAdapter);
+
+        fm = getActivity().getSupportFragmentManager();
 
         return forecastView;
     }
@@ -189,8 +193,6 @@ public class ForecastFragment extends Fragment implements
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-
-
         int loaderId = loader.getId();
         switch (loaderId) {
             case ID_CURRENT_LOADER:
@@ -244,7 +246,6 @@ public class ForecastFragment extends Fragment implements
      */
     @Override
     public void onClick(long date) {
-        FragmentManager fm = getActivity().getSupportFragmentManager();
 
         Bundle args = new Bundle();
         Uri uriForDateClicked = HourlyWeatherContract.HourlyWeatherEntry.buildWeatherUriWithDate(date);
@@ -311,7 +312,11 @@ public class ForecastFragment extends Fragment implements
 
 
     public static void reload() {
+        Fragment hourlyFragment = fm.findFragmentByTag(MainActivity.HOURLY_TAG);
 
+        if(hourlyFragment!=null) {
+            HourlyFragment.reload();
+        }
         mSupportLoaderManager.restartLoader(ID_CURRENT_LOADER, null, mLoaderCallbacks);
         mSupportLoaderManager.restartLoader(ID_FORECAST_LOADER, null, mLoaderCallbacks);
     }

@@ -85,22 +85,6 @@ class AutoCompleteAdapter extends ArrayAdapter<AutoCompleteAdapter.PlaceAutocomp
 
     }
 
-//    @NonNull
-//    @Override
-//    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-//        String pos = getItem(position);
-//        View view = convertView;
-//        if(view == null){
-//            LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-//            view = layoutInflater.inflate(R.layout.list_item_location_autocomplete, null);
-//        }
-//        TextView tv = (TextView) view.findViewById(R.id.textViewListLocation);
-//        tv.setText(pos.toString());
-//
-//        return view;
-//    }
-
-
     @Override
     public int getCount() {
         return mResultList.size();
@@ -112,9 +96,6 @@ class AutoCompleteAdapter extends ArrayAdapter<AutoCompleteAdapter.PlaceAutocomp
         return mResultList.get(index);
     }
 
-//    static public String getPlaceId(int index) {
-//        return placeIds.get(index);
-//    }
 
     @Override
     public String toString() {
@@ -152,9 +133,6 @@ class AutoCompleteAdapter extends ArrayAdapter<AutoCompleteAdapter.PlaceAutocomp
     }
 
     private ArrayList<PlaceAutocomplete> autoComplete(CharSequence constraint){
-
-//        final ArrayList<String> results = new ArrayList<>();
-//        final ArrayList<String> placeId = new ArrayList<>();
 
         try {
             Task<AutocompletePredictionBufferResponse> result = mGeoDataClient.getAutocompletePredictions(

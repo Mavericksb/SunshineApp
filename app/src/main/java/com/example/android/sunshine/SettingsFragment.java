@@ -17,6 +17,7 @@ package com.example.android.sunshine;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
@@ -27,9 +28,11 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
 import android.util.Log;
 
+import com.example.android.sunshine.data.LocationsContract;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.sync.SunshineSyncUtils;
+import com.example.android.sunshine.utilities.SunshineLocationUtils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
@@ -108,9 +111,25 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             // units have changed. update lists of weather entries accordingly
             activity.getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
         } else if (key.equals(getString(R.string.pref_enable_geolocation_key))){
-
             boolean areLocationUpdatesRequested = SunshinePreferences.getRequestUpdates(getActivity());
             Log.e("SettingsFragments", "Requested updates ? " + areLocationUpdatesRequested );
+            if(!areLocationUpdatesRequested){
+                Cursor cursor = getActivity().getContentResolver().query(LocationsContract.LocationsEntry.CONTENT_URI,
+                        LocationActivity.LOCATION_PROJECTION,
+                        LocationsContract.LocationsEntry.COLUMN_PLACEID + " =?",
+                        new String[]{LocationsContract.LocationsEntry.UNIQUE_GEOLOCATION_ID},
+                        null);
+                long position;
+                if(cursor!=null) {
+                    if (cursor.moveToFirst()) {
+                        position = cursor.getLong(LocationActivity.INDEX_ID);
+                        SunshineLocationUtils.deleteLocation(getActivity(), new String[]{String.valueOf(position)});
+                    }
+                    cursor.close();
+                }
+
+            }
+
         }
         Preference preference = findPreference(key);
         if (null != preference) {

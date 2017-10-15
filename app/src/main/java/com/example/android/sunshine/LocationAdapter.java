@@ -5,6 +5,8 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.v4.app.FragmentManager;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +21,8 @@ import com.example.android.sunshine.data.LocationsContract;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.sync.SunshineSyncUtils;
+import com.example.android.sunshine.utilities.NotificationUtils;
+import com.example.android.sunshine.utilities.SunshineLocationUtils;
 
 /**
  * Created by ROBERTO on 08/09/2017.
@@ -34,20 +38,12 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener {
     //static private ArrayList<String> placeIds;
     private Context mContext;
 
-    private final LocationAdapterOnClickHandler mClickHandler;
 
-
-    public interface LocationAdapterOnClickHandler {
-        void onClick();
-    }
-
-
-    public LocationAdapter(Context context, Cursor cursor, LocationAdapterOnClickHandler clickHandler) {
+    public LocationAdapter(Context context, Cursor cursor) {
         super(context, cursor, FLAG_REGISTER_CONTENT_OBSERVER);
 
         mContext = context;
         mCursor = cursor;
-        mClickHandler = clickHandler;
     }
 
     @Override
@@ -58,9 +54,14 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
+
+
         View view = LayoutInflater.from(mContext).inflate(R.layout.list_item_pref_location, null);
+
+        view.setVisibility(View.VISIBLE);
         view.setFocusable(true);
         return view;
+
     }
 
     @Override
@@ -77,17 +78,33 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener {
         String city = cursor.getString(LocationActivity.INDEX_CITY_NAME);
         String placeId = cursor.getString(LocationActivity.INDEX_PLACE_ID);
         SunshinePreferences.setLocationDetails(mContext, latitude, longitude, city, placeId);
+        long lastUpdate = cursor.getLong(LocationActivity.INDEX_LAST_UPDATE);
+        Log.e("Location Adapter", " Last Update is " + lastUpdate);
 
-        SunshineSyncUtils.startImmediateSync(mContext);
-        //ForecastFragment.reload();
+        long timeSinceLastUpdate = SunshinePreferences
+                .getEllapsedTimeSinceLastLocationUpdate(mContext, lastUpdate);
 
-        //HourlyActivity.reload();
+        boolean halfHourPassedSinceLastNotification = false;
+
+        if (timeSinceLastUpdate >= (DateUtils.MINUTE_IN_MILLIS * 30)) {
+            halfHourPassedSinceLastNotification = true;
+        }
+
+        if (lastUpdate == -1 || halfHourPassedSinceLastNotification) {
+            SunshineLocationUtils.updateLastLocationUpdate(mContext, cityId);
+            SunshineSyncUtils.startImmediateSync(mContext);
+        } else {
+            MainActivity.reload();
+            ForecastFragment.reload();
+        }
+
         ((Activity) mContext).finish();
 
     }
 
     @Override
     public void bindView(View view, final Context context, final Cursor cursor) {
+
         TextView textViewPrefLocation = (TextView) view.findViewById(R.id.textViewPrefLocation);
         ImageButton deleteCity = (ImageButton) view.findViewById(R.id.button_delete_city);
 
@@ -143,34 +160,10 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener {
                     }
                 }
 
-                //Delete this city from location table
-                Uri uri = ContentUris.withAppendedId(LocationsContract.LocationsEntry.CONTENT_URI, Long.valueOf(position));
-                mContext.getContentResolver().delete(uri, null, null);
-
-                // Delete this city's weather forecast from weather table
-
-
-                mContext.getContentResolver().delete(
-                        WeatherContract.WeatherEntry.CONTENT_URI,
-                        WeatherContract.WeatherEntry.COLUMN_CITY_ID + "=?",
-                        stringPosition);
-
-                mContext.getContentResolver().delete(
-                        CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI,
-                        CurrentWeatherContract.CurrentWeatherEntry.COLUMN_CITY_ID + "=?",
-                        stringPosition);
-
-                mContext.getContentResolver().delete(
-                        HourlyWeatherContract.HourlyWeatherEntry.CONTENT_URI,
-                        HourlyWeatherContract.HourlyWeatherEntry.COLUMN_CITY_ID + "=?",
-                        stringPosition);
-
-
-
+                SunshineLocationUtils.deleteLocation(mContext, stringPosition);
             }
         });
     }
-
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {

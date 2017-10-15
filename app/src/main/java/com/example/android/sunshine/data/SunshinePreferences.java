@@ -376,6 +376,12 @@ public final class SunshinePreferences {
         return timeSinceLastNotification;
     }
 
+
+    public static long getEllapsedTimeSinceLastLocationUpdate(Context context, long lastLocationUpdate) {
+        long timeSinceLastLocationUpdate = System.currentTimeMillis() - lastLocationUpdate;
+        return timeSinceLastLocationUpdate;
+    }
+
     /**
      * Saves the time that a notification is shown. This will be used to get the ellapsed time
      * since a notification was shown.

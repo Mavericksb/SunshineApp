@@ -13,6 +13,46 @@
         android:layout_height="wrap_content"
        />
 
+    <LinearLayout
+        android:id="@+id/view_geolocality"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/list_item_padding_vertical"
+        android:paddingBottom="@dimen/list_item_padding_vertical"
+        android:background="#55000000">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_add_city"/>
+
+        <TextView
+            android:id="@+id/text_view_find_me"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            tools:text="Actual"
+            />
+
+        <TextView
+            android:id="@+id/textViewGeolocality"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="@dimen/forecast_detail_vertical_padding"
+            android:paddingRight="@dimen/forecast_detail_vertical_padding"
+            tools:text="Questa è una città"
+
+            />
+
+    </LinearLayout>
+
     <ListView android:id="@+id/PrefLocationlist"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -28,8 +68,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingBottom="48dp"
-        android:paddingTop="@dimen/forecast_detail_vertical_padding">
+        android:paddingBottom="40dp"
+        android:paddingTop="8dp">
 
         <ImageButton
             android:id="@+id/button_add_city"

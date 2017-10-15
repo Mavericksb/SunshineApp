@@ -46,7 +46,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
      * use-case, we wanted to watch out for it and warn you what could happen if you mistakenly
      * version your databases.
      */
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public WeatherDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -166,7 +166,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
                         CurrentWeatherEntry.COLUMN_PRESSURE   + " REAL NOT NULL, "                    +
 
                         CurrentWeatherEntry.COLUMN_WIND_SPEED + " REAL NOT NULL, "                    +
-//                        CurrentWeatherEntry.COLUMN_DEGREES    + " REAL NOT NULL);";
+
                         CurrentWeatherEntry.COLUMN_DEGREES    + " REAL NOT NULL, " +
                         " UNIQUE (" + CurrentWeatherEntry.COLUMN_DATE + ", " + CurrentWeatherEntry.COLUMN_CITY_ID +  ") ON CONFLICT REPLACE);";
         sqLiteDatabase.execSQL(SQL_CREATE_CURRENT_WEATHER_TABLE);
@@ -179,13 +179,14 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
 
                 "CREATE TABLE " + LocationsEntry.TABLE_NAME + " (" +
 
-                        LocationsEntry._ID               + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        LocationsEntry._ID               + " INTEGER PRIMARY KEY AUTOINCREMENT, "   +
 
-                        LocationsEntry.COLUMN_NAME       + " STRING NOT NULL, "                 +
+                        LocationsEntry.COLUMN_NAME       + " STRING NOT NULL, "                     +
 
-                        LocationsEntry.COLUMN_LATITUDE   + " REAL NOT NULL, "                    +
-                        LocationsEntry.COLUMN_LONGITUDE   + " REAL NOT NULL, "                    +
-                        LocationsEntry.COLUMN_PLACEID + " STRING NOT NULL, "                     +
+                        LocationsEntry.COLUMN_LATITUDE   + " REAL NOT NULL, "                       +
+                        LocationsEntry.COLUMN_LONGITUDE   + " REAL NOT NULL, "                      +
+                        LocationsEntry.COLUMN_PLACEID + " STRING NOT NULL, "                        +
+                        LocationsEntry.COLUMN_LAST_UPDATE + " REAL NOT NULL, "                      +
 
                 /* To ensure this table can only contain one location entry per PlaceId */
                         " UNIQUE (" + LocationsEntry.COLUMN_PLACEID + ") ON CONFLICT REPLACE);";

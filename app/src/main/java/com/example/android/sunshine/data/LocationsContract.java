@@ -55,6 +55,9 @@ public class LocationsContract {
         /* Min and max temperatures in °C for the day (stored as floats in the database) */
         public static final String COLUMN_LATITUDE = "latitude";
         public static final String COLUMN_LONGITUDE = "longitude";
+        public static final String COLUMN_LAST_UPDATE = "last_update";
 
+        public static final String UNIQUE_GEOLOCATION_ID = "unique_geolocation_id";
+        public static final long WEATHER_UPDATE_NEEDED = -1;
     }
 }
