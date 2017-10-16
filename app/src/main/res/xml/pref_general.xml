@@ -16,36 +16,39 @@
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent">
-
-
-<EditTextPreference
-        android:defaultValue="@string/pref_location_default"
-        android:inputType="text"
-        android:key="@string/pref_location_key"
-        android:singleLine="true"
-        android:title="@string/pref_location_label"  />
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
 
     <ListPreference
+
+        android:icon="@drawable/ic_add_city"
         android:defaultValue="@string/pref_units_metric"
         android:entries="@array/pref_units_options"
         android:entryValues="@array/pref_units_values"
         android:key="@string/pref_units_key"
-        android:title="@string/pref_units_label" />
+        android:title="@string/pref_units_label"
+        android:layout="@layout/item_preference"/>
 
     <CheckBoxPreference
+        android:icon="@drawable/ic_add_city"
         android:defaultValue="@bool/show_notifications_by_default"
         android:key="@string/pref_enable_notifications_key"
+
         android:summaryOff="@string/pref_enable_notifications_false"
         android:summaryOn="@string/pref_enable_notifications_true"
-        android:title="@string/pref_enable_notifications_label" />
+        android:title="@string/pref_enable_notifications_label"
+        android:layout="@layout/item_preference"
+        />
 
     <CheckBoxPreference
+        android:icon="@drawable/ic_add_city"
         android:defaultValue="@bool/get_location_by_default"
         android:key="@string/pref_enable_geolocation_key"
         android:summaryOff="@string/pref_enable_geolocation_false"
         android:summaryOn="@string/pref_enable_geolocation_true"
-        android:title="@string/pref_enable_geolocation_label" />
+        android:title="@string/pref_enable_geolocation_label"
+        android:layout="@layout/item_preference"/>
 
 </PreferenceScreen>

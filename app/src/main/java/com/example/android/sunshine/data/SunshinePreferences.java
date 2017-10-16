@@ -18,6 +18,8 @@ package com.example.android.sunshine.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v7.preference.CheckBoxPreference;
+import android.support.v7.preference.Preference;
 
 import com.example.android.sunshine.R;
 
@@ -151,6 +153,7 @@ public final class SunshinePreferences {
         SharedPreferences.Editor editor = sp.edit();
 
         editor.putString(PREF_PLACE_ID, placeId);
+        editor.apply();
     }
 
     public static String getPlaceId(Context context) {
@@ -196,9 +199,9 @@ public final class SunshinePreferences {
 
         String requestUpdatesKey = context.getString(R.string.pref_enable_geolocation_key);
 
-
         editor.putBoolean(requestUpdatesKey, requestLocationUpdates);
         editor.apply();
+
     }
 
     public static double[] getPreferredLocationCoords(Context context) {

@@ -21,6 +21,8 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.android.sunshine.data.CurrentWeatherContract;
+import com.example.android.sunshine.data.HourlyWeatherContract;
 import com.example.android.sunshine.data.LocationsContract;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
@@ -121,12 +123,16 @@ public class LocationActivity extends AppCompatActivity implements
                                 SunshineLocationUtils.updateLastLocationUpdate(LocationActivity.this, cityId);
                                 SunshineSyncUtils.startImmediateSync(LocationActivity.this);
                             } else {
-                                MainActivity.reload();
-                                ForecastFragment.reload();
+                                getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
+                                getContentResolver().notifyChange(HourlyWeatherContract.HourlyWeatherEntry.CONTENT_URI, null);
+                                getContentResolver().notifyChange(CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI, null);
+//                                MainActivity.reload();
+//                                ForecastFragment.reload();
                             }
                             cursor.close();
                         } else {
-                            SunshinePreferences.setRequestUpdates(LocationActivity.this, true);
+
+                            //SunshinePreferences.setRequestUpdates(LocationActivity.this, true);
                         }
                         finish();
                         break;
@@ -166,11 +172,12 @@ public class LocationActivity extends AppCompatActivity implements
                         new String[]{LocationsContract.LocationsEntry.UNIQUE_GEOLOCATION_ID},
                         sortOrder);
                 if(geoLocalityCursor!=null) {
-                    geoLocalityCursor.moveToFirst();
-                    if(SunshinePreferences.getRequestUpdates(LocationActivity.this)) {
-                        mTextViewFindMe.setText("Current");
-                        mTextViewGeolocality.setText("(" + geoLocalityCursor.getString(INDEX_CITY_NAME) + ")");
-                    } else {
+
+                        geoLocalityCursor.moveToFirst();
+                        if (SunshinePreferences.getRequestUpdates(LocationActivity.this) && geoLocalityCursor.getCount() > 0) {
+                            mTextViewFindMe.setText("Current");
+                            mTextViewGeolocality.setText("(" + geoLocalityCursor.getString(INDEX_CITY_NAME) + ")");
+                        } else {
                         mTextViewFindMe.setText("Find me");
                         mTextViewGeolocality.setText("");
                     }

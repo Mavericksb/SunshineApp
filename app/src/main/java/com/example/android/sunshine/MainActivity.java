@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -39,6 +40,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceManager;
+import android.support.v7.preference.PreferenceScreen;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -169,7 +173,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -188,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
+                resumeLocationUpdates();
 //                getActionBar().setTitle(mTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
@@ -250,6 +254,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onResume() {
         super.onResume();
+        resumeLocationUpdates();
+        updateLocationUI();
+    }
+
+    private void resumeLocationUpdates(){
         Log.e(TAG, "I'm ON RESUME. Req loc upd ? " + SunshinePreferences.getRequestUpdates(this) + " checkedPerms ? " + checkPermissions());
         // Within {@code onPause()}, we remove location updates. Here, we resume receiving
         // location updates if the user has requested them.
@@ -260,10 +269,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             Log.e(TAG, "Request Permissions");
             requestPermissions();
         }
-
-        updateLocationUI();
     }
-
     @Override
     protected void onPause() {
         super.onPause();
