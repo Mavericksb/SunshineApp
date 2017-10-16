@@ -35,7 +35,9 @@ import android.support.v4.content.Loader;
 import android.support.v4.os.ResultReceiver;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.WindowInsetsCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -95,6 +97,9 @@ import static com.example.android.sunshine.data.LocationsContract.LocationsEntry
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private final String TAG = this.getClass().getSimpleName();
+
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     public static final String FORECAST_TAG = "forecast_fragment";
     public static final String HOURLY_TAG = "hourly_fragment";
@@ -169,13 +174,37 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        mToolbarCityName = (TextView) findViewById(R.id.toolbar_city_name);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+//                R.string.drawer_open, R.string.drawer_close) {
+            R.string.pref_enable_geolocation_true, R.string.pref_enable_geolocation_false) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+//                getActionBar().setTitle(mTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+//                getActionBar().setTitle(mDrawerTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
         mRequestingLocationUpdates = SunshinePreferences.getRequestUpdates(this);
-        mToolbarCityName = (TextView) findViewById(R.id.toolbar_city_name);
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mSettingsClient = LocationServices.getSettingsClient(this);
         mLastUpdateTime = "";
@@ -242,6 +271,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         stopLocationUpdates();
     }
 
+    /* Called whenever we call invalidateOptionsMenu() */
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // If the nav drawer is open, hide action items related to the content view
+//        boolean drawerOpen = mDrawerLayout.isDrawerOpen();
+        //menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
 
     /**
      * This is where we inflate and set up the menu for this Activity.
@@ -267,8 +305,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
-            return true;
+            if (mDrawerToggle.onOptionsItemSelected(item)) {
+                return true;
+            }
+//            startActivity(new Intent(this, SettingsActivity.class));
+//            return true;
         }
         if (id == R.id.action_location) {
             startActivity(new Intent(this, LocationActivity.class));
@@ -628,10 +669,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                                 mCurrentLocation.getLongitude());
                     }
 
-                    Toast showAddress = Toast.makeText(MainActivity.this, "" + getString(R.string.address_found) +
-                            " " + mLocality, Toast.LENGTH_LONG);
-                    showAddress.show();
                     locationCursor.close();
+                } else {
+                    Toast noAddress = Toast.makeText(MainActivity.this, "" + getString(R.string.no_address_found), Toast.LENGTH_LONG);
+                    noAddress.show();
                 }
             }
         }
