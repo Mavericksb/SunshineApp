@@ -214,6 +214,7 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
         String highString = SunshineWeatherUtils.formatTemperature(mContext, highInCelsius);
         Spannable highSpan = new SpannableString(highString);
         highSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.high_temp_text)), highSpan.length()-2, highSpan.length()-1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
+
          /* Create the accessibility (a11y) String from the weather description */
         String highA11y = mContext.getString(R.string.a11y_high_temp, highString);
 

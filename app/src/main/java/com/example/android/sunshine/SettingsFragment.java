@@ -54,10 +54,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         // Add 'general' preferences, defined in the XML file
         addPreferencesFromResource(R.xml.pref_general);
 
-
-
-
-        SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();
+       SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();
         PreferenceScreen prefScreen = getPreferenceScreen();
         int count = prefScreen.getPreferenceCount();
         for (int i = 0; i < count; i++) {

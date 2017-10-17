@@ -10,44 +10,35 @@
     android:baselineAligned="false"
     android:minHeight="48dp"
     android:padding="8dp"
-
+    android:layout_marginStart="-8dp"
+    android:layout_marginLeft="-8dp"
     android:weightSum="10"
     tools:background="@color/colorPrimary">
-
-
-
-    <ImageView
-        android:paddingEnd="6dp"
-        android:paddingRight="6dp"
-        android:id="@android:id/icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleX="0.8"
-        android:scaleY="0.8"
-        android:layout_gravity="center_vertical"/>
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="7"
-        android:orientation="vertical" >
-
-
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical">
 
         <TextView
             android:id="@android:id/title"
+            android:textStyle="bold"
+            android:textSize="@dimen/hourly_text_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            tools:text="Notifications"/>
+            tools:text="Notifications"
+            android:gravity="center_vertical"/>
 
-        <TextView
-            android:id="@android:id/summary"
-            android:textSize="12sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/darker_gray"
-            tools:text="Enabled"/>
+        <!--<TextView-->
+            <!--android:id="@android:id/summary"-->
+            <!--android:textSize="12sp"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textColor="@android:color/darker_gray"-->
+            <!--tools:text="Enabled"/>-->
     </LinearLayout>
 
     <LinearLayout

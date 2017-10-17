@@ -21,6 +21,9 @@
     android:layout_height="match_parent"
     >
 
+    <PreferenceCategory android:title="Settings"
+        android:layout="@layout/item_preference_category">
+
     <ListPreference
 
         android:icon="@drawable/ic_add_city"
@@ -50,5 +53,7 @@
         android:summaryOn="@string/pref_enable_geolocation_true"
         android:title="@string/pref_enable_geolocation_label"
         android:layout="@layout/item_preference"/>
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

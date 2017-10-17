@@ -34,8 +34,25 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:background="@android:color/black"
+
+
 >
 
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:paddingLeft="@dimen/list_item_padding_horizontal"
+        android:paddingRight="@dimen/list_item_padding_horizontal"
+        android:id="@+id/constraintLayout"
+        android:background="#33000044"
+        app:layout_constraintHorizontal_bias="0.0"
+
+        android:layout_marginBottom="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/shadow">
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - This Guideline divides the screen into a left half and a right half and is used to        -
@@ -47,18 +64,18 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="0dp"
         android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginTop="0dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
         android:fontFamily="sans-serif-light"
         android:textColor="@color/white"
-        android:textSize="48sp"
+        android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@+id/horizontal_middle"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="19\u00b0"
-        app:layout_constraintHorizontal_bias="0.509"
-        app:layout_constraintVertical_bias="0.504" />
+        app:layout_constraintHorizontal_bias="0.85"
+        app:layout_constraintVertical_bias="0.00999999"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <android.support.constraint.Guideline
         android:id="@+id/horizontal_middle"
@@ -82,22 +99,26 @@
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="0dp"
-        android:fontFamily="sans-serif-condensed"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:layout_marginBottom="8dp"
+
         android:textColor="@color/white"
-        android:textSize="20sp"
+        android:textSize="@dimen/forecast_primary_text_size"
         app:layout_constraintBottom_toTopOf="@+id/weather_icon"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="@+id/weather_icon"
         tools:text="Today, April 03"
-        />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintRight_toLeftOf="@+id/horizontal_middle"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintVertical_bias="0.49" />
 
     <!-- Icon indicating weather condition -->
     <ImageView
         android:id="@+id/weather_icon"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
+        android:layout_width="74dp"
+        android:layout_height="74dp"
         android:adjustViewBounds="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -105,22 +126,24 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/art_clouds"
         android:layout_marginTop="0dp"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="8dp"
+        app:layout_constraintHorizontal_bias="0.05" />
 
     <!-- Text that describes weather condition -->
     <TextView
         android:id="@+id/weather_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
+        android:layout_marginTop="8dp"
         android:textColor="@color/white"
         android:textSize="20sp"
-        app:layout_constraintHorizontal_bias="0.433"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="@+id/weather_icon"
-        app:layout_constraintRight_toRightOf="@+id/weather_icon"
         app:layout_constraintTop_toBottomOf="@+id/weather_icon"
         tools:text="Rainy"
-        android:fontFamily="sans-serif-condensed"/>
+        android:layout_marginLeft="8dp"
+        app:layout_constraintRight_toLeftOf="@+id/horizontal_middle"
+        android:layout_marginRight="8dp" />
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - High temperature for today                                                                -
@@ -135,20 +158,23 @@
         android:id="@+id/high_temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="0dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
         android:layout_marginTop="0dp"
-        android:fontFamily="sans-serif-light"
         android:textColor="@color/white"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/weather_description"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintLeft_toLeftOf="@+id/horizontal_middle"
-        app:layout_constraintRight_toLeftOf="@+id/guideline2"
-        app:layout_constraintTop_toTopOf="@+id/weather_description"
-        app:layout_constraintVertical_bias="1.0"
-        tools:text="19\u00b0" />
+        android:textSize="@dimen/forecast_primary_text_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@+id/current_temperature"
+        app:layout_constraintRight_toLeftOf="@+id/low_temperature"
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="19\u00b0"
+        android:shadowColor="#000000"
+        android:shadowRadius="1"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        app:layout_constraintTop_toBottomOf="@+id/current_temperature"
+        app:layout_constraintHorizontal_bias="0.0" />
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - Low temperature for today                                                                 -
@@ -164,32 +190,37 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="0dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginRight="0dp"
         android:layout_marginTop="0dp"
-        android:fontFamily="sans-serif-light"
+        android:textSize="@dimen/forecast_primary_text_size"
         android:textColor="@color/white"
-        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/high_temperature"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintLeft_toLeftOf="@+id/guideline2"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/high_temperature"
+        app:layout_constraintRight_toRightOf="@+id/current_temperature"
         app:layout_constraintVertical_bias="0.0"
-        tools:text="10\u00b0" />
+        tools:text="10\u00b0"
+        android:shadowColor="#000000"
+        android:shadowRadius="1"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        app:layout_constraintTop_toBottomOf="@+id/current_temperature"
+        android:layout_marginLeft="0dp"
+        app:layout_constraintLeft_toLeftOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.8" />
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/guideline2"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.75" />
+        app:layout_constraintGuide_percent="0.85" />
 
+</android.support.constraint.ConstraintLayout>
 
     <View
+        android:id="@+id/shadow"
         android:layout_width="0dp"
-        android:layout_height="0.5dp"
-        android:background="#FFFFFF"
+        android:layout_height="10dp"
+        android:background="@drawable/shadow_drawable"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

@@ -372,7 +372,7 @@ public final class SunshineDateUtils {
                 formatted = context.getString(R.string.today) + format;
                 break;
             case VIEW_TYPE_FUTURE_DAY:
-                formatted = new SimpleDateFormat("EEEE", Locale.getDefault()).format(time);
+                formatted = new SimpleDateFormat("EEEE, dd", Locale.getDefault()).format(time);
                 break;
             default:
                 formatted = new SimpleDateFormat("EEE dd", Locale.getDefault()).format(time);
