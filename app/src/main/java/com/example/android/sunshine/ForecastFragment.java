@@ -215,61 +215,63 @@ public class ForecastFragment extends Fragment implements
 
                 mMergedCursor = new MergeCursor(new Cursor[]{mCurrentCursor, mForecastCursor});
                 mForecastAdapter.swapCursor(mMergedCursor);
+                mCurrentCursor = null;
+                mForecastCursor = null;
                 showWeatherDataView();
             } else {
                 showEmptyView();
             }
+
         }
+    }
 
-}
-
-    /**
-     * Called when a previously created loader is being reset, and thus making its data unavailable.
-     * The application should at this point remove any references it has to the Loader's data.
-     *
-     * @param loader The Loader that is being reset.
-     */
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+        /**
+         * Called when a previously created loader is being reset, and thus making its data unavailable.
+         * The application should at this point remove any references it has to the Loader's data.
+         *
+         * @param loader The Loader that is being reset.
+         */
+        @Override
+        public void onLoaderReset (Loader < Cursor > loader) {
         /*
          * Since this Loader's data is now invalid, we need to clear the Adapter that is
          * displaying the data.
          */
-        mForecastAdapter.swapCursor(null);
-    }
-
-    /**
-     * This method is for responding to clicks from our list.
-     *
-     * @param date Normalized UTC time that represents the local date of the weather in GMT time.
-     * @see WeatherContract.WeatherEntry#COLUMN_DATE
-     */
-    @Override
-    public void onClick(long date) {
-
-        Bundle args = new Bundle();
-        Uri uriForDateClicked = HourlyWeatherContract.HourlyWeatherEntry.buildWeatherUriWithDate(date);
-        args.putParcelable(HourlyFragment.URI_WITH_DATE, uriForDateClicked);
-
-        //Log.e("FORECAST FRAGMENT", "I'm here!");
-        Fragment hourlyFragment = fm.findFragmentByTag(MainActivity.HOURLY_TAG);
-
-
-        FragmentTransaction ft = fm.beginTransaction();
-        if (hourlyFragment == null) {
-            hourlyFragment = new HourlyFragment();
-            hourlyFragment.setArguments(args);
-            ft
-                    .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
-                    .addToBackStack(null)
-                    .replace(R.id.fragment_container, hourlyFragment, MainActivity.HOURLY_TAG).commit();
-        } else {
-            hourlyFragment.setArguments(args);
-            ft.show(hourlyFragment);
+            mForecastAdapter.swapCursor(null);
         }
 
+        /**
+         * This method is for responding to clicks from our list.
+         *
+         * @param date Normalized UTC time that represents the local date of the weather in GMT time.
+         * @see WeatherContract.WeatherEntry#COLUMN_DATE
+         */
+        @Override
+        public void onClick ( long date){
 
-    }
+            Bundle args = new Bundle();
+            Uri uriForDateClicked = HourlyWeatherContract.HourlyWeatherEntry.buildWeatherUriWithDate(date);
+            args.putParcelable(HourlyFragment.URI_WITH_DATE, uriForDateClicked);
+
+            //Log.e("FORECAST FRAGMENT", "I'm here!");
+            Fragment hourlyFragment = fm.findFragmentByTag(MainActivity.HOURLY_TAG);
+
+
+            FragmentTransaction ft = fm.beginTransaction();
+            if (hourlyFragment == null) {
+                hourlyFragment = new HourlyFragment();
+                hourlyFragment.setArguments(args);
+                ft
+                        .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.fade_out, android.R.anim.fade_in, android.R.anim.fade_out)
+                        .addToBackStack(null)
+                        .replace(R.id.fragment_container, hourlyFragment, MainActivity.HOURLY_TAG).commit();
+            } else {
+                hourlyFragment.setArguments(args);
+                ft.show(hourlyFragment);
+            }
+
+
+        }
 
     private void showEmptyView() {
         /* First, hide the loading indicator */
@@ -314,7 +316,7 @@ public class ForecastFragment extends Fragment implements
     public static void reload() {
         Fragment hourlyFragment = fm.findFragmentByTag(MainActivity.HOURLY_TAG);
 
-        if(hourlyFragment!=null) {
+        if (hourlyFragment != null) {
             HourlyFragment.reload();
         }
         mSupportLoaderManager.restartLoader(ID_CURRENT_LOADER, null, mLoaderCallbacks);

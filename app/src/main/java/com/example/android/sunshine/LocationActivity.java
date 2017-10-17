@@ -126,8 +126,7 @@ public class LocationActivity extends AppCompatActivity implements
                                 getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
                                 getContentResolver().notifyChange(HourlyWeatherContract.HourlyWeatherEntry.CONTENT_URI, null);
                                 getContentResolver().notifyChange(CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI, null);
-//                                MainActivity.reload();
-//                                ForecastFragment.reload();
+
                             }
                             cursor.close();
                         } else {

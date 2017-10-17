@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.widget.Toast;
 
 import com.example.android.sunshine.AutoCompleteActivity;
+import com.example.android.sunshine.LocationActivity;
 import com.example.android.sunshine.data.CurrentWeatherContract;
 import com.example.android.sunshine.data.HourlyWeatherContract;
 import com.example.android.sunshine.data.LocationsContract;
@@ -36,6 +37,16 @@ public class SunshineLocationUtils {
             Toast notSucceded = Toast.makeText(context, "Failed to add city", Toast.LENGTH_SHORT);
             notSucceded.show();
         }
+
+        if(mPlaceId.equals(LocationsContract.LocationsEntry.UNIQUE_GEOLOCATION_ID)){
+            SunshinePreferences.setCityId(context, ContentUris.parseId(newUri));
+            SunshinePreferences.setLocationDetails(context, mLatitude, mLongitude, mCity, mPlaceId);
+            SunshineLocationUtils.updateLastLocationUpdate(context, ContentUris.parseId(newUri));
+            SunshineSyncUtils.startImmediateSync(context);
+            context.getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
+            context.getContentResolver().notifyChange(CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI, null);
+            context.getContentResolver().notifyChange(HourlyWeatherContract.HourlyWeatherEntry.CONTENT_URI, null);
+        }
     }
 
     public static void deleteLocation(Context mContext, String[] stringPosition) {
@@ -61,6 +72,10 @@ public class SunshineLocationUtils {
                 HourlyWeatherContract.HourlyWeatherEntry.CONTENT_URI,
                 HourlyWeatherContract.HourlyWeatherEntry.COLUMN_CITY_ID + "=?",
                 stringPosition);
+
+        mContext.getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
+        mContext.getContentResolver().notifyChange(CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI, null);
+        mContext.getContentResolver().notifyChange(HourlyWeatherContract.HourlyWeatherEntry.CONTENT_URI, null);
     }
 
 
