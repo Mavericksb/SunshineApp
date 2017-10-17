@@ -88,6 +88,9 @@ public class CurrentWeatherContract {
         /* Weather ID as returned by API, used to identify the icon to be used */
         public static final String COLUMN_WEATHER_ID = "weather_id";
 
+        public static final String COLUMN_DAILY_SUMMARY = "daily_summary";
+        public static final String COLUMN_WEEK_SUMMARY = "week_summary";
+
         /* City ID as returned by Locations Table, used to relate weather entries to city in preferred locations */
         public static final String COLUMN_CITY_ID = "city_id";
 

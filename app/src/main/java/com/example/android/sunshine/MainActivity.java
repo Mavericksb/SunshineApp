@@ -258,7 +258,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void resumeLocationUpdates(){
-        Log.e(TAG, "I'm ON RESUME. Req loc upd ? " + SunshinePreferences.getRequestUpdates(this) + " checkedPerms ? " + checkPermissions());
         // Within {@code onPause()}, we remove location updates. Here, we resume receiving
         // location updates if the user has requested them.
         if (SunshinePreferences.getRequestUpdates(this) && checkPermissions()) {

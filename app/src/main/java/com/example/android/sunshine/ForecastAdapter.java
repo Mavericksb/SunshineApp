@@ -164,7 +164,6 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
         int weatherImageId = SunshineWeatherUtils
                         .getDSLargeArtResourceIdForWeatherCondition(weatherId);
 
-
         forecastAdapterViewHolder.iconView.setImageResource(weatherImageId);
 
         /****************
@@ -200,10 +199,24 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
         forecastAdapterViewHolder.currentTemperature.setText(temperatureString);
         forecastAdapterViewHolder.currentTemperature.setContentDescription(temperatureA11y);
 
+        int humidity = (int) mCursor.getDouble(ForecastFragment.INDEX_CURRENT_HUMIDITY);
+        String humidityString = humidity + "%";
+        forecastAdapterViewHolder.currentHumidity.setText(humidityString);
+
+        int windSpeed = (int) mCursor.getDouble(ForecastFragment.INDEX_CURRENT_WIND_SPEED);
+        String windSpeedString = windSpeed + " Kmh";
+        forecastAdapterViewHolder.currentWindSpeed.setText(windSpeedString);
+
+        double pressure = mCursor.getDouble(ForecastFragment.INDEX_CURRENT_HUMIDITY);
+        String pressureString = pressure + " hPa";
+        forecastAdapterViewHolder.currentPressure.setText(pressureString);
+
+
         /**************************
          * High (max) temperature *
          **************************/
          /* Read high temperature from the cursor (in degrees celsius) */
+         /* GO TO NEXT POSITION IN CMERGED CURSOR, WHICH IS DATA FROM WHEATHER CURSOR */
         mCursor.moveToNext();
         double highInCelsius = mCursor.getDouble(ForecastFragment.INDEX_WEATHER_MAX_TEMP);
          /*
@@ -382,12 +395,18 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
         final TextView highTempView;
         final TextView lowTempView;
         TextView currentTemperature;
+        TextView currentHumidity;
+        TextView currentWindSpeed;
+        TextView currentPressure;
 
         ForecastAdapterViewHolder(View view, int viewType) {
             super(view);
 
             if(viewType==VIEW_TYPE_TODAY) {
                     currentTemperature = (TextView) view.findViewById(R.id.current_temperature);
+                    currentHumidity = (TextView) view.findViewById(R.id.textViewHumidity);
+                    currentWindSpeed = (TextView) view.findViewById(R.id.textViewWind);
+                    currentPressure = (TextView) view.findViewById(R.id.textViewPressure);
                 }
 
 

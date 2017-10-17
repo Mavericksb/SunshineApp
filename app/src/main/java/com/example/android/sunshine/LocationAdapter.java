@@ -161,6 +161,9 @@ class LocationAdapter extends CursorAdapter implements View.OnClickListener {
                 }
 
                 SunshineLocationUtils.deleteLocation(mContext, stringPosition);
+                mContext.getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
+                mContext.getContentResolver().notifyChange(HourlyWeatherContract.HourlyWeatherEntry.CONTENT_URI, null);
+                mContext.getContentResolver().notifyChange(CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI, null);
             }
         });
     }

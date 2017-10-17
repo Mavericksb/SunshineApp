@@ -156,6 +156,8 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
                         CurrentWeatherEntry.COLUMN_DATE       + " INTEGER NOT NULL, "                 +
 
                         CurrentWeatherEntry.COLUMN_WEATHER_ID + " STRING NOT NULL,"                  +
+                        CurrentWeatherEntry.COLUMN_DAILY_SUMMARY + " STRING NOT NULL,"                  +
+                        CurrentWeatherEntry.COLUMN_WEEK_SUMMARY + " STRING NOT NULL,"                  +
 
                         CurrentWeatherEntry.COLUMN_PRECIP_INTENSITY + " REAL NOT NULL,"                  +
                         CurrentWeatherEntry.COLUMN_PRECIP_PROBABILITY + " REAL NOT NULL,"                  +

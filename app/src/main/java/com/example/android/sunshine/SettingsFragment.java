@@ -136,9 +136,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                             cursor.moveToPosition(i);
                             position = cursor.getLong(LocationActivity.INDEX_ID);
                             String placeId = cursor.getString(LocationActivity.INDEX_PLACE_ID);
+                            Log.e("del geolocality", " " + placeId);
                             if (placeId.equals(LocationsContract.LocationsEntry.UNIQUE_GEOLOCATION_ID)) {
-                                if(cursor.moveToNext()){
-                                    nextPos = i+1;
+                                if (cursor.moveToNext()) {
+                                    nextPos = i + 1;
                                 }
                                 SunshineLocationUtils.deleteLocation(getActivity(), new String[]{String.valueOf(position)});
                                 break;
@@ -146,30 +147,30 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                             prevPos = i;
                         }
 
-                        }
-
-                        if(prevPos != -1) {
-                            changePos = prevPos;
-                        } else if (nextPos != -1) {
-                            changePos = nextPos;
-                        }
-
-                        if(-1 != changePos){
-                            cursor.moveToPosition(changePos);
-                            long id = cursor.getLong(LocationActivity.INDEX_ID);
-                            String city = cursor.getString(LocationActivity.INDEX_CITY_NAME);
-                            String placeId = cursor.getString(LocationActivity.INDEX_PLACE_ID);
-                            double latitude = cursor.getDouble(LocationActivity.INDEX_CITY_LATITUDE);
-                            double longitude = cursor.getDouble(LocationActivity.INDEX_CITY_LONGITUDE);
-                            SunshinePreferences.setCityId(getActivity(), id);
-                            SunshinePreferences.setLocationDetails(getActivity(), latitude, longitude, city, placeId);
-                            SunshineLocationUtils.updateLastLocationUpdate(getActivity(), id);
-                            SunshineSyncUtils.startImmediateSync(getActivity());
-                            getActivity().getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
-                            getActivity().getContentResolver().notifyChange(CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI, null);
-                            getActivity().getContentResolver().notifyChange(HourlyWeatherContract.HourlyWeatherEntry.CONTENT_URI, null);
-                        }
                     }
+
+                    if (prevPos != -1) {
+                        changePos = prevPos;
+                    } else if (nextPos != -1) {
+                        changePos = nextPos;
+                    }
+
+                    if (-1 != changePos) {
+                        cursor.moveToPosition(changePos);
+                        long id = cursor.getLong(LocationActivity.INDEX_ID);
+                        String city = cursor.getString(LocationActivity.INDEX_CITY_NAME);
+                        String placeId = cursor.getString(LocationActivity.INDEX_PLACE_ID);
+                        double latitude = cursor.getDouble(LocationActivity.INDEX_CITY_LATITUDE);
+                        double longitude = cursor.getDouble(LocationActivity.INDEX_CITY_LONGITUDE);
+                        SunshinePreferences.setCityId(getActivity(), id);
+                        SunshinePreferences.setLocationDetails(getActivity(), latitude, longitude, city, placeId);
+                        SunshineLocationUtils.updateLastLocationUpdate(getActivity(), id);
+                        SunshineSyncUtils.startImmediateSync(getActivity());
+                        getActivity().getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
+                        getActivity().getContentResolver().notifyChange(CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI, null);
+                        getActivity().getContentResolver().notifyChange(HourlyWeatherContract.HourlyWeatherEntry.CONTENT_URI, null);
+                    }
+
 //
 //                        position = cursor.getLong(LocationActivity.INDEX_ID);
 //                        SunshineLocationUtils.deleteLocation(getActivity(), new String[]{String.valueOf(position)});
@@ -180,15 +181,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
         }
 
-    }
 
-    Preference preference = findPreference(key);
-        if(null!=preference)
-
-    {
-        if (!(preference instanceof CheckBoxPreference)) {
-            setPreferenceSummary(preference, sharedPreferences.getString(key, ""));
+        Preference preference = findPreference(key);
+        if (null != preference) {
+            if (!(preference instanceof CheckBoxPreference)) {
+                setPreferenceSummary(preference, sharedPreferences.getString(key, ""));
+            }
         }
     }
-}
 }

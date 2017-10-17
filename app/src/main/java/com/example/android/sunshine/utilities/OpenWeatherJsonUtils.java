@@ -141,6 +141,8 @@ public final class OpenWeatherJsonUtils {
         JSONObject daily = forecastJson.getJSONObject(DS_DAILY);
         JSONObject hourly = forecastJson.getJSONObject(DS_HOURLY);
 
+        String dailySummary = hourly.getString(DS_SUMMARY);
+        String weekSummary = daily.getString(DS_SUMMARY);
         JSONObject currentlyWeatherData = forecastJson.getJSONObject(DS_CURRENTLY);
         JSONArray jsonDailyWeatherArray = daily.getJSONArray(DS_DATA_ARRAY);
         JSONArray jsonHourlyWeatherArray = hourly.getJSONArray(DS_DATA_ARRAY);
@@ -157,7 +159,7 @@ public final class OpenWeatherJsonUtils {
 
         ArrayList<ContentValues[]> weatherArray = new ArrayList<>(3);
 
-        ContentValues[] currentWeatherContentValues = getCurrentWeatherData(context, currentlyWeatherData);
+        ContentValues[] currentWeatherContentValues = getCurrentWeatherData(context, currentlyWeatherData, dailySummary, weekSummary);
         ContentValues[] dailyWeatherContentValues = getDailyWeatherValues(context, jsonDailyWeatherArray);
         ContentValues[] hourlyWeatherContentValues = getHourlyWeatherValues(context, jsonHourlyWeatherArray);
 
@@ -168,7 +170,7 @@ public final class OpenWeatherJsonUtils {
         return weatherArray;
     }
 
-    private static ContentValues[] getCurrentWeatherData(Context context, JSONObject dayForecast) throws JSONException {
+    private static ContentValues[] getCurrentWeatherData(Context context, JSONObject dayForecast, String dailySummary, String weekSummary) throws JSONException {
 
         //long normalizedUtcStartDay = SunshineDateUtils.getNormalizedUtcDateForToday();
 
@@ -223,6 +225,8 @@ public final class OpenWeatherJsonUtils {
         currentWeatherValues.put(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_PRECIP_PROBABILITY, precipProbability);
         currentWeatherValues.put(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID, weatherId);
         currentWeatherValues.put(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_CITY_ID, cityId);
+        currentWeatherValues.put(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_DAILY_SUMMARY, dailySummary);
+        currentWeatherValues.put(CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEEK_SUMMARY, weekSummary);
 
         currentForecastValues[0] = currentWeatherValues;
 
