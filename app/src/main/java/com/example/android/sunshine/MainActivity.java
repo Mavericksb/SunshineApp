@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static Cursor mForecastBackgroundCursor;
 
     private ImageAnimator mImageAnimator;
+    private static boolean onStartAnimation = false;
 
     private static String mWeatherId = null;
     private static long mDateTime = -1;
@@ -386,15 +387,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 mDateTime = mCurrentBackgroundCursor.getLong(INDEX_DATE);
                 mSunrise = mForecastBackgroundCursor.getLong(INDEX_SUNRISE_TIME);
                 mSunset = mForecastBackgroundCursor.getLong(INDEX_SUNSET_TIME);
-                mImageAnimator.playAnimation(mWeatherId, mDateTime, mSunrise, mSunset, false);
+                mImageAnimator.playAnimation(mWeatherId, mDateTime, mSunrise, mSunset, onStartAnimation);
+                onStartAnimation = false;
                 mCurrentBackgroundCursor = null;
                 mForecastBackgroundCursor = null;
                 mToolbarCityName.setText(SunshinePreferences.getCityName(this));
             } else {
                 mImageAnimator.stopAnimation();
+                onStartAnimation = true;
                 mToolbarCityName.setText("Add a location");
             }
         }
+
     }
 
     public static void reload() {

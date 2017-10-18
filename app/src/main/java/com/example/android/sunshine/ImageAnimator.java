@@ -177,6 +177,7 @@ public class ImageAnimator {
         }
 
         if (PREVIOUS_STATE == DAYTIME && PREVIOUS_WEATHER_ID.equals(weatherId) && !onStart) {
+            Log.e("IMAGEANIMATOR", "GOING TO RETURN");
             return;
         } else {
             PREVIOUS_STATE = DAYTIME;

@@ -21,35 +21,55 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="60dp"
-    android:paddingLeft="@dimen/list_item_padding_horizontal"
-    android:paddingRight="@dimen/list_item_padding_horizontal"
-    tools:background="@color/activated"
+    android:minHeight="70dp"
+    android:background="#229999ff"
     >
-    <!--android:background="@drawable/touch_selector"-->
 
-    <ImageView
-        android:id="@+id/hourly_weather_icon"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="60dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline"
-        tools:src="@drawable/art_clouds"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:paddingLeft="@dimen/list_item_padding_horizontal"
+        android:paddingRight="@dimen/list_item_padding_horizontal"
+        android:id="@+id/constraintLayout"
+        app:layout_constraintBottom_toTopOf="@+id/shadow"
+        android:background="#33000044"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintVertical_bias="0.0">
+
+        <ImageView
+            android:id="@+id/hourly_weather_icon"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            tools:src="@drawable/art_clouds"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="0dp"
+            app:layout_constraintTop_toBottomOf="@+id/hourly_date"
+            android:layout_marginLeft="0dp"
+            app:layout_constraintRight_toLeftOf="@+id/guideline5"
+            app:layout_constraintVertical_bias="0.4"
+            app:layout_constraintHorizontal_bias="0.01" />
 
     <TextView
         android:id="@+id/hourly_date"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/list_item_date_left_margin"
-        android:layout_marginStart="@dimen/list_item_date_start_margin"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
-        app:layout_constraintLeft_toRightOf="@+id/hourly_weather_icon"
-        android:textSize="@dimen/hourly_text_size"
+        tools:text="Today, April 03"
         android:textColor="@color/white"
+        android:textSize="@dimen/forecast_primary_text_size"
         android:fontFamily="sans-serif-condensed"
-        tools:text="Today, April 03"/>
+        android:layout_marginLeft="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/hourly_weather_icon"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintVertical_bias="0.923" />
 
     <TextView
         android:id="@+id/hourly_weather_description"
@@ -57,10 +77,19 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="@color/white"
-        app:layout_constraintLeft_toLeftOf="@+id/hourly_date"
         app:layout_constraintTop_toTopOf="@+id/guideline"
+        tools:text="Rainy"
+        android:textSize="@dimen/forecast_primary_text_size"
         android:fontFamily="sans-serif-condensed"
-        tools:text="Rainy"/>
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintRight_toLeftOf="@+id/hourly_temperature"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintHorizontal_bias="0.3"
+        app:layout_constraintVertical_bias="0.48"
+        app:layout_constraintLeft_toRightOf="@+id/hourly_weather_icon"
+        app:layout_constraintBottom_toTopOf="@+id/guideline" />
 
     <TextView
         android:id="@+id/hourly_temperature"
@@ -75,21 +104,31 @@
         tools:text="10\u00b0"
         app:layout_constraintBottom_toTopOf="@+id/guideline" />
 
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
     <android.support.constraint.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5"
-        tools:layout_editor_absoluteY="32dp"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintGuide_percent="0.5" />
+
+    </android.support.constraint.ConstraintLayout>
+
 
     <View
+        android:id="@+id/shadow"
         android:layout_width="0dp"
-        android:layout_height="0.5dp"
-        android:background="#FFFFFF"
+        android:layout_height="10dp"
+        android:background="@drawable/shadow_drawable"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        />
 
 </android.support.constraint.ConstraintLayout>
