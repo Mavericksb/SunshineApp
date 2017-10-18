@@ -22,13 +22,16 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.example.android.sunshine.utilities.SunshineDateUtils;
 import com.example.android.sunshine.utilities.SunshineWeatherUtils;
@@ -154,7 +157,8 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
     }
 
 
-    private void setDataToday(ForecastAdapterViewHolder forecastAdapterViewHolder, int position) {
+
+    private void setDataToday(final ForecastAdapterViewHolder forecastAdapterViewHolder, int position) {
         mCursor.moveToPosition(position);
 
         /****************
@@ -207,9 +211,26 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
         String windSpeedString = windSpeed + " Kmh";
         forecastAdapterViewHolder.currentWindSpeed.setText(windSpeedString);
 
-        double pressure = mCursor.getDouble(ForecastFragment.INDEX_CURRENT_HUMIDITY);
+        double pressure = mCursor.getDouble(ForecastFragment.INDEX_CURRENT_PRESSURE);
         String pressureString = pressure + " hPa";
         forecastAdapterViewHolder.currentPressure.setText(pressureString);
+
+        final String dailySummary = mCursor.getString(ForecastFragment.INDEX_DAILY_SUMMARY);
+        final String weekSummary = mCursor.getString(ForecastFragment.INDEX_WEEK_SUMMARY);
+
+        forecastAdapterViewHolder.evolutionSummary.setText(dailySummary);
+
+        forecastAdapterViewHolder.evolutionButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    forecastAdapterViewHolder.evolutionSummary.setText(weekSummary);
+                } else {
+                    forecastAdapterViewHolder.evolutionSummary.setText(dailySummary);
+                }
+            }
+        });
+        forecastAdapterViewHolder.evolutionSummary.setSelected(true);
+
 
 
         /**************************
@@ -224,7 +245,7 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
           * the temperature. This method will also append either °C or °F to the temperature
           * String.
           */
-        String highString = SunshineWeatherUtils.formatTemperature(mContext, highInCelsius);
+        String highString = "Max:" + SunshineWeatherUtils.formatTemperature(mContext, highInCelsius);
         Spannable highSpan = new SpannableString(highString);
         highSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.high_temp_text)), highSpan.length()-2, highSpan.length()-1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
 
@@ -246,7 +267,7 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
           * the temperature. This method will also append either °C or °F to the temperature
           * String.
           */
-        String lowString = SunshineWeatherUtils.formatTemperature(mContext, lowInCelsius);
+        String lowString = "Min:" + SunshineWeatherUtils.formatTemperature(mContext, lowInCelsius);
         Spannable lowSpan = new SpannableString(lowString);
         lowSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.low_temp_text)), lowSpan.length()-2, lowSpan.length()-1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
         String lowA11y = mContext.getString(R.string.a11y_low_temp, lowString);
@@ -398,6 +419,8 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
         TextView currentHumidity;
         TextView currentWindSpeed;
         TextView currentPressure;
+        TextView evolutionSummary;
+        ToggleButton evolutionButton;
 
         ForecastAdapterViewHolder(View view, int viewType) {
             super(view);
@@ -407,6 +430,9 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
                     currentHumidity = (TextView) view.findViewById(R.id.textViewHumidity);
                     currentWindSpeed = (TextView) view.findViewById(R.id.textViewWind);
                     currentPressure = (TextView) view.findViewById(R.id.textViewPressure);
+                    evolutionSummary = (TextView) view.findViewById(R.id.summary_text_view);
+                evolutionButton = (ToggleButton) view.findViewById(R.id.day_week_button);
+
                 }
 
 

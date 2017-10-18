@@ -249,7 +249,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         SunshineSyncUtils.initialize(this);
     }
 
-
     @Override
     public void onResume() {
         super.onResume();

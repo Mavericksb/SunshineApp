@@ -56,7 +56,9 @@ public class ForecastFragment extends Fragment implements
             CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEATHER_ID,
             CurrentWeatherContract.CurrentWeatherEntry.COLUMN_HUMIDITY,
             CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WIND_SPEED,
-            CurrentWeatherContract.CurrentWeatherEntry.COLUMN_PRESSURE
+            CurrentWeatherContract.CurrentWeatherEntry.COLUMN_PRESSURE,
+            CurrentWeatherContract.CurrentWeatherEntry.COLUMN_DAILY_SUMMARY,
+            CurrentWeatherContract.CurrentWeatherEntry.COLUMN_WEEK_SUMMARY
     };
 
     public static final int INDEX_CURRENT_WEATHER_DATE = 0;
@@ -65,6 +67,8 @@ public class ForecastFragment extends Fragment implements
     public static final int INDEX_CURRENT_HUMIDITY = 3;
     public static final int INDEX_CURRENT_WIND_SPEED = 4;
     public static final int INDEX_CURRENT_PRESSURE = 5;
+    public static final int INDEX_DAILY_SUMMARY = 6;
+    public static final int INDEX_WEEK_SUMMARY = 7;
 
 
     /*
