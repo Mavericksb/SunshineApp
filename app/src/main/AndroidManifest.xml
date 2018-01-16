@@ -102,7 +102,8 @@
         <!-- This is the Service declaration used in conjunction with FirebaseJobDispatcher -->
         <service
             android:name=".sync.SunshineFirebaseJobService"
-            android:exported="false">
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE">
             <intent-filter>
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>

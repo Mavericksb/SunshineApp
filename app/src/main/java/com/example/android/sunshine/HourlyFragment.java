@@ -18,6 +18,7 @@ package com.example.android.sunshine;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.MergeCursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,9 +28,11 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,12 +40,20 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
+import android.view.animation.CycleInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.sunshine.animations.SunsetAnimation;
 import com.example.android.sunshine.data.HourlyWeatherContract;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
@@ -55,9 +66,10 @@ import java.net.URI;
 
 public class HourlyFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
-        HourlyForecastAdapter.HourlyForecastAdapterOnClickHandler{
+        HourlyForecastAdapter.HourlyForecastAdapterOnClickHandler {
 
-    private static Loader hourlyLoader;
+//    private static Loader hourlyLoader;
+
 
     /*
      * In this Activity, you can share the selected day's forecast. No social sharing is complete
@@ -106,6 +118,7 @@ public class HourlyFragment extends Fragment implements
      * whatever number you like, so long as it is unique and consistent.
      */
     private static final int ID_HOURLY_FORECAST_LOADER = 453;
+    private static final int ID_TODAY_LOADER = 46;
 
     private HourlyForecastAdapter mHourlyForecastAdapter;
     private RecyclerView mRecyclerView;
@@ -116,8 +129,21 @@ public class HourlyFragment extends Fragment implements
     private static LoaderManager.LoaderCallbacks mLoaderCallbacks;
 
     private static Uri mOldUri;
+    private static Uri mOldTodayUri;
     private static Uri mUri;
+    private static Uri mTodayUri;
+
+    private static Cursor mTodayCursor;
+    private static Cursor mHourlyCursor;
+    private static Cursor mMergedCursor;
+
+    private long sunrise;
+    private long sunset;
+
+    private View mItemTodaySummaryView;
+
     public static final String URI_WITH_DATE = "uri";
+    public static final String URI_TODAY_WITH_DATE = "today_uri";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -126,15 +152,17 @@ public class HourlyFragment extends Fragment implements
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState) {
         View hourlyForecastView = inflater.inflate(R.layout.activity_hourly, container, false);
+        mItemTodaySummaryView = hourlyForecastView.findViewById(R.id.today_summary);
 
         Uri uri = getArguments().getParcelable(URI_WITH_DATE);
+        Uri todayUri = getArguments().getParcelable(URI_TODAY_WITH_DATE);
 
         if (uri == null) throw new NullPointerException("URI for DetailActivity cannot be null");
-        if(uri != mUri){
+        if (uri != mUri) {
             mUri = uri;
+            mTodayUri = todayUri;
         }
 
         mRecyclerView = (RecyclerView) hourlyForecastView.findViewById(R.id.recyclerview_hourly_forecast);
@@ -181,11 +209,14 @@ public class HourlyFragment extends Fragment implements
         mLoaderCallbacks = this;
         mSupportLoaderManager = getActivity().getSupportLoaderManager();
 
-        hourlyLoader =  mSupportLoaderManager.initLoader(ID_HOURLY_FORECAST_LOADER, null, mLoaderCallbacks);
-                if(!mUri.equals(mOldUri)){
-                    reload();
-                    mOldUri = mUri;
-                }
+        mSupportLoaderManager.initLoader(ID_TODAY_LOADER, null, mLoaderCallbacks);
+        mSupportLoaderManager.initLoader(ID_HOURLY_FORECAST_LOADER, null, mLoaderCallbacks);
+
+        if (!mUri.equals(mOldUri)) {
+            reload();
+            mOldUri = mUri;
+            mOldTodayUri = mTodayUri;
+        }
 
         return hourlyForecastView;
 
@@ -206,6 +237,7 @@ public class HourlyFragment extends Fragment implements
 
         switch (loaderId) {
 
+
             case ID_HOURLY_FORECAST_LOADER:
 
                 /* Sort order: Ascending by date */
@@ -217,7 +249,13 @@ public class HourlyFragment extends Fragment implements
                         null, //HourlyWeatherContract.HourlyWeatherEntry.COLUMN_CITY_ID + "=?",
                         null, //selectionArgs,
                         sortOrder);
-
+            case ID_TODAY_LOADER:
+                return new CursorLoader(getActivity(),
+                        mTodayUri,
+                        ForecastFragment.MAIN_FORECAST_PROJECTION,
+                        null, //HourlyWeatherContract.HourlyWeatherEntry.COLUMN_CITY_ID + "=?",
+                        null, //selectionArgs,
+                        null);
             default:
                 throw new RuntimeException("Loader Not Implemented: " + loaderId);
         }
@@ -225,7 +263,7 @@ public class HourlyFragment extends Fragment implements
 
     /**
      * Called when a Loader has finished loading its data.
-     *
+     * <p>
      * NOTE: There is one small bug in this code. If no data is present in the cursor do to an
      * initial load being performed with no access to internet, the loading indicator will show
      * indefinitely, until data is present from the ContentProvider. This will be fixed in a
@@ -237,16 +275,127 @@ public class HourlyFragment extends Fragment implements
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-        mHourlyForecastAdapter.swapCursor(data);
-        if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
-        mRecyclerView.smoothScrollToPosition(mPosition);
-        if (data.getCount() != 0){
+        int loaderId = loader.getId();
+        switch (loaderId) {
+            case ID_HOURLY_FORECAST_LOADER:
+                mHourlyForecastAdapter.swapCursor(data);
+                break;
+            case ID_TODAY_LOADER:
+                populateTodaySummary(data);
+                break;
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + loaderId);
+        }
+
+//        if (mTodayCursor != null && mHourlyCursor != null) {
+//            if (mTodayCursor.getCount() != 0 && mHourlyCursor.getCount() != 0) {
+//                mTodayCursor.moveToFirst();
+//                mHourlyCursor.moveToFirst();
+//                sunrise = mTodayCursor.getLong(ForecastFragment.INDEX_SUNRISE_TIME);
+//                sunset = mTodayCursor.getLong(ForecastFragment.INDEX_SUNSET_TIME);
+//
+//
+//                mMergedCursor = new MergeCursor(new Cursor[]{mTodayCursor, mHourlyCursor});
+//                mHourlyForecastAdapter.swapCursor(mMergedCursor);
+//                mTodayCursor = null;
+//                mHourlyCursor = null;
+//                showWeatherDataView();
+//            }
             showWeatherDataView();
+//            if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+//            mRecyclerView.smoothScrollToPosition(mPosition);
         }
 //        else{
 //            Toast noData = Toast.makeText(getContext(), "There is no forecast for this day", Toast.LENGTH_SHORT);
 //            noData.show();
-//        }
+//
+
+    private void populateTodaySummary(Cursor mCursor) {
+
+        mCursor.moveToFirst();
+
+        TextView summaryHighTemp = (TextView) mItemTodaySummaryView.findViewById(R.id.high_temperature);
+        TextView summaryLowTemp = (TextView) mItemTodaySummaryView.findViewById(R.id.low_temperature);
+        TextView summaryHumidity = (TextView) mItemTodaySummaryView.findViewById(R.id.hourlyTextViewHumidity);
+        TextView summaryWindSpeed = (TextView) mItemTodaySummaryView.findViewById(R.id.hourlyTextViewWind);
+        TextView summaryPressure = (TextView) mItemTodaySummaryView.findViewById(R.id.hourlyTextViewPressure);
+        TextView evolutionSummary = (TextView) mItemTodaySummaryView.findViewById(R.id.hourly_summary_text_view);
+        ImageView iconView = (ImageView) mItemTodaySummaryView.findViewById(R.id.hourly_weather_icon);
+        TextView dateView = (TextView) mItemTodaySummaryView.findViewById(R.id.hourly_date);
+        TextView descriptionView = (TextView) mItemTodaySummaryView.findViewById(R.id.hourly_weather_description);
+        TextView sunriseTime = (TextView) mItemTodaySummaryView.findViewById(R.id.sunrise_time);
+        TextView sunsetTime = (TextView) mItemTodaySummaryView.findViewById(R.id.sunset_time);
+        ImageView sunsetIcon = (ImageView) mItemTodaySummaryView.findViewById(R.id.imageview_sunset);
+
+        SunsetAnimation sunsetAnimation = new SunsetAnimation(sunsetIcon, 70);
+        sunsetAnimation.setInterpolator(new AccelerateDecelerateInterpolator());
+        sunsetAnimation.setRepeatCount(Animation.INFINITE);
+        sunsetAnimation.setDuration(10000);
+        sunsetIcon.startAnimation(sunsetAnimation);
+
+        long sunrise = mCursor.getLong(ForecastFragment.INDEX_SUNRISE_TIME);
+        String sunriseString = SunshineDateUtils.getHourlyDetailDate(sunrise, 1);
+        sunriseTime.setText(sunriseString);
+
+        long sunset = mCursor.getLong(ForecastFragment.INDEX_SUNSET_TIME);
+        String sunsetString = SunshineDateUtils.getHourlyDetailDate(sunset, 1);
+        sunsetTime.setText(sunsetString);
+
+
+        String weatherId = mCursor.getString(ForecastFragment.INDEX_WEATHER_CONDITION_ID);
+        int weatherImageId = SunshineWeatherUtils.getDSLargeArtResourceIdForWeatherCondition(weatherId);
+
+        iconView.setImageResource(weatherImageId);
+
+        /****************
+         * Weather Date *
+         ****************/
+         /* Read date from the cursor */
+        long dateInMillis = mCursor.getLong(ForecastFragment.INDEX_WEATHER_DATE);
+         /* Get human readable string using our utility method */
+        //String dateString = SunshineDateUtils.getFriendlyDateString(mContext, dateInMillis, false);
+        String dateString = SunshineDateUtils.getDailyDetailDate(getActivity(), dateInMillis, 1);
+        dateView.setText(dateString.toUpperCase());
+
+        /***********************
+         * Weather Description *
+         ***********************/
+        if(weatherId!=null) {
+            String description = SunshineWeatherUtils.getDSStringForWeatherCondition(getActivity(), weatherId);
+         /* Create the accessibility (a11y) String from the weather description */
+            String descriptionA11y = getActivity().getString(R.string.a11y_forecast, description);
+
+
+         /* Set the text and content description (for accessibility purposes) */
+            descriptionView.setText(description);
+            descriptionView.setContentDescription(descriptionA11y);
+        }
+
+        double highTemp = mCursor.getDouble(ForecastFragment.INDEX_WEATHER_MAX_TEMP);
+        String highTempString = "Max: " + SunshineWeatherUtils.formatTemperature(getActivity(), highTemp) + " ";
+         /* Create the accessibility (a11y) String from the weather description */
+        summaryHighTemp.setText(highTempString);
+
+        double lowTemp = mCursor.getDouble(ForecastFragment.INDEX_WEATHER_MIN_TEMP);
+        String lowTempString = "Min: " + SunshineWeatherUtils.formatTemperature(getActivity(), lowTemp);
+         /* Create the accessibility (a11y) String from the weather description */
+        summaryLowTemp.setText(lowTempString);
+
+        int windSpeed = (int) mCursor.getDouble(ForecastFragment.INDEX_WIND_SPEED);
+        String windSpeedString = windSpeed + " Kmh";
+        summaryWindSpeed.setText(windSpeedString);
+
+        int humidity = (int) mCursor.getDouble(ForecastFragment.INDEX_CURRENT_HUMIDITY);
+        String humidityString = humidity + "%";
+        summaryHumidity.setText(humidityString);
+
+        double pressure = mCursor.getDouble(ForecastFragment.INDEX_PRESSURE);
+        String pressureString = pressure + " hPa";
+        summaryPressure.setText(pressureString);
+
+        String evolution = mCursor.getString(ForecastFragment.INDEX_SUMMARY);
+        evolutionSummary.setText(evolution);
+
     }
 
     /**
@@ -307,8 +456,8 @@ public class HourlyFragment extends Fragment implements
     }
 
 
-
-    public static void reload(){
+    public static void reload() {
+        mSupportLoaderManager.restartLoader(ID_TODAY_LOADER, null, mLoaderCallbacks);
         mSupportLoaderManager.restartLoader(ID_HOURLY_FORECAST_LOADER, null, mLoaderCallbacks);
     }
 

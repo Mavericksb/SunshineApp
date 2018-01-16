@@ -17,6 +17,7 @@ package com.example.android.sunshine.sync;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.JobParameters;
@@ -26,7 +27,7 @@ import com.firebase.jobdispatcher.RetryStrategy;
 
 public class SunshineFirebaseJobService extends JobService {
 
-    private AsyncTask<Void, Void, Void> mFetchWeatherTask;
+    private static AsyncTask<Void, Void, Void> mFetchWeatherTask;
 
     /**
      * The entry point to your Job. Implementations should offload work to another thread of
@@ -41,6 +42,7 @@ public class SunshineFirebaseJobService extends JobService {
     @Override
     public boolean onStartJob(final JobParameters jobParameters) {
 
+
         mFetchWeatherTask = new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
@@ -52,10 +54,11 @@ public class SunshineFirebaseJobService extends JobService {
 
             @Override
             protected void onPostExecute(Void aVoid) {
+                Toast notifiyMe = Toast.makeText(getApplicationContext(), "Job fired", Toast.LENGTH_SHORT);
+                notifiyMe.show();
                 jobFinished(jobParameters, false);
             }
         };
-
         mFetchWeatherTask.execute();
         return true;
     }

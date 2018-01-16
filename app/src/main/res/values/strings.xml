@@ -271,6 +271,10 @@
     <string name="service_not_available">No service. Check connection</string>
     <string name="navigation_drawer_closed">Settings closed</string>
     <string name="navigation_drawer_open">Settings open</string>
+    <string name="hourly_day_label">DAY</string>
+    <string name="hourly_label_hour">Time</string>
+    <string name="hourly_forecast_label">Forecast</string>
+    <string name="hourly_temp_label">Temp.</string>
 
 
 </resources>

@@ -86,24 +86,21 @@
      - particular issue won't break the app, but you should note that this attribute will be     -
      - ignored on devices that run an Android version less than 16.                              -
      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <TextView
-        android:id="@+id/text_view_current_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/colorPrimary"
-        android:textSize="@dimen/forecast_primary_text_size"
-        app:layout_constraintBottom_toTopOf="@+id/weather_icon"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:text="CURRENT"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias="0.02"
-        app:layout_constraintRight_toLeftOf="@+id/horizontal_middle"
-        android:layout_marginRight="8dp"
-        android:layout_marginLeft="0dp"
-        app:layout_constraintVertical_bias="0.0"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="0dp" />
+        <TextView
+            android:id="@+id/text_view_current_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:text="CURRENT"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/forecast_primary_text_size"
+            app:layout_constraintBottom_toTopOf="@+id/weather_icon"
+            app:layout_constraintHorizontal_bias="0.1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/horizontal_middle"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
         <TextView
             android:id="@+id/date"
             android:layout_width="wrap_content"
@@ -111,12 +108,10 @@
             android:textColor="@color/white"
             android:textSize="@dimen/forecast_primary_text_size"
             app:layout_constraintBottom_toTopOf="@+id/weather_icon"
-            tools:text="Today, April 03"
-            app:layout_constraintVertical_bias="0.0"
-            android:layout_marginTop="0dp"
+            app:layout_constraintLeft_toLeftOf="@+id/text_view_current_label"
             app:layout_constraintTop_toBottomOf="@+id/text_view_current_label"
-            android:layout_marginLeft="0dp"
-            app:layout_constraintLeft_toLeftOf="@+id/text_view_current_label" />
+            app:layout_constraintVertical_bias="0.0"
+            tools:text="Today, April 03" />
 
     <!-- Icon indicating weather condition -->
     <ImageView
@@ -180,6 +175,7 @@
         android:id="@+id/low_temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_goneMarginLeft="8dp"
         android:textSize="@dimen/forecast_primary_text_size"
         android:textColor="@color/white"
         tools:text="10\u00b0"

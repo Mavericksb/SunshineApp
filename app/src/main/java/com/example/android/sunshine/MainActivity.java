@@ -97,7 +97,6 @@ import static com.example.android.sunshine.data.LocationsContract.LocationsEntry
  * Created by Robert on 19/09/2017.
  */
 
-
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private final String TAG = this.getClass().getSimpleName();

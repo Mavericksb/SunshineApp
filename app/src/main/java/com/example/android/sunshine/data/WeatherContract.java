@@ -95,6 +95,7 @@ public class WeatherContract {
         public static final String COLUMN_PRECIP_PROBABILITY = "precip_prob";
         public static final String COLUMN_PRECIP_TYPE = "precip_type";
 
+        public static final String COLUMN_SUMMARY = "summary";
         public static final String COLUMN_SUNRISE_TIME = "sunrise_time";
         public static final String COLUMN_SUNSET_TIME = "sunset_time";
         public static final String COLUMN_MOON_PHASE = "moon_phase";

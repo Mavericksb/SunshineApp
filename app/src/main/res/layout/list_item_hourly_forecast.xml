@@ -43,16 +43,15 @@
             android:id="@+id/hourly_weather_icon"
             android:layout_width="38dp"
             android:layout_height="38dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            tools:src="@drawable/art_clouds"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="8dp"
-            android:layout_marginTop="0dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/hourly_date"
-            android:layout_marginLeft="0dp"
-            app:layout_constraintRight_toLeftOf="@+id/guideline5"
             app:layout_constraintVertical_bias="0.4"
-            app:layout_constraintHorizontal_bias="0.01" />
+            tools:src="@drawable/art_clouds" />
 
     <TextView
         android:id="@+id/hourly_date"
@@ -71,52 +70,54 @@
         android:layout_marginTop="8dp"
         app:layout_constraintVertical_bias="0.923" />
 
-    <TextView
-        android:id="@+id/hourly_weather_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/white"
-        app:layout_constraintTop_toTopOf="@+id/guideline"
-        tools:text="Rainy"
-        android:textSize="@dimen/forecast_primary_text_size"
-        android:fontFamily="sans-serif-condensed"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintRight_toLeftOf="@+id/hourly_temperature"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="0dp"
-        app:layout_constraintHorizontal_bias="0.3"
-        app:layout_constraintVertical_bias="0.48"
-        app:layout_constraintLeft_toRightOf="@+id/hourly_weather_icon"
-        app:layout_constraintBottom_toTopOf="@+id/guideline" />
-
-    <TextView
-        android:id="@+id/hourly_temperature"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-smallcaps"
-        android:gravity="end"
-        android:textSize="@dimen/hourly_text_size"
-        android:textColor="@color/white"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline"
-        tools:text="10\u00b0"
-        app:layout_constraintBottom_toTopOf="@+id/guideline" />
-
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline5"
+        <TextView
+            android:id="@+id/hourly_weather_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5" />
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif-condensed"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/white"
+            android:textSize="@dimen/forecast_primary_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.35"
+            app:layout_constraintLeft_toRightOf="@+id/hourly_weather_icon"
+            app:layout_constraintRight_toLeftOf="@+id/hourly_temperature"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Rainy" />
 
-    <android.support.constraint.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5" />
+        <TextView
+            android:id="@+id/hourly_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif-smallcaps"
+            android:gravity="end"
+            android:textColor="@color/white"
+            android:textSize="@dimen/hourly_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="10\u00b0" />
+
+        <!--<android.support.constraint.Guideline-->
+        <!--android:id="@+id/guideline"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal"-->
+        <!--app:layout_constraintGuide_percent="0.5" />-->
 
     </android.support.constraint.ConstraintLayout>
 

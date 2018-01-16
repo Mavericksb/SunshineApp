@@ -339,6 +339,7 @@ public final class OpenWeatherJsonUtils {
             long sunset;
             double moonphase;
             double cloudCover;
+            String summary;
 
             double high;
             double low;
@@ -364,6 +365,7 @@ public final class OpenWeatherJsonUtils {
             }
             cloudCover = dayForecast.getDouble(DS_CLOUD_COVER);
 
+            summary = dayForecast.getString(DS_SUMMARY);
             sunrise = SunshineDateUtils.getNormalizedUtcDateForToday((dayForecast.getLong(DS_SUNRISE_TIME)*1000), mTimeZone);
             sunset = SunshineDateUtils.getNormalizedUtcDateForToday((dayForecast.getLong(DS_SUNSET_TIME)*1000), mTimeZone);
             moonphase = dayForecast.getDouble(DS_MOONPHASE);
@@ -406,6 +408,7 @@ public final class OpenWeatherJsonUtils {
             weatherValues.put(WeatherContract.WeatherEntry.COLUMN_SUNSET_TIME, sunset);
             weatherValues.put(WeatherContract.WeatherEntry.COLUMN_SUNRISE_TIME, sunrise);
             weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MOON_PHASE, moonphase);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_SUMMARY, summary);
 
             dailyWeatherValues[i] = weatherValues;
         }

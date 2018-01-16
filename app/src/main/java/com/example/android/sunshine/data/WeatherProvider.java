@@ -246,14 +246,15 @@ public class WeatherProvider extends ContentProvider {
              */
             case CODE_WEATHER_WITH_DATE: {
                 String normalizedUtcDateString = uri.getLastPathSegment();
-
-                String[] selectionArguments = new String[]{normalizedUtcDateString};
+                String cityId = String.valueOf(SunshinePreferences.getCityId(getContext()));
+                String[] selectionArguments = new String[]{normalizedUtcDateString, cityId};
 
                 cursor = mOpenHelper.getReadableDatabase().query(
                         /* Table we are going to query */
                         WeatherContract.WeatherEntry.TABLE_NAME,
                         projection,
-                        WeatherContract.WeatherEntry.COLUMN_DATE + " = ? ",
+                        WeatherContract.WeatherEntry.COLUMN_DATE + "=?" +
+                                " AND " + WeatherContract.WeatherEntry.COLUMN_CITY_ID + "=?",
                         selectionArguments,
                         null,
                         null,

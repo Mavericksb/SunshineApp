@@ -81,7 +81,10 @@ public class ForecastFragment extends Fragment implements
             WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
             WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
             WeatherContract.WeatherEntry.COLUMN_SUNRISE_TIME,
-            WeatherContract.WeatherEntry.COLUMN_SUNSET_TIME
+            WeatherContract.WeatherEntry.COLUMN_SUNSET_TIME,
+            WeatherContract.WeatherEntry.COLUMN_WIND_SPEED,
+            WeatherContract.WeatherEntry.COLUMN_PRESSURE,
+            WeatherContract.WeatherEntry.COLUMN_SUMMARY
     };
 
     public static final int INDEX_WEATHER_DATE = 0;
@@ -90,6 +93,9 @@ public class ForecastFragment extends Fragment implements
     public static final int INDEX_WEATHER_CONDITION_ID = 3;
     public static final int INDEX_SUNRISE_TIME = 4;
     public static final int INDEX_SUNSET_TIME = 5;
+    public static final int INDEX_WIND_SPEED = 6;
+    public static final int INDEX_PRESSURE = 7;
+    public static final int INDEX_SUMMARY = 8;
 
     private static final int ID_CURRENT_LOADER = 43;
     private static final int ID_FORECAST_LOADER = 44;
@@ -97,6 +103,7 @@ public class ForecastFragment extends Fragment implements
     private static Cursor mCurrentCursor;
     private static Cursor mForecastCursor;
     private static Cursor mMergedCursor;
+    private static String dailySummary = "";
 
     private ForecastAdapter mForecastAdapter;
     private RecyclerView mRecyclerView;
@@ -222,6 +229,7 @@ public class ForecastFragment extends Fragment implements
                 mForecastCursor.moveToFirst();
                 long sunriseTime = mForecastCursor.getLong(INDEX_SUNRISE_TIME);
                 long sunsetTime = mForecastCursor.getLong(INDEX_SUNSET_TIME);
+                dailySummary = mCurrentCursor.getString(INDEX_DAILY_SUMMARY);
                 SunshinePreferences.setRiseSetTime(getActivity(), sunriseTime, sunsetTime);
 
                 mMergedCursor = new MergeCursor(new Cursor[]{mCurrentCursor, mForecastCursor});
@@ -258,15 +266,16 @@ public class ForecastFragment extends Fragment implements
          * @see WeatherContract.WeatherEntry#COLUMN_DATE
          */
         @Override
-        public void onClick ( long date){
+        public void onClick (long date){
 
             Bundle args = new Bundle();
+            Uri uriForTodayClicked = WeatherContract.WeatherEntry.buildWeatherUriWithDate(date);
             Uri uriForDateClicked = HourlyWeatherContract.HourlyWeatherEntry.buildWeatherUriWithDate(date);
+            args.putParcelable(HourlyFragment.URI_TODAY_WITH_DATE, uriForTodayClicked);
             args.putParcelable(HourlyFragment.URI_WITH_DATE, uriForDateClicked);
 
             //Log.e("FORECAST FRAGMENT", "I'm here!");
             Fragment hourlyFragment = fm.findFragmentByTag(MainActivity.HOURLY_TAG);
-
 
             FragmentTransaction ft = fm.beginTransaction();
             if (hourlyFragment == null) {

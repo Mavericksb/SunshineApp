@@ -245,15 +245,15 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
           * the temperature. This method will also append either °C or °F to the temperature
           * String.
           */
-        String highString = "Max:" + SunshineWeatherUtils.formatTemperature(mContext, highInCelsius);
-        Spannable highSpan = new SpannableString(highString);
-        highSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.high_temp_text)), highSpan.length()-2, highSpan.length()-1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
+        String highString = "Max: " + SunshineWeatherUtils.formatTemperature(mContext, highInCelsius) + " ";
+//        Spannable highSpan = new SpannableString(highString);
+//        highSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.high_temp_text)), highSpan.length()-1, highSpan.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
 
          /* Create the accessibility (a11y) String from the weather description */
         String highA11y = mContext.getString(R.string.a11y_high_temp, highString);
 
          /* Set the text and content description (for accessibility purposes) */
-        forecastAdapterViewHolder.highTempView.setText(highSpan);
+        forecastAdapterViewHolder.highTempView.setText(highString);
         forecastAdapterViewHolder.highTempView.setContentDescription(highA11y);
 
         /*************************
@@ -268,12 +268,12 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
           * String.
           */
         String lowString = "Min:" + SunshineWeatherUtils.formatTemperature(mContext, lowInCelsius);
-        Spannable lowSpan = new SpannableString(lowString);
-        lowSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.low_temp_text)), lowSpan.length()-2, lowSpan.length()-1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
+//        Spannable lowSpan = new SpannableString(lowString);
+//        lowSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.low_temp_text)), lowSpan.length()-1, lowSpan.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
         String lowA11y = mContext.getString(R.string.a11y_low_temp, lowString);
 
          /* Set the text and content description (for accessibility purposes) */
-        forecastAdapterViewHolder.lowTempView.setText(lowSpan);
+        forecastAdapterViewHolder.lowTempView.setText(lowString);
         forecastAdapterViewHolder.lowTempView.setContentDescription(lowA11y);
     }
 
@@ -329,13 +329,11 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
           * String.
           */
         String highString = SunshineWeatherUtils.formatTemperature(mContext, highInCelsius);
-        Spannable highSpan = new SpannableString(highString);
-        highSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.high_temp_text)), highSpan.length()-2, highSpan.length()-1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
          /* Create the accessibility (a11y) String from the weather description */
         String highA11y = mContext.getString(R.string.a11y_high_temp, highString);
 
          /* Set the text and content description (for accessibility purposes) */
-        forecastAdapterViewHolder.highTempView.setText(highSpan);
+        forecastAdapterViewHolder.highTempView.setText(highString);
         forecastAdapterViewHolder.highTempView.setContentDescription(highA11y);
 
         /*************************
@@ -350,12 +348,10 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
           * String.
           */
         String lowString = SunshineWeatherUtils.formatTemperature(mContext, lowInCelsius);
-        Spannable lowSpan = new SpannableString(lowString);
-        lowSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.low_temp_text)), lowSpan.length()-2, lowSpan.length()-1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE );
         String lowA11y = mContext.getString(R.string.a11y_low_temp, lowString);
 
          /* Set the text and content description (for accessibility purposes) */
-        forecastAdapterViewHolder.lowTempView.setText(lowSpan);
+        forecastAdapterViewHolder.lowTempView.setText(lowString);
         forecastAdapterViewHolder.lowTempView.setContentDescription(lowA11y);
     }
 

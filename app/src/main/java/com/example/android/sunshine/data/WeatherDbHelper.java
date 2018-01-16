@@ -93,7 +93,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
                 WeatherEntry.COLUMN_PRECIP_INTENSITY    + " REAL NOT NULL, "                    +
                 WeatherEntry.COLUMN_PRECIP_PROBABILITY    + " REAL NOT NULL, "                    +
                 WeatherEntry.COLUMN_PRECIP_TYPE    + " STRING NOT NULL, "                    +
-
+                WeatherEntry.COLUMN_SUMMARY    + " STRING NOT NULL, "                    +
                 WeatherEntry.COLUMN_SUNRISE_TIME    + " INT NOT NULL, "                    +
                 WeatherEntry.COLUMN_SUNSET_TIME    + " INT NOT NULL, "                    +
 //                WeatherEntry.COLUMN_MOON_PHASE    + " REAL NOT NULL);";

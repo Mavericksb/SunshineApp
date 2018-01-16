@@ -22,12 +22,14 @@ import android.support.annotation.NonNull;
 import android.support.v4.animation.ValueAnimatorCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.example.android.sunshine.data.HourlyWeatherContract;
 import com.example.android.sunshine.utilities.SunshineDateUtils;
@@ -117,7 +119,7 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
 
         view.setFocusable(true);
 
-        return new HourlyForecastAdapterViewHolder(view);
+        return new HourlyForecastAdapterViewHolder(view, viewType);
     }
 
     /**
@@ -132,31 +134,38 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
      */
     @Override
     public void onBindViewHolder(HourlyForecastAdapterViewHolder hourlyForecastAdapterViewHolder, int position) {
-        mCursor.moveToPosition(position);
+//
 
         /****************
          * Weather Icon *
          ****************/
-        String weatherId = mCursor.getString(HourlyFragment.INDEX_WEATHER_CONDITION_ID);
-        int weatherImageId;
+//
+//        int weatherImageId;
 
         int viewType = getItemViewType(position);
 
         switch (viewType) {
 
             case VIEW_TYPE_TODAY:
-                weatherImageId = SunshineWeatherUtils
-                        .getDSLargeArtResourceIdForWeatherCondition(weatherId);
+                setDataForToday(hourlyForecastAdapterViewHolder, position);
                 break;
-
             case VIEW_TYPE_FUTURE_DAY:
-                weatherImageId = SunshineWeatherUtils
-                        .getDSSmallArtResourceIdForWeatherCondition(weatherId);
+                setDataHourly(hourlyForecastAdapterViewHolder, position);
                 break;
 
             default:
                 throw new IllegalArgumentException("Invalid view type, value of " + viewType);
         }
+
+
+
+    }
+
+    private void setDataHourly(HourlyForecastAdapterViewHolder hourlyForecastAdapterViewHolder, int position) {
+        mCursor.moveToPosition(position);
+
+        String weatherId = mCursor.getString(HourlyFragment.INDEX_WEATHER_CONDITION_ID);
+        int weatherImageId = SunshineWeatherUtils.getDSSmallArtResourceIdForWeatherCondition(weatherId);
 
         hourlyForecastAdapterViewHolder.iconView.setImageResource(weatherImageId);
 
@@ -167,7 +176,7 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
         long dateInMillis = mCursor.getLong(HourlyFragment.INDEX_WEATHER_DATE);
          /* Get human readable string using our utility method */
         //String dateString = SunshineDateUtils.getFriendlyDateString(mContext, dateInMillis, false);
-        String dateString = SunshineDateUtils.getHourlyDetailDate(dateInMillis, viewType);
+        String dateString = SunshineDateUtils.getHourlyDetailDate(dateInMillis, VIEW_TYPE_FUTURE_DAY);
 
          /* Display friendly date string */
         hourlyForecastAdapterViewHolder.dateView.setText(dateString);
@@ -183,16 +192,7 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
         hourlyForecastAdapterViewHolder.descriptionView.setText(description);
         hourlyForecastAdapterViewHolder.descriptionView.setContentDescription(descriptionA11y);
 
-        /**************************
-         * High (max) temperature *
-         **************************/
-         /* Read high temperature from the cursor (in degrees celsius) */
         double temperature = mCursor.getDouble(HourlyFragment.INDEX_WEATHER_TEMPERATURE);
-         /*
-          * If the user's preference for weather is fahrenheit, formatTemperature will convert
-          * the temperature. This method will also append either °C or °F to the temperature
-          * String.
-          */
         String tempString = SunshineWeatherUtils.formatTemperature(mContext, temperature);
          /* Create the accessibility (a11y) String from the weather description */
         String highA11y = mContext.getString(R.string.a11y_temp, tempString);
@@ -200,6 +200,62 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
          /* Set the text and content description (for accessibility purposes) */
         hourlyForecastAdapterViewHolder.tempView.setText(tempString);
         hourlyForecastAdapterViewHolder.tempView.setContentDescription(highA11y);
+    }
+
+    private void setDataForToday(HourlyForecastAdapterViewHolder hourlyForecastAdapterViewHolder, int position) {
+
+        mCursor.moveToPosition(position);
+
+        String weatherId = mCursor.getString(ForecastFragment.INDEX_WEATHER_CONDITION_ID);
+        int weatherImageId = SunshineWeatherUtils.getDSLargeArtResourceIdForWeatherCondition(weatherId);
+
+        hourlyForecastAdapterViewHolder.iconView.setImageResource(weatherImageId);
+
+        /****************
+         * Weather Date *
+         ****************/
+         /* Read date from the cursor */
+        long dateInMillis = mCursor.getLong(ForecastFragment.INDEX_WEATHER_DATE);
+         /* Get human readable string using our utility method */
+        //String dateString = SunshineDateUtils.getFriendlyDateString(mContext, dateInMillis, false);
+        String dateString = SunshineDateUtils.getDailyDetailDate(mContext, dateInMillis, VIEW_TYPE_FUTURE_DAY);
+        hourlyForecastAdapterViewHolder.dateView.setText(dateString.toUpperCase());
+
+        /***********************
+         * Weather Description *
+         ***********************/
+        String description = SunshineWeatherUtils.getDSStringForWeatherCondition(mContext, weatherId);
+         /* Create the accessibility (a11y) String from the weather description */
+        String descriptionA11y = mContext.getString(R.string.a11y_forecast, description);
+
+         /* Set the text and content description (for accessibility purposes) */
+        hourlyForecastAdapterViewHolder.descriptionView.setText(description);
+        hourlyForecastAdapterViewHolder.descriptionView.setContentDescription(descriptionA11y);
+
+        double highTemp = mCursor.getDouble(ForecastFragment.INDEX_WEATHER_MAX_TEMP);
+        String highTempString = "Max: " + SunshineWeatherUtils.formatTemperature(mContext, highTemp) + " ";
+         /* Create the accessibility (a11y) String from the weather description */
+         hourlyForecastAdapterViewHolder.summaryHighTemp.setText(highTempString);
+
+        double lowTemp = mCursor.getDouble(ForecastFragment.INDEX_WEATHER_MIN_TEMP);
+        String lowTempString = "Min: " + SunshineWeatherUtils.formatTemperature(mContext, lowTemp);
+         /* Create the accessibility (a11y) String from the weather description */
+        hourlyForecastAdapterViewHolder.summaryLowTemp.setText(lowTempString);
+
+        int windSpeed = (int) mCursor.getDouble(ForecastFragment.INDEX_WIND_SPEED);
+        String windSpeedString = windSpeed + " Kmh";
+        hourlyForecastAdapterViewHolder.summaryWindSpeed.setText(windSpeedString);
+
+        int humidity = (int) mCursor.getDouble(ForecastFragment.INDEX_CURRENT_HUMIDITY);
+        String humidityString = humidity + "%";
+        hourlyForecastAdapterViewHolder.summaryHumidity.setText(humidityString);
+
+        double pressure = mCursor.getDouble(ForecastFragment.INDEX_PRESSURE);
+        String pressureString = pressure + " hPa";
+        hourlyForecastAdapterViewHolder.summaryPressure.setText(pressureString);
+
+        String evolution = mCursor.getString(ForecastFragment.INDEX_SUMMARY);
+        hourlyForecastAdapterViewHolder.evolutionSummary.setText(evolution);
 
     }
 
@@ -227,11 +283,11 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
      */
     @Override
     public int getItemViewType(int position) {
-        if (mUseTodayLayout && position == 0) {
-            return VIEW_TYPE_TODAY;
-        } else {
+//        if (mUseTodayLayout && position == 0) {
+//            return VIEW_TYPE_TODAY;
+//        } else {
             return VIEW_TYPE_FUTURE_DAY;
-        }
+//        }
     }
 
     /**
@@ -252,16 +308,32 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
      * a cache of the child views for a forecast item. It's also a convenient place to set an
      * OnClickListener, since it has access to the adapter and the views.
      */
-    class HourlyForecastAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class HourlyForecastAdapterViewHolder extends RecyclerView.ViewHolder  {
         final ImageView iconView;
 
         final TextView dateView;
         final TextView descriptionView;
         final TextView tempView;
+        TextView summaryHighTemp;
+        TextView summaryLowTemp;
+        TextView summaryHumidity;
+        TextView summaryWindSpeed;
+        TextView summaryPressure;
+        TextView evolutionSummary;
 
 
-        HourlyForecastAdapterViewHolder(View view) {
+        HourlyForecastAdapterViewHolder(View view, int viewType) {
             super(view);
+
+            if(viewType==VIEW_TYPE_TODAY) {
+                summaryHighTemp = (TextView) view.findViewById(R.id.high_temperature);
+                summaryLowTemp = (TextView) view.findViewById(R.id.low_temperature);
+                summaryHumidity = (TextView) view.findViewById(R.id.hourlyTextViewHumidity);
+                summaryWindSpeed = (TextView) view.findViewById(R.id.hourlyTextViewWind);
+                summaryPressure = (TextView) view.findViewById(R.id.hourlyTextViewPressure);
+                evolutionSummary = (TextView) view.findViewById(R.id.hourly_summary_text_view);
+
+            }
 
             iconView = (ImageView) view.findViewById(R.id.hourly_weather_icon);
             dateView = (TextView) view.findViewById(R.id.hourly_date);
@@ -269,7 +341,7 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
             tempView = (TextView) view.findViewById(R.id.hourly_temperature);
 
 
-            view.setOnClickListener(this);
+//            view.setOnClickListener(this);
         }
 
         /**
@@ -279,11 +351,11 @@ class HourlyForecastAdapter extends RecyclerView.Adapter<HourlyForecastAdapter.H
          *
          * @param v the View that was clicked
          */
-        @Override
-        public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
-            mCursor.moveToPosition(adapterPosition);
-            long dateInMillis = mCursor.getLong(HourlyFragment.INDEX_WEATHER_DATE);
-        }
+//        @Override
+//        public void onClick(View v) {
+//            int adapterPosition = getAdapterPosition();
+//            mCursor.moveToPosition(adapterPosition);
+//            long dateInMillis = mCursor.getLong(HourlyFragment.INDEX_WEATHER_DATE);
+//        }
     }
 }
