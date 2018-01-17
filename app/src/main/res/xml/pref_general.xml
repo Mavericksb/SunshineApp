@@ -26,7 +26,7 @@
 
     <ListPreference
 
-        android:icon="@drawable/ic_add_city"
+        android:icon="@drawable/ic_temperature"
         android:defaultValue="@string/pref_units_metric"
         android:entries="@array/pref_units_options"
         android:entryValues="@array/pref_units_values"
@@ -35,7 +35,7 @@
         android:layout="@layout/item_preference"/>
 
     <CheckBoxPreference
-        android:icon="@drawable/ic_add_city"
+        android:icon="@drawable/ic_notification"
         android:defaultValue="@bool/show_notifications_by_default"
         android:key="@string/pref_enable_notifications_key"
 
