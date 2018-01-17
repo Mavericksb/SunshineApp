@@ -119,16 +119,6 @@ public class NotificationUtils {
             int smallArtResourceId = SunshineWeatherUtils
                     .getDSSmallArtResourceIdForWeatherCondition(weatherId);
 
-            /*
-             * NotificationCompat Builder is a very convenient way to build backward-compatible
-             * notifications. In order to use it, we provide a context and specify a color for the
-             * notification, a couple of different icons, the title for the notification, and
-             * finally the text of the notification, which in our case in a summary of today's
-             * forecast.
-             */
-
-
-
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                     .setColor(ContextCompat.getColor(context,R.color.colorPrimary))
                     .setLargeIcon(largeIcon)

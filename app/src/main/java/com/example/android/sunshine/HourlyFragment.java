@@ -313,7 +313,7 @@ public class HourlyFragment extends Fragment implements
 
     private void populateTodaySummary(Cursor mCursor) {
 
-        if(getActivity() == null){
+        if(getActivity() == null || mCursor.getCount()==0){
             return;
         }
 //        Context context = getActivity();

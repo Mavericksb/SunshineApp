@@ -126,7 +126,7 @@ public class SunshineSyncTask {
 
                 boolean oneDayPassedSinceLastNotification = false;
 
-                if (timeSinceLastNotification >= DateUtils.DAY_IN_MILLIS) {
+                if (timeSinceLastNotification >= (DateUtils.HOUR_IN_MILLIS * 2)) {
                     oneDayPassedSinceLastNotification = true;
                 }
 
