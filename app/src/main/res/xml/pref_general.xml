@@ -21,7 +21,7 @@
     android:layout_height="match_parent"
     >
 
-    <PreferenceCategory android:title="Settings"
+    <PreferenceCategory android:title="@string/action_settings"
         android:layout="@layout/item_preference_category">
 
     <ListPreference

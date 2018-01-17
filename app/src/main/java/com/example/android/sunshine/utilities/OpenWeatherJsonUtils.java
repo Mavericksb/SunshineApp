@@ -17,6 +17,7 @@ package com.example.android.sunshine.utilities;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.android.sunshine.data.CurrentWeatherContract;
@@ -417,14 +418,14 @@ public final class OpenWeatherJsonUtils {
 
     }
 
-    private static String extractWeatherId(String id, double precipIntensity, double cloudCover, double windSpeed) {
+    private static String extractWeatherId(String id, double precipIntensity, double cloudCover, @Nullable double windSpeed) {
 
         String exactId = "";
 
         switch (id) {
             case "rain":
-                if (windSpeed > 50 && precipIntensity > 0.25) {
-                    if (windSpeed > 75 && precipIntensity > 0.50) {
+                if (windSpeed > 50 && precipIntensity > 2.5) {
+                    if (windSpeed > 75 && precipIntensity > 5.0) {
                         exactId = "violent_storm";
                     } else {
                         exactId = "storm";
@@ -432,14 +433,19 @@ public final class OpenWeatherJsonUtils {
                     return exactId;
                 }
 
-                if (precipIntensity < 0.25) {
+                if (precipIntensity < 0.5) {
+                    exactId = "drizzling";
+                } else if (precipIntensity < 1.25) {
                     exactId = "light_" + id;
-                } else if (precipIntensity < 0.50) {
+                } else if (precipIntensity < 2.5) {
                     exactId = "moderate_" + id;
-                } else if (precipIntensity < 0.75) {
+                } else if (precipIntensity < 4.0) {
                     exactId = "heavy_" + id;
-                } else {
+                } else if (precipIntensity < 6.0) {
                     exactId = "intense_" + id;
+                }  else if (precipIntensity < 10.0){
+                    exactId = "heavy_shower";
+                } else { exactId = "cloudburst";
                 }
                 return exactId;
 

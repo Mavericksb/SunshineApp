@@ -15,18 +15,6 @@
      limitations under the License.
 -->
 
-<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  - This layout displays today's primary weather information, such as the date, an icon and      -
-  - description, and the high and low temperature.                                               -
-  -                                                                                              -
-  - Although this layout is very similar to primary_weather_info.xml, we decided to create two   -
-  - different layouts for simplicity. The differences are that in this layout, we add additional -
-  - padding to the top and bottom of the root layout and we have a background that changes color -
-  - depending on whether or not it is being touched. These can be set programmatically in Java,  -
-  - but again, we wanted to avoid making things too complicated.                                 -
-  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
-
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -35,9 +23,7 @@
     android:layout_height="wrap_content"
     tools:background="@color/colorPrimary"
     android:orientation="vertical"
-
-
->
+    android:background="#22000000">
 
 
     <android.support.constraint.ConstraintLayout
@@ -49,8 +35,7 @@
         android:paddingLeft="@dimen/list_item_padding_horizontal"
         android:paddingRight="@dimen/list_item_padding_horizontal"
         android:id="@+id/constraintLayout"
-        app:layout_constraintBottom_toTopOf="parent"
->
+        app:layout_constraintBottom_toTopOf="parent">
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      - This Guideline divides the screen into a left half and a right half and is used to        -
@@ -91,7 +76,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="8dp"
-            android:text="CURRENT"
+            android:text="@string/current_label"
             android:textColor="@color/colorPrimary"
             android:textSize="@dimen/forecast_primary_text_size"
             app:layout_constraintBottom_toTopOf="@+id/weather_icon"
@@ -197,7 +182,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="0dp"
             android:layout_marginTop="0dp"
-            android:text="HUMIDITY"
+            android:text="@string/humidity_upcase"
             android:textColor="@color/white"
             android:textSize="@dimen/forecast_secondary_text_size"
             app:layout_constraintLeft_toLeftOf="@+id/current_temperature"
@@ -221,7 +206,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="WIND"
+            android:text="@string/wind_upcase"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewHumidityLabel"
@@ -247,7 +232,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="PRESSURE"
+            android:text="@string/pressure_upcase"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewWindLabel"
@@ -300,7 +285,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
-                android:text="EVOLUTION"
+                android:text="@string/evolution_label"
                 android:textColor="@color/colorPrimary"
                 android:textSize="16sp" />
 
@@ -313,13 +298,13 @@
                 android:layout_marginRight="16dp"
                 android:layout_weight="1"
                 android:ellipsize="marquee"
+                android:singleLine="true"
                 android:focusable="true"
                 android:marqueeRepeatLimit="marquee_forever"
-                android:maxLines="1"
-                android:singleLine="true"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 tools:text="Soleggiato fino a stasera, pioggia in nottata." />
+
         </LinearLayout>
 
         <ToggleButton
@@ -330,7 +315,7 @@
             android:layout_weight="1"
             android:background="@color/colorPrimary"
             android:textColor="@color/white"
-            android:textOff="DAY"
+            android:textOff="@string/button_day"
             android:textOn="WEEK"
 
             />

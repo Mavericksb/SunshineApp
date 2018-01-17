@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sunshine</string>
+    <string name="action_location">Luogo</string>
+    <string name="action_share">Condividi</string>
+    <string name="action_settings">Impostazioni</string>
+    <string name="action_refresh">Aggiorna</string>
+    <string name="title_activity_detail">Dettagli</string>
+    <string name="title_activity_settings">Impostazioni</string>
+    <string name="title_activity_location">Luogo</string>
+    <string name="title_activity_pref_location">Aggiungi luogo</string>
+    <string name="title_activity_hourly_forecast">Previsioni Orarie</string>
+    <string name="pref_location_label">Luogo</string>
+    <string name="pref_units_label">Temperatura</string>
+    <string name="pref_units_label_metric">Metrica</string>
+    <string name="pref_units_label_imperial">Imperiale</string>
+    <string name="pref_enable_notifications_label">Notifiche</string>
+    <string name="pref_enable_geolocation_label">Localizzami</string>
+    <string name="pref_enable_geolocation_true" translatable="false">Abilitato</string>
+    <string name="pref_enable_geolocation_false" translatable="false">Disabilitato</string>
+    <string name="pref_enable_notifications_true" translatable="false">Abilitate</string>
+    <string name="pref_enable_notifications_false" translatable="false">Disabilitate</string>
+    <string name="today">Oggi</string>
+    <string name="tomorrow">Domani</string>
+    <string name="wind_label">Vento</string>
+    <string name="pressure_label">Pressione</string>
+    <string name="humidity_label">Umidità</string>
+    <string name="condition_2xx">Temporale</string>
+    <string name="condition_3xx">Pioggia Fine</string>
+    <string name="condition_500">Pioggia Leggera</string>
+    <string name="condition_501">Pioggia Moderata</string>
+    <string name="condition_502">Pioggia Abbondante</string>
+    <string name="condition_503">Pioggia Intensa</string>
+    <string name="condition_522">Forti Rovesci</string>
+    <string name="condition_600">Neve Leggera</string>
+    <string name="condition_601">Neve</string>
+    <string name="condition_602">Neve Abbondante</string>
+    <string name="condition_741">Nebbia</string>
+    <string name="condition_800">Sereno</string>
+    <string name="condition_8001">Sereno</string>
+    <string name="condition_8002">Sereno</string>
+    <string name="condition_801">Preval. Sereno</string>
+    <string name="condition_802">Nubi Sparse</string>
+    <string name="condition_803">Coperto</string>
+    <string name="condition_804">Coperto</string>
+    <string name="condition_8041">Parz. Nuvoloso</string>
+    <string name="condition_8042">Parz. Nuvoloso</string>
+    <string name="condition_906">Grandine</string>
+    <string name="condition_951">Calmo</string>
+    <string name="condition_952">Brezza Leggera</string>
+    <string name="condition_953">Brezza Leggera</string>
+    <string name="condition_954">Brezza</string>
+    <string name="condition_955">Brezza Fresca</string>
+    <string name="condition_956">"Forte Brezza "</string>
+    <string name="condition_957">Vento Forte</string>
+    <string name="condition_958">Burrasca</string>
+    <string name="condition_959">Forte Burrasca</string>
+    <string name="condition_960">Temporale</string>
+    <string name="condition_961">Violento Temp.</string>
+    <string name="condition_962">Uragano</string>
+    <string name="permission_rationale">Sei sicuro?</string>
+    <string name="permission_denied_explanation">Accetta per attivare la localizzazione automatica</string>
+    <string name="settings">Settaggi</string>
+    <string name="hourly_day_label">DATA</string>
+    <string name="hourly_label_hour">Ora</string>
+    <string name="hourly_forecast_label">Previsioni</string>
+    <string name="hourly_temp_label">Temp.</string>
+    <string name="heavy_shower">Abbondanti</string>
+    <string name="cloudburst">Nubifragio</string>
+    <string name="drizzling">Lievi</string>
+    <string name="light_precip_intensity">Leggere</string>
+    <string name="moderate_precip_intensity">Moderate</string>
+    <string name="heavy_precip_intensity">Notevoli</string>
+    <string name="intense_precip_intensity">Intense</string>
+    <string name="shower_precip_intensity">Abbondanti</string>
+    <string name="hourly_precip_label">Precip.</string>
+    <string name="hourly_wind_label">Vento</string>
+    <string name="wind_upcase">VENTO</string>
+    <string name="humidity_upcase">UMIDITA\'</string>
+    <string name="pressure_upcase">PRESSIONE</string>
+    <string name="evolution_label">EVOLUZIONE</string>
+    <string name="current_label">ATTUALE</string>
+    <string name="add_city_label">Aggiungi Città</string>
+</resources>

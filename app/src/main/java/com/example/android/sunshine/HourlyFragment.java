@@ -16,6 +16,7 @@
 package com.example.android.sunshine;
 
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.MergeCursor;
@@ -278,40 +279,45 @@ public class HourlyFragment extends Fragment implements
         int loaderId = loader.getId();
         switch (loaderId) {
             case ID_HOURLY_FORECAST_LOADER:
+//                mHourlyCursor = data;
                 mHourlyForecastAdapter.swapCursor(data);
                 break;
             case ID_TODAY_LOADER:
+//                mTodayCursor = data;
                 populateTodaySummary(data);
                 break;
             default:
                 throw new RuntimeException("Loader Not Implemented: " + loaderId);
         }
 
+
 //        if (mTodayCursor != null && mHourlyCursor != null) {
 //            if (mTodayCursor.getCount() != 0 && mHourlyCursor.getCount() != 0) {
 //                mTodayCursor.moveToFirst();
 //                mHourlyCursor.moveToFirst();
-//                sunrise = mTodayCursor.getLong(ForecastFragment.INDEX_SUNRISE_TIME);
-//                sunset = mTodayCursor.getLong(ForecastFragment.INDEX_SUNSET_TIME);
+////                sunrise = mTodayCursor.getLong(ForecastFragment.INDEX_SUNRISE_TIME);
+////                sunset = mTodayCursor.getLong(ForecastFragment.INDEX_SUNSET_TIME);
 //
 //
-//                mMergedCursor = new MergeCursor(new Cursor[]{mTodayCursor, mHourlyCursor});
-//                mHourlyForecastAdapter.swapCursor(mMergedCursor);
+////                mMergedCursor = new MergeCursor(new Cursor[]{mTodayCursor, mHourlyCursor});
+//                populateTodaySummary(mTodayCursor);
+//                mHourlyForecastAdapter.swapCursor(mHourlyCursor);
 //                mTodayCursor = null;
 //                mHourlyCursor = null;
 //                showWeatherDataView();
 //            }
             showWeatherDataView();
-//            if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
-//            mRecyclerView.smoothScrollToPosition(mPosition);
+            if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+            mRecyclerView.smoothScrollToPosition(mPosition);
         }
-//        else{
-//            Toast noData = Toast.makeText(getContext(), "There is no forecast for this day", Toast.LENGTH_SHORT);
-//            noData.show();
-//
 
     private void populateTodaySummary(Cursor mCursor) {
 
+        if(getActivity() == null){
+            return;
+        }
+//        Context context = getActivity();
+//
         mCursor.moveToFirst();
 
         TextView summaryHighTemp = (TextView) mItemTodaySummaryView.findViewById(R.id.high_temperature);
@@ -395,6 +401,7 @@ public class HourlyFragment extends Fragment implements
 
         String evolution = mCursor.getString(ForecastFragment.INDEX_SUMMARY);
         evolutionSummary.setText(evolution);
+        evolutionSummary.setSelected(true);
 
     }
 

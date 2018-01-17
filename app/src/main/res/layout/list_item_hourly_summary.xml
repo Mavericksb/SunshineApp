@@ -15,18 +15,6 @@
          limitations under the License.
     -->
 
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      - This layout displays today's primary weather information, such as the date, an icon and      -
-      - description, and the high and low temperature.                                               -
-      -                                                                                              -
-      - Although this layout is very similar to primary_weather_info.xml, we decided to create two   -
-      - different layouts for simplicity. The differences are that in this layout, we add additional -
-      - padding to the top and bottom of the root layout and we have a background that changes color -
-      - depending on whether or not it is being touched. These can be set programmatically in Java,  -
-      - but again, we wanted to avoid making things too complicated.                                 -
-      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
-
 <LinearLayout
 xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -35,7 +23,7 @@ android:layout_width="match_parent"
 android:layout_height="wrap_content"
 tools:background="@color/colorPrimary"
 android:orientation="vertical"
-    >
+    android:background="#22000000"    >
 
 
 <android.support.constraint.ConstraintLayout
@@ -208,7 +196,7 @@ android:orientation="vertical"
         android:id="@+id/textViewHumidityLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="HUMIDITY"
+        android:text="@string/humidity_upcase"
         android:textColor="@color/white"
         android:textSize="@dimen/forecast_secondary_text_size"
         app:layout_constraintLeft_toLeftOf="@+id/high_temperature"
@@ -233,7 +221,7 @@ android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="WIND"
+        android:text="@string/wind_upcase"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewHumidityLabel"
@@ -259,7 +247,7 @@ android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="PRESSURE"
+        android:text="@string/pressure_upcase"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewWindLabel"
@@ -314,7 +302,7 @@ android:orientation="vertical"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="16dp"
             android:layout_weight="1"
-            android:text="EVOLUTION"
+            android:text="@string/evolution_label"
             android:textColor="@color/colorPrimary"
             android:textSize="16sp" />
 
@@ -327,13 +315,13 @@ android:orientation="vertical"
             android:layout_marginRight="16dp"
             android:layout_weight="1"
             android:ellipsize="marquee"
+            android:singleLine="true"
             android:focusable="true"
             android:marqueeRepeatLimit="marquee_forever"
-
-            android:singleLine="true"
             android:textColor="@color/white"
             android:textSize="16sp"
             tools:text="Soleggiato fino a stasera, pioggia in nottata." />
+
     </LinearLayout>
 
 

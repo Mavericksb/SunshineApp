@@ -312,9 +312,35 @@ public final class SunshineWeatherUtils {
         return context.getString(stringId);
     }
 
+    public static String getPrecipIntensity(Context context, double precipIntensity) {
+        String exactId;
+        if (precipIntensity <= 0.2) {
+            exactId = context.getString(R.string.no_precipitation);
+        } else if (precipIntensity < 0.5) {
+            exactId = context.getString(R.string.drizzling);
+        } else if (precipIntensity < 1.25) {
+            exactId = context.getString(R.string.light_precip_intensity);
+        } else if (precipIntensity < 2.5) {
+            exactId = context.getString(R.string.moderate_precip_intensity);;
+        } else if (precipIntensity < 4.0) {
+            exactId = context.getString(R.string.heavy_precip_intensity);
+        } else if (precipIntensity < 6.0) {
+            exactId = context.getString(R.string.intense_precip_intensity);;
+        } else if (precipIntensity < 10.0) {
+            exactId = context.getString(R.string.heavy_shower);;
+        } else {
+            exactId = context.getString(R.string.cloudburst);;
+        }
+        return exactId;
+    }
+    
     public static String getDSStringForWeatherCondition(Context context, String weatherId) {
+
         int stringId;
         switch (weatherId) {
+            case "drizzling":
+                stringId = R.string.drizzling;
+                break;
             case "light_rain":
                 stringId = R.string.condition_500;
                 break;
@@ -326,6 +352,12 @@ public final class SunshineWeatherUtils {
                 break;
             case "intense_rain":
                 stringId = R.string.condition_503;
+                break;
+            case "heavy_shower":
+                stringId = R.string.heavy_shower;
+                break;
+            case "cloudburst":
+                stringId = R.string.cloudburst;
                 break;
             case "storm":
                 stringId = R.string.condition_960;

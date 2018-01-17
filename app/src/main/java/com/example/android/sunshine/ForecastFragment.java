@@ -286,6 +286,7 @@ public class ForecastFragment extends Fragment implements
                         .addToBackStack(null)
                         .replace(R.id.fragment_container, hourlyFragment, MainActivity.HOURLY_TAG).commit();
             } else {
+                hourlyFragment.getArguments().clear();
                 hourlyFragment.setArguments(args);
                 ft.show(hourlyFragment);
             }

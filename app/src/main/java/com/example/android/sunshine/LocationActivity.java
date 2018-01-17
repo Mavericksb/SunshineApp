@@ -174,10 +174,10 @@ public class LocationActivity extends AppCompatActivity implements
 
                         geoLocalityCursor.moveToFirst();
                         if (SunshinePreferences.getRequestUpdates(LocationActivity.this) && geoLocalityCursor.getCount() > 0) {
-                            mTextViewFindMe.setText("Current");
+                            mTextViewFindMe.setText(this.getText(R.string.current_label));
                             mTextViewGeolocality.setText("(" + geoLocalityCursor.getString(INDEX_CITY_NAME) + ")");
                         } else {
-                        mTextViewFindMe.setText("Find me");
+                        mTextViewFindMe.setText(this.getText(R.string.pref_location_label));
                         mTextViewGeolocality.setText("");
                     }
                     geoLocalityCursor.close();

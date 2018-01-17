@@ -65,7 +65,7 @@
     <string name="title_activity_hourly_forecast">Hourly Forecast</string>
 
 
-    <string name="content_authority">com.example.android.sunshine</string>
+    <string name="content_authority" translatable="false">com.example.android.sunshine</string>
 
 
     <!-- - - - - - - - - - - - - - - -
@@ -108,7 +108,7 @@
     <string name="pref_enable_notifications_true">Enabled</string>
     <string name="pref_enable_notifications_false">Not Enabled</string>
 
-    <string name="pref_last_notification">last_notification</string>
+    <string name="pref_last_notification" translatable="false">last_notification</string>
 
     <!-- Strings related to Geo Location Enabled preference -->
     <string name="pref_enable_geolocation_key" translatable="false">enable_geolocation</string>
@@ -116,7 +116,7 @@
     <string name="pref_enable_geolocation_true">Enabled</string>
     <string name="pref_enable_geolocation_false">Not Enabled</string>
 
-    <string name="pref_last_geolocation_time">last_geolocation_time</string>
+    <string name="pref_last_geolocation_time" translatable="false">last_geolocation_time</string>
 
 
 
@@ -131,7 +131,7 @@
     <string name="tomorrow">Tomorrow</string>
 
     <!-- Date format -->
-    <string name="format_full_friendly_date">
+    <string name="format_full_friendly_date" translatable="false">
         <xliff:g id="month">%1$s</xliff:g>, <xliff:g id="day">%2$s</xliff:g>
     </string>
 
@@ -141,7 +141,7 @@
       - - - - - - - - - - - - - - - - -->
 
     <!-- Temperature format -->
-    <string name="format_temperature">
+    <string name="format_temperature" translatable="false">
         <xliff:g id="temp">%1.0f</xliff:g>\u00B0
     </string>
 
@@ -261,20 +261,38 @@
         Low:<xliff:g id="low">%3$s</xliff:g>
     </string>
 
-    <string name="permission_rationale">What is this rationale ?</string>
-    <string name="permission_denied_explanation">What\'s this permission denied explanation ?</string>
-    <string name="settings">Settings string ?</string>
-    <string name="no_geocoder_available">No geocoder available</string>
-    <string name="address_found">Address Found</string>
-    <string name="no_address_found">No Address Found</string>
-    <string name="invalid_lat_long_used">Invalid latitude or longitude</string>
-    <string name="service_not_available">No service. Check connection</string>
-    <string name="navigation_drawer_closed">Settings closed</string>
-    <string name="navigation_drawer_open">Settings open</string>
+    <string name="permission_rationale">Are you sure ?</string>
+    <string name="permission_denied_explanation">Accept to enable localization</string>
+    <string name="settings">Settings</string>
+    <string name="no_geocoder_available" translatable="false">No geocoder available</string>
+    <string name="address_found" translatable="false">Address Found</string>
+    <string name="no_address_found" translatable="false">No Address Found</string>
+    <string name="invalid_lat_long_used" translatable="false">Invalid latitude or longitude</string>
+    <string name="service_not_available" translatable="false">No service. Check connection</string>
+    <string name="navigation_drawer_closed" translatable="false">Settings closed</string>
+    <string name="navigation_drawer_open" translatable="false">Settings open</string>
     <string name="hourly_day_label">DAY</string>
     <string name="hourly_label_hour">Time</string>
     <string name="hourly_forecast_label">Forecast</string>
     <string name="hourly_temp_label">Temp.</string>
+    <string name="heavy_shower">Heavy Shower</string>
+    <string name="cloudburst">Cloudburst</string>
+    <string name="drizzling">Drizzling</string>
+    <string name="light_precip_intensity">Light</string>
+    <string name="moderate_precip_intensity">Moderate</string>
+    <string name="heavy_precip_intensity">Heavy</string>
+    <string name="intense_precip_intensity">Intense</string>
+    <string name="shower_precip_intensity">Shower</string>
+    <string name="no_precipitation">None</string>
+    <string name="hourly_precip_label">Precip.</string>
+    <string name="hourly_wind_label">Wind</string>
+    <string name="pressure_upcase">PRESSURE</string>
+    <string name="wind_upcase">WIND</string>
+    <string name="humidity_upcase">HUMIDITY</string>
+    <string name="evolution_label">EVOLUTION</string>
+    <string name="button_day">day</string>
+    <string name="current_label">CURRENT</string>
+    <string name="add_city_label">Add City</string>
 
 
 </resources>

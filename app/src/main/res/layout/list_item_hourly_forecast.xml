@@ -15,28 +15,26 @@
      limitations under the License.
 -->
 
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="70dp"
     android:background="#229999ff"
-    >
+    android:minHeight="70dp">
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="0dp"
         android:layout_height="60dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        android:background="#33000044"
         android:paddingLeft="@dimen/list_item_padding_horizontal"
         android:paddingRight="@dimen/list_item_padding_horizontal"
-        android:id="@+id/constraintLayout"
         app:layout_constraintBottom_toTopOf="@+id/shadow"
-        android:background="#33000044"
         app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
         <ImageView
@@ -53,22 +51,20 @@
             app:layout_constraintVertical_bias="0.4"
             tools:src="@drawable/art_clouds" />
 
-    <TextView
-        android:id="@+id/hourly_date"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        tools:text="Today, April 03"
-        android:textColor="@color/white"
-        android:textSize="@dimen/forecast_primary_text_size"
-        android:fontFamily="sans-serif-condensed"
-        android:layout_marginLeft="0dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginBottom="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/hourly_weather_icon"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp"
-        app:layout_constraintVertical_bias="0.923" />
+        <TextView
+            android:id="@+id/hourly_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif-condensed"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="@color/white"
+            android:textSize="@dimen/forecast_secondary_text_size"
+            app:layout_constraintBottom_toTopOf="@+id/hourly_weather_icon"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.923"
+            tools:text="13:59" />
 
         <TextView
             android:id="@+id/hourly_weather_description"
@@ -83,34 +79,96 @@
             android:fontFamily="sans-serif-condensed"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="@color/white"
-            android:textSize="@dimen/forecast_primary_text_size"
+            android:textSize="@dimen/forecast_secondary_text_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.35"
+            app:layout_constraintHorizontal_bias="0.19"
             app:layout_constraintLeft_toRightOf="@+id/hourly_weather_icon"
             app:layout_constraintRight_toLeftOf="@+id/hourly_temperature"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Rainy" />
+            tools:text="Scattered Clouds" />
 
         <TextView
             android:id="@+id/hourly_temperature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:fontFamily="sans-serif-smallcaps"
             android:gravity="end"
             android:textColor="@color/white"
-            android:textSize="@dimen/hourly_text_size"
+            android:textSize="@dimen/forecast_secondary_text_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="10\u00b0" />
+
+        <TextView
+            android:id="@+id/hourly_precip_intensity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif-condensed"
+            android:textColor="@color/white"
+            android:textSize="@dimen/forecast_secondary_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/hourly_temperature"
+            app:layout_constraintHorizontal_bias="0.66"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.19"
+            tools:text="Heavy  Shower" />
+
+        <TextView
+            android:id="@+id/hourly_wind_speed"
+            android:layout_width="wrap_content"
+            android:layout_height="18dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif-condensed"
+            android:textColor="@color/white"
+            android:textSize="@dimen/forecast_secondary_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.33"
+            app:layout_constraintStart_toEndOf="@+id/hourly_precip_intensity"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="4.5Km/h" />
+
+        <TextView
+            android:id="@+id/hourly_precip_intensity_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:textColor="@color/white"
+            android:textSize="@dimen/forecast_secondary_text_size"
+            app:layout_constraintEnd_toEndOf="@+id/hourly_precip_intensity"
+            app:layout_constraintTop_toBottomOf="@+id/hourly_precip_intensity"
+            tools:text="1.9mm" />
+
+        <View
+            android:id="@+id/hourly_no_precip"
+            android:layout_width="25dp"
+            android:layout_height="0.5dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.6"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!--<android.support.constraint.Guideline-->
         <!--android:id="@+id/guideline"-->
@@ -129,7 +187,6 @@
         android:background="@drawable/shadow_drawable"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        />
+        app:layout_constraintRight_toRightOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

@@ -114,6 +114,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         } else if (key.equals(getString(R.string.pref_units_key))) {
             // units have changed. update lists of weather entries accordingly
             activity.getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
+            activity.getContentResolver().notifyChange(HourlyWeatherContract.HourlyWeatherEntry.CONTENT_URI, null);
+            activity.getContentResolver().notifyChange(CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI, null);
         } else if (key.equals(getString(R.string.pref_enable_geolocation_key))) {
             boolean areLocationUpdatesRequested = SunshinePreferences.getRequestUpdates(getActivity());
 
@@ -149,31 +151,29 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
                     }
 
-                    if (prevPos != -1) {
-                        changePos = prevPos;
-                    } else if (nextPos != -1) {
-                        changePos = nextPos;
-                    }
+                    if(SunshinePreferences.getPlaceId(getActivity()).equals(LocationsContract.LocationsEntry.UNIQUE_GEOLOCATION_ID)) {
+                        if (prevPos != -1) {
+                            changePos = prevPos;
+                        } else if (nextPos != -1) {
+                            changePos = nextPos;
+                        }
 
-                    if (-1 != changePos) {
-                        cursor.moveToPosition(changePos);
-                        long id = cursor.getLong(LocationActivity.INDEX_ID);
-                        String city = cursor.getString(LocationActivity.INDEX_CITY_NAME);
-                        String placeId = cursor.getString(LocationActivity.INDEX_PLACE_ID);
-                        double latitude = cursor.getDouble(LocationActivity.INDEX_CITY_LATITUDE);
-                        double longitude = cursor.getDouble(LocationActivity.INDEX_CITY_LONGITUDE);
-                        SunshinePreferences.setCityId(getActivity(), id);
-                        SunshinePreferences.setLocationDetails(getActivity(), latitude, longitude, city, placeId);
-                        SunshineLocationUtils.updateLastLocationUpdate(getActivity(), id);
-                        SunshineSyncUtils.startImmediateSync(getActivity());
-                        getActivity().getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
-                        getActivity().getContentResolver().notifyChange(CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI, null);
-                        getActivity().getContentResolver().notifyChange(HourlyWeatherContract.HourlyWeatherEntry.CONTENT_URI, null);
+                        if (-1 != changePos) {
+                            cursor.moveToPosition(changePos);
+                            long id = cursor.getLong(LocationActivity.INDEX_ID);
+                            String city = cursor.getString(LocationActivity.INDEX_CITY_NAME);
+                            String placeId = cursor.getString(LocationActivity.INDEX_PLACE_ID);
+                            double latitude = cursor.getDouble(LocationActivity.INDEX_CITY_LATITUDE);
+                            double longitude = cursor.getDouble(LocationActivity.INDEX_CITY_LONGITUDE);
+                            SunshinePreferences.setCityId(getActivity(), id);
+                            SunshinePreferences.setLocationDetails(getActivity(), latitude, longitude, city, placeId);
+                            SunshineLocationUtils.updateLastLocationUpdate(getActivity(), id);
+                            SunshineSyncUtils.startImmediateSync(getActivity());
+                            getActivity().getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
+                            getActivity().getContentResolver().notifyChange(CurrentWeatherContract.CurrentWeatherEntry.CONTENT_URI, null);
+                            getActivity().getContentResolver().notifyChange(HourlyWeatherContract.HourlyWeatherEntry.CONTENT_URI, null);
+                        }
                     }
-
-//
-//                        position = cursor.getLong(LocationActivity.INDEX_ID);
-//                        SunshineLocationUtils.deleteLocation(getActivity(), new String[]{String.valueOf(position)});
                     cursor.close();
                 }
 

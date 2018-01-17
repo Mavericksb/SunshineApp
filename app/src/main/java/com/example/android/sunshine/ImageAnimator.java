@@ -98,7 +98,7 @@ public class ImageAnimator {
 
     private GradientDrawable cloudy_day_gradient = new GradientDrawable(
             GradientDrawable.Orientation.TR_BL,
-            new int[]{0xFF465f97, 0xFF6e9da4});
+            new int[]{0xFF3f5587, 0xFF648e94});
 
     private GradientDrawable night_gradient = new GradientDrawable(
             GradientDrawable.Orientation.BL_TR,
