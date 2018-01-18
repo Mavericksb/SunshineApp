@@ -15,7 +15,7 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.android.sunshine">
+    package="com.gabra.android.sunshine">
 
     <!-- This permission is necessary in order for Sunshine to perform network access. -->
 
@@ -37,7 +37,7 @@
 
         <!-- The manifest entry for our ForecastFragment. Each Activity requires a manifest entry -->
         <activity
-            android:name=".MainActivity"
+            android:name="com.gabra.android.sunshine.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.Forecast">
@@ -52,56 +52,56 @@
 
         <!-- The manifest entry for our DetailActivity. Each Activity requires a manifest entry -->
         <activity
-            android:name=".DetailActivity"
+            android:name="com.gabra.android.sunshine.DetailActivity"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.gabra.android.sunshine.MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.gabra.android.sunshine.MainActivity" />
         </activity>
 
         <!-- The manifest entry for our SettingsActivity. Each Activity requires a manifest entry -->
-        <activity android:name=".SettingsActivity" />
+        <activity android:name="com.gabra.android.sunshine.SettingsActivity" />
         <activity
-            android:name=".AutoCompleteActivity"
+            android:name="com.gabra.android.sunshine.AutoCompleteActivity"
             android:label="@string/title_activity_location"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.gabra.android.sunshine.MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.gabra.android.sunshine.MainActivity" />
         </activity>
 
         <activity
-            android:name=".LocationActivity"
+            android:name="com.gabra.android.sunshine.LocationActivity"
             android:label="@string/title_activity_pref_location"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.gabra.android.sunshine.MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
             android:name="android.support.PARENT_ACTIVITY"
-            android:value=".MainActivity" />
+            android:value="com.gabra.android.sunshine.MainActivity" />
         </activity>
 
         <!-- Our ContentProvider -->
         <provider
-            android:name=".data.WeatherProvider"
+            android:name="com.gabra.android.sunshine.data.WeatherProvider"
             android:authorities="@string/content_authority"
             android:exported="false" />
 
         <!-- This is required for reverse Geo Coding -->
         <service
-            android:name=".sync.FetchAddressIntentService"
+            android:name="com.gabra.android.sunshine.sync.FetchAddressIntentService"
             android:exported="false"/>
 
         <!-- This is required for immediate syncs -->
         <service
-            android:name=".sync.SunshineSyncIntentService"
+            android:name="com.gabra.android.sunshine.sync.SunshineSyncIntentService"
             android:exported="false" />
 
         <!-- This is the Service declaration used in conjunction with FirebaseJobDispatcher -->
         <service
-            android:name=".sync.SunshineFirebaseJobService"
+            android:name="com.gabra.android.sunshine.sync.SunshineFirebaseJobService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE">
             <intent-filter>

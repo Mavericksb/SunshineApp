@@ -16,10 +16,10 @@
     <string name="pref_units_label_imperial">Imperiale</string>
     <string name="pref_enable_notifications_label">Notifiche</string>
     <string name="pref_enable_geolocation_label">Localizzami</string>
-    <string name="pref_enable_geolocation_true" translatable="false">Abilitato</string>
-    <string name="pref_enable_geolocation_false" translatable="false">Disabilitato</string>
-    <string name="pref_enable_notifications_true" translatable="false">Abilitate</string>
-    <string name="pref_enable_notifications_false" translatable="false">Disabilitate</string>
+    <string name="pref_enable_geolocation_true">Abilitato</string>
+    <string name="pref_enable_geolocation_false">Disabilitato</string>
+    <string name="pref_enable_notifications_true">Abilitate</string>
+    <string name="pref_enable_notifications_false">Disabilitate</string>
     <string name="today">Oggi</string>
     <string name="tomorrow">Domani</string>
     <string name="wind_label">Vento</string>

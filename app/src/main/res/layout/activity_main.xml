@@ -40,7 +40,7 @@
         android:layout_gravity="start"
         android:background="#0d445e">
     <fragment
-        android:name="com.example.android.sunshine.SettingsFragment"
+        android:name="com.gabra.android.sunshine.SettingsFragment"
         android:id="@+id/settings_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

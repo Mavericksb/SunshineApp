@@ -65,7 +65,7 @@
     <string name="title_activity_hourly_forecast">Hourly Forecast</string>
 
 
-    <string name="content_authority" translatable="false">com.example.android.sunshine</string>
+    <string name="content_authority" translatable="false">com.gabra.android.sunshine</string>
 
 
     <!-- - - - - - - - - - - - - - - -
@@ -104,7 +104,7 @@
 
     <!-- Strings related to Notification Enabled preference -->
     <string name="pref_enable_notifications_key" translatable="false">enable_notifications</string>
-    <string name="pref_enable_notifications_label">Notifications</string>
+    <string name="pref_enable_notifications_label" translatable="true">Notifications</string>
     <string name="pref_enable_notifications_true">Enabled</string>
     <string name="pref_enable_notifications_false">Not Enabled</string>
 
@@ -112,9 +112,9 @@
 
     <!-- Strings related to Geo Location Enabled preference -->
     <string name="pref_enable_geolocation_key" translatable="false">enable_geolocation</string>
-    <string name="pref_enable_geolocation_label">Find me</string>
-    <string name="pref_enable_geolocation_true">Enabled</string>
-    <string name="pref_enable_geolocation_false">Not Enabled</string>
+    <string name="pref_enable_geolocation_label" translatable="true">Find me</string>
+    <string name="pref_enable_geolocation_true" translatable="true">Enabled</string>
+    <string name="pref_enable_geolocation_false" translatable="true">Not Enabled</string>
 
     <string name="pref_last_geolocation_time" translatable="false">last_geolocation_time</string>
 
@@ -147,26 +147,26 @@
 
     <string name="wind_label">Wind</string>
     <!-- Wind in kph -->
-    <string name="format_wind_kmh">
+    <string name="format_wind_kmh" translatable="false">
         <xliff:g id="speed">%1$1.1f</xliff:g> km/h
         <xliff:g id="direction">%2$s</xliff:g>
     </string>
 
     <!-- Wind in mph -->
-    <string name="format_wind_mph">
+    <string name="format_wind_mph" translatable="false">
         <xliff:g id="speed">%1$1.1f</xliff:g> mph
         <xliff:g id="direction">%2$s</xliff:g>
     </string>
 
     <string name="pressure_label">Pressure</string>
     <!-- Pressure format -->
-    <string name="format_pressure">
+    <string name="format_pressure" translatable="false">
         <xliff:g id="pressure">%1.0f</xliff:g> hPa
     </string>
 
     <string name="humidity_label">Humidity</string>
     <!-- Humidity format -->
-    <string name="format_humidity">
+    <string name="format_humidity" translatable="false">
         <xliff:g id="humidity">%1.0f</xliff:g> %%
     </string>
 
@@ -177,32 +177,32 @@
     <string name="condition_501">Moderate Rain</string>
     <string name="condition_502">Heavy Rain</string>
     <string name="condition_503">Intense Rain</string>
-    <string name="condition_504">Extreme Rain</string>
-    <string name="condition_511">Freezing Rain</string>
-    <string name="condition_520">Light Shower</string>
-    <string name="condition_521">Shower</string>
+    <string name="condition_504" translatable="false">Extreme Rain</string>
+    <string name="condition_511" translatable="false">Freezing Rain</string>
+    <string name="condition_520" translatable="false">Light Shower</string>
+    <string name="condition_521" translatable="false">Shower</string>
     <string name="condition_522">Heavy Shower</string>
-    <string name="condition_531">Ragged Shower</string>
+    <string name="condition_531" translatable="false">Ragged Shower</string>
     <string name="condition_600">Light Snow</string>
     <string name="condition_601">Snow</string>
     <string name="condition_602">Heavy Snow</string>
-    <string name="condition_611">Sleet</string>
-    <string name="condition_612">Shower Sleet</string>
-    <string name="condition_615">Rain and Snow</string>
-    <string name="condition_616">Rain and Snow</string>
-    <string name="condition_620">Shower Snow</string>
-    <string name="condition_621">Shower Snow</string>
-    <string name="condition_622">Shower Snow</string>
-    <string name="condition_701">Mist</string>
-    <string name="condition_711">Smoke</string>
-    <string name="condition_721">Haze</string>
-    <string name="condition_731">Sand, Dust</string>
+    <string name="condition_611" translatable="false">Sleet</string>
+    <string name="condition_612" translatable="false">Shower Sleet</string>
+    <string name="condition_615" translatable="false">Rain and Snow</string>
+    <string name="condition_616" translatable="false">Rain and Snow</string>
+    <string name="condition_620" translatable="false">Shower Snow</string>
+    <string name="condition_621" translatable="false">Shower Snow</string>
+    <string name="condition_622" translatable="false">Shower Snow</string>
+    <string name="condition_701" translatable="false">Mist</string>
+    <string name="condition_711" translatable="false">Smoke</string>
+    <string name="condition_721" translatable="false">Haze</string>
+    <string name="condition_731" translatable="false">Sand, Dust</string>
     <string name="condition_741">Fog</string>
-    <string name="condition_751">Sand</string>
-    <string name="condition_761">Dust</string>
-    <string name="condition_762">Volcanic Ash</string>
-    <string name="condition_771">Squalls</string>
-    <string name="condition_781">Tornado</string>
+    <string name="condition_751" translatable="false">Sand</string>
+    <string name="condition_761" translatable="false">Dust</string>
+    <string name="condition_762" translatable="false">Volcanic Ash</string>
+    <string name="condition_771" translatable="false">Squalls</string>
+    <string name="condition_781" translatable="false">Tornado</string>
     <string name="condition_800">Clear</string>
     <string name="condition_8001">Clear Day</string>
     <string name="condition_8002">Clear Night</string>
@@ -212,12 +212,12 @@
     <string name="condition_804">Overcast Clouds</string>
     <string name="condition_8041">Partly Cloudy</string>
     <string name="condition_8042">Partly Cloudy</string>
-    <string name="condition_900">Tornado</string>
-    <string name="condition_901">Tropical Storm</string>
-    <string name="condition_902">Hurricane</string>
-    <string name="condition_903">Cold</string>
-    <string name="condition_904">Hot</string>
-    <string name="condition_905">Windy</string>
+    <string name="condition_900" translatable="false">Tornado</string>
+    <string name="condition_901" translatable="false">Tropical Storm</string>
+    <string name="condition_902" translatable="false">Hurricane</string>
+    <string name="condition_903" translatable="false">Cold</string>
+    <string name="condition_904" translatable="false">Hot</string>
+    <string name="condition_905" translatable="false">Windy</string>
     <string name="condition_906">Hail</string>
     <string name="condition_951">Calm</string>
     <string name="condition_952">Light Breeze</string>
@@ -232,8 +232,8 @@
     <string name="condition_961">Violent Storm</string>
     <string name="condition_962">Hurricane</string>
 
-    <string name="condition_unknown">Unknown (<xliff:g id="conditionId">%1$d</xliff:g>)</string>
-    <string name="condition_ds_unknown">Unknown (<xliff:g id="conditionId">%s</xliff:g>)</string>
+    <string name="condition_unknown" translatable="false">Unknown (<xliff:g id="conditionId">%1$d</xliff:g>)</string>
+    <string name="condition_ds_unknown" translatable="false">Unknown (<xliff:g id="conditionId">%s</xliff:g>)</string>
 
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -242,20 +242,20 @@
       - Fun Fact: Accessibility is abbreviated a11y because accessibility starts with 'a', -
       - followed by 11 letters, and then a 'y'. It is pronounced alley, like an alley cat. -
       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <string name="a11y_forecast">Forecast: <xliff:g id="condition">%1$s</xliff:g></string>
-    <string name="a11y_forecast_icon">Forecast icon: <xliff:g id="condition">%1$s</xliff:g></string>
-    <string name="a11y_high_temp">High: <xliff:g id="high">%1$s</xliff:g></string>
-    <string name="a11y_low_temp">Low: <xliff:g id="low">%1$s</xliff:g></string>
-    <string name="a11y_temp">Temperature: <xliff:g id="temp">%1$s</xliff:g></string>
-    <string name="a11y_humidity">Humidity: <xliff:g id="humidity">%1$s</xliff:g></string>
-    <string name="a11y_pressure">Barometric Pressure: <xliff:g id="pressure">%1$s</xliff:g></string>
-    <string name="a11y_wind">Wind speed and direction: <xliff:g id="wind">%1$s</xliff:g></string>
+    <string name="a11y_forecast" translatable="false">Forecast: <xliff:g id="condition">%1$s</xliff:g></string>
+    <string name="a11y_forecast_icon" translatable="false">Forecast icon: <xliff:g id="condition">%1$s</xliff:g></string>
+    <string name="a11y_high_temp" translatable="false">High: <xliff:g id="high">%1$s</xliff:g></string>
+    <string name="a11y_low_temp" translatable="false">Low: <xliff:g id="low">%1$s</xliff:g></string>
+    <string name="a11y_temp" translatable="false">Temperature: <xliff:g id="temp">%1$s</xliff:g></string>
+    <string name="a11y_humidity" translatable="false">Humidity: <xliff:g id="humidity">%1$s</xliff:g></string>
+    <string name="a11y_pressure" translatable="false">Barometric Pressure: <xliff:g id="pressure">%1$s</xliff:g></string>
+    <string name="a11y_wind" translatable="false">Wind speed and direction: <xliff:g id="wind">%1$s</xliff:g></string>
 
 
     <!-- Used by NotificationUtils -->
 
     <!-- The format of the notification we show when the weather is updated -->
-    <string name="format_notification">
+    <string name="format_notification" translatable="false">
         Forecast: <xliff:g id="condition">%1$s</xliff:g> -
         High:<xliff:g id="high">%2$s</xliff:g>
         Low:<xliff:g id="low">%3$s</xliff:g>
@@ -283,14 +283,14 @@
     <string name="heavy_precip_intensity">Heavy</string>
     <string name="intense_precip_intensity">Intense</string>
     <string name="shower_precip_intensity">Shower</string>
-    <string name="no_precipitation">None</string>
+    <string name="no_precipitation" translatable="false">None</string>
     <string name="hourly_precip_label">Precip.</string>
     <string name="hourly_wind_label">Wind</string>
     <string name="pressure_upcase">PRESSURE</string>
     <string name="wind_upcase">WIND</string>
     <string name="humidity_upcase">HUMIDITY</string>
     <string name="evolution_label">EVOLUTION</string>
-    <string name="button_day">day</string>
+    <string name="button_day" translatable="false">day</string>
     <string name="current_label">CURRENT</string>
     <string name="add_city_label">Add City</string>
 
